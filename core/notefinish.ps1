@@ -1,9 +1,9 @@
 
 Write-Host "NOTICE: Due to the script's limited ability, the following stuffs might have not been setup properly as planned:" -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host ([char]0xA0) -BackgroundColor Black
 
-Write-Host "- I tried my best, but it seems PENetwork Manager doesn't want to import all the settings. When you restart and the program come up, please do the following: " -n; Write-Host -ForegroundColor Yellow 'Go to "Others" in the left pane, scroll down to "Tray (notification area) options" section and check the first 5 options.'
 if ($build -lt 18382) {
 	Write-Host "- The File Explorer icon might not get replaced with the 1903 one. In that case, " -n; Write-Host -ForegroundColor Yellow 'open an Administrator CMD and run "ie4uinit -show" several times until it displays the correct icon.'
+}
 if ($build -ge 17763) {
 	Write-Host "- The Chromium Edge icon might not get deleted from the desktop. In that case just delete it."
 }

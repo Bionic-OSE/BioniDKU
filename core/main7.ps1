@@ -1,5 +1,5 @@
 ﻿$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze"
-$butter = "Build 22107.200_pwsh7.uec_release.04122022-1647"
+$butter = "Build 22107.200_pwsh7u1.uec_release.04122022-1818"
 function Show-Branding($s1,$s2) {
 	if ($s1 -like "clear") {Clear-Host}
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
