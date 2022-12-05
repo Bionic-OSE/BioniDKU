@@ -12,8 +12,8 @@ And I couldn't get everything here without some help from those friends. They ha
 
 ## What has changed?
 ### COSMETIC
-- A stunning new and high-res wallpaper, featuring Chinju Forest from Inazuma of Genshin Impact!
-- **A SLEW** of new music, expanding from the current 12 songs library to 30 songs (well, mostly Genshin OSTs; you can guess my favorite game by now XD).
+- A stunning new and high-res wallpaper.
+- **A SLEW** of new music, expanding from the current 12 songs library to 30 songs.
 - A nicer script interface, now even more colorful and more distinguishable.
 ### MECHANISM
 - By leveraging batch technology, the script is now self-manageable with 2 new capabilites: **self-restart** and **self-resume** after OS restart.
