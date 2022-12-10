@@ -2,13 +2,13 @@
 
 ## What is an IDKU?
 ### Definition
-**IDKU** (short for <ins>"I don't know Update"</ins>) is a type of Windows 10 installation that has all the differences between all existing Windows 10 Feature Updates/Versions stripped out or hidden. The point of which is to challenge you to use the operating system without knowing its version, and to surprise you in the end by revealing its identity.
+**IDKU** (short for *"I don't know Update"*) is a type of Windows 10 installation that has all the differences between all existing Windows 10 Feature Updates/Versions stripped out or hidden. The point of which is to challenge you to use the operating system without knowing its version, and to surprise you in the end by revealing its identity.
 
 Windows features that have differences will either be restricted, synchronized or replaced with alternatives. This is done using various methods, mainly registry tweaks and group policies. The script's purpose is to automate this entire process as much as possible, as doing all of them manually can be a great pain.
 
 IDKUs are rendered **insecure** due to many of Windows security features having differences and therefore had to be removed. The OS will not have any password protection, no UAC, no Windows Update and no Windows Defender. Challenge participants should consider using IDKUs as a secondary OS, or increase protection of any online account signed in to them to avoid any possible security compromises.
 ### Origin
-This kind of challenge was formed by Julia and her friends back in 2020. Back then a domain was used to "IDKUlize" the installations as there were no scripts. Then Sunryze started working on a script in the following year, calling it "**AutoIDKU**", and the script was widely used until around June 2022 when he decided to empty the source repository, rendering the script unusable due to its dependence on files stored there. The story below this section is about how I came up with the idea of reviving it and how I made it possible.
+This kind of challenge was created by Julia and her friends back in 2020. Back then a domain was used to "IDKUlize" the installations as there were no scripts. Then Sunryze started working on a script in the following year, calling it "**AutoIDKU**", and the script was widely used until around June 2022 when he decided to empty the source repository, rendering the script unusable due to its dependence on files stored there. The story below this section is about how I came up with the idea of reviving it and how I made it possible.
 
 By the way, if you do notice the number `2210x` before the version number in places of this project, well that's the ID of this project (I have a weird project management/identification system and the IDs are just one part of it).
 
