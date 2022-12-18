@@ -1,4 +1,4 @@
-$manmode = Test-Path Test-Path -Path "$PSScriptRoot\launcherman.bat" -PathType Leaf
+$manmode = Test-Path -Path "$PSScriptRoot\launcherman.bat" -PathType Leaf
 if ($manmode -eq $true) {
 	"@echo off & start C:\Windows\System32\cmd.exe /c $PSScriptRoot\launcherman.bat" | Out-File -FilePath "C:\Windows\resume.bat" -Encoding ascii
 }
