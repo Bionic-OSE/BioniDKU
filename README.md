@@ -13,7 +13,7 @@ Orignially an attempt to resurrect the original [AutoIDKU](https://github.com/su
 - The rule of automation: anything that has to be done manually must be done first, and so here they are, reordered to be after the Windows Update part.
 - An options-overview screen upon script startup, prompting user to check again and make changes if neccesary.
 ### UNDER THE HOOD and MODULES
-- Hello PowerShell 7! Although it isn't that different from PowerShell 5.x, it solves the **NuGet** errors on Windows 10 version 1507 and enables **PSWindowsUpdate** to work on 1607. On version 1511 and older, PowerShell 5 is used as the main orchestrator with a seperate main script due to compatibility reasons, and PowerShell 7 is used for the **MusicPlayer**; where as on 1607 and newer, PowerShell 7 is used for everything.
+- Hello PowerShell 7! Although it isn't that different from PowerShell 5.x, it solves the **NuGet** errors on Windows 10 version 1507 and enables **PSWindowsUpdate** to work on 1607. On version 1511 and older, PowerShell 5 is used as the main orchestrator with a seperate main script due to compatibility reasons, and PowerShell 7 is used for the **MusicPlayer**; where as on 1607 and newer, PowerShell 7 is used for everything *(UPDATE: As of version 200_u2 the UWP apps removal module no longer runs on 7 due to performance issues)*.
 - Several new modules have been introduced, some to adapt to the current state of Windows 10 versions, some to solve problems that was not possible before.
 - And more that I can't cover all...
 
@@ -21,13 +21,13 @@ Orignially an attempt to resurrect the original [AutoIDKU](https://github.com/su
 Yes. There are things that should be taken care of now due to how "dangerous" this script is to Windows.
 
 ### BEFORE YOU EXECUTE THE SCRIPT
-**1. Windows Defender MUST be disabled before you hit the OK button on the password prompt** (yes, there is a password). **I have included a tool do to that:**
+**1. Microsoft/Windows Defender MUST be disabled before you hit the Yes button on the confirmation prompt** (it will also notice you about this once again). **I have included a tool do to that:**
 - Go to [this link](https://cutt.ly/BioniDKU-extras) and download the **BioniDKU_AddtFile_dControl.zip** file.
 - On your target system, in Defender settings turn off Real time protection (and Tamper protection too if it's there).
 - Now open the zip file and run **dControl.exe** inside it (no other programs or extraction needed, just double clicking and click "Run" when it asks if you want to better extract it). Password is: `sordum`
 - Click **Disable Defender** and restart the PC. You can now enter the password and proceed.
 
-**2. The executable password is always** `BioniDKU`
+**2. A reliable internet connection is required.** If you're on a metered connection, a 1GB plan should work if you don't plan to run Windows Updates on the target system (about more than 400MB will be downloaded in total). Work on offline-running support will come in future releases, so stay tuned!
 
 ## About the definition of "IDKU" and the backstory
 [Click here to read them](https://github.com/Bionic-OSE/BioniDKU/blob/main/YEETME.md)
