@@ -1,5 +1,6 @@
-﻿$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze"
-$butter = "Build 22107.200_pwsh5u3.oseprod_mainrel.221220-2058"
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze"
+$butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Butter
+$pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
 function Show-Branding($s1,$s2) {
 	if ($s1 -like "clear") {Clear-Host}
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
@@ -13,6 +14,8 @@ function Show-Branding($s1,$s2) {
 		Write-Host " "; Write-Host "--------------------------------------------------------------"; Write-Host " "
 	}
 }
+# Set Working Directory first before anything else
+$workdir = "$PSScriptRoot\.."
 
 ##############################################################
 ### Everything inside these two lines of 63 hashes are the 
@@ -20,195 +23,86 @@ function Show-Branding($s1,$s2) {
 ### ANYTHING ELSE IN THIS FILE!
 
 ### ------ REQUIRED MODULES, PLEASE DO NOT DISABLE ------
-$manualstuffs =	        $true
-$disableuac =           $true
+	$manualstuffs =	        $true
+	$disableuac =           $true
 
 ### ------ SCRIPT CONFIGURATION: Module Switches ------
 
-$setupmusic =           $true
+	$setupmusic =           $true
 
-$requiredprograms =     $true
-$hidetaskbaricons =     $true
-$replaceneticon =       $true
-$removeedge =           $true
-$setwallpaper =         $true
-$dotnet35 =             $true 
-$dotnet462 =            $true
-$sharex462 =            $true
-$paintdotnet462 =       $true 
-$desktopshortcuts =     $true 
-$removeudpassistant =   $true 
-$removewaketimers =     $true 
-$removeUWPapps =        $true 
-$openshellconfig =      $true 
-$explorericon =         $true
-$classicapps =          $true 
-$taskbarpins =          $true
-$replaceemojifont =     $true 
-$defaultapps =          $true 
-$disablesettings =      $true 
-$blockapps =            $true 
-$gpomodifs =            $true 
-$disableaddressbar =    $true
-$removeonedrive =       $true
-$removehomegroup =      $true
-$explorerstartfldr =    $true 
-$oldbatteryflyout =     $true 
-$customsounds =         $true
+if ($pwsh -eq 7) {
+	$windowsupdate =        $true}
+if ($pwsh -eq 5) {
+	$dotnet462 =            $true}
+	$sharex462 =            $true
+	$paintdotnet462 =       $true 
+	$dotnet35 =             $true
+	$requiredprograms =     $true
+	$hidetaskbaricons =     $true
+	$replaceneticon =       $true
+	$removeedge =           $true
+	$setwallpaper =         $true
+	$desktopshortcuts =     $true 
+	$removeudpassistant =   $true 
+	$removewaketimers =     $true 
+	$removeUWPapps =        $true 
+	$openshellconfig =      $true 
+	$explorericon =         $true
+	$classicapps =          $true 
+	$taskbarpins =          $true
+	$replaceemojifont =     $true 
+	$defaultapps =          $true 
+	$disablesettings =      $true 
+	$blockapps =            $true 
+	$gpomodifs =            $true 
+	$disableaddressbar =    $true
+	$removeonedrive =       $true
+	$removehomegroup =      $true
+	$explorerstartfldr =    $true 
+	$oldbatteryflyout =     $true 
+	$customsounds =         $true
 
 ### ------ SCRIPT CONFIGURATION: Registry Switches ------
 # Below are registry-applied tweaks. You can disable all of them,
 # or you can disable a specific one.
 
-$registrytweaks =       $true # Master switch for all option below
+	$registrytweaks =       $true # Master switch for all option below
+	
+	$disablestartupitems =  $true
+	$disablenotifs =        $true 
+	$disablegamebar =       $true 
+	$disableautoplay =      $true 
+	$disablemultitaskbar =  $true
+	$transparencydisable =  $true 
+	$disableanimations =    $true 
+	$disablewinink =        $true 
+	$removedownloads =      $true
+	$applookupinstore =     $true
+	$contextmenuentries =   $true
+	$1709peoplebar =        $true
+	$1511locationicon =     $true
+	$removequickaccess =    $true
+	$disablelocationicon =  $true 
+	$activatephotoviewer =  $true 
+	$registeredowner =      $true 
+	$classicpaint =         $true 
+	$disableedgeprelaunch = $true
+	$disablecortana =       $true 
+	$disablestoreautoupd =  $true
+	$balloonnotifs =        $true 
+	$showalltrayicons =     $false # Recommended TRUE only if 1511+
+	$disablelockscrn =      $true
+	$darkmodeoff =          $true 
+	$classicalttab =        $true
+	$oldvolcontrol =        $true
+	$defaultcolor =         $true
+	$remove3Dobjects =      $true
+	$hidebluetoothicon =    $true
+	$disablelogonbg =       $true
+	$svchostslimming =      $true
 
-$disablestartupitems =  $true
-$disablenotifs =        $true 
-$disablegamebar =       $true 
-$disableautoplay =      $true 
-$disablemultitaskbar =  $true
-$transparencydisable =  $true 
-$disableanimations =    $true 
-$disablewinink =        $true 
-$removedownloads =      $true
-$applookupinstore =     $true
-$contextmenuentries =   $true
-$1709peoplebar =        $true
-$1511locationicon =     $true
-$removequickaccess =    $true
-$disablelocationicon =  $true 
-$activatephotoviewer =  $true 
-$registeredowner =      $true 
-$classicpaint =         $true 
-$disableedgeprelaunch = $true
-$disablecortana =       $true 
-$disablestoreautoupd =  $true
-$balloonnotifs =        $true 
-$showalltrayicons =     $false # Recommended TRUE only if 1511+
-$disablelockscrn =      $true
-$darkmodeoff =          $true 
-$classicalttab =        $true
-$oldvolcontrol =        $true
-$defaultcolor =         $true
-$remove3Dobjects =      $true
-$hidebluetoothicon =    $true
-$disablelogonbg =       $true
-$svchostslimming =      $true
-
-& $PSScriptRoot\modules.ps1
-function Get-ConfigStat {
-	$confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
-	if ($confuled -eq 2) {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
-		exit
-	}
-	if ($confuled -eq 0) {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
-		exit
-	}
-}
-Get-ConfigStat
-##############################################################
-
-Show-Branding clear
-# PowerShell 5 script optimized specifically for Windows 10 builds 10240 and 10586
-# (version 1507 and 1511) since PowerShell 7 requires 1607 or newer to function properly
-# This script also has some newer build's stuffs removed.
-
-# Remove the other PowerShell counterpart
-$pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
-$psop = Test-Path -Path "$PSScriptRoot\main7.ps1" -PathType Leaf
-if ($psop -eq $true) {Remove-Item "$PSScriptRoot\main7.ps1"}
-
-# Set Working Directory
-$workdir = "$PSScriptRoot\.."
-
-# Clear out any pending script resume orders
-& $PSScriptRoot\unsume.ps1
-
-### ------ System Variables ------
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Finding your Windows 10 build number"
-
-$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
-$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
-$battery = (Get-WmiObject Win32_Battery)
-
-if ($build -le 17134 -and $build -ge 10240) {
-    $tls1 = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NetFramework\v4.0.30319').SchUseStrongCrypto
-    $tls2 = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NetFramework\v4.0.30319').SchUseStrongCrypto
-    if ($tls1 -eq 0 -or $tls2 -eq 0 -or $null -eq $tls1 -or $null -eq $tls2) {
-        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NetFramework\v4.0.30319' -Name 'SchUseStrongCrypto' -Value '1' -Type DWord
-        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\.NetFramework\v4.0.30319' -Name 'SchUseStrongCrypto' -Value '1' -Type DWord
-        Write-Host -ForegroundColor Yellow -BackgroundColor DarkGray "This version of Windows requires certain TLS settings. Restarting the script for them to take effect..."
-        Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
-        exit
-    }
-}
-
-### ------ Pending reboot check and Bits importing ------
-switch ($build) {
-    {$_ -ge 10240} {
-        $pendingreboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
-        if ($pendingreboot -eq $true -and $build -ge 10240) {
-            Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your PC has a pending restart, which has to be done before running this script. Automatically restarting in 5 seconds..." -n; Write-Host ([char]0xA0)
-			& $PSScriptRoot\resume.ps1
-			Start-Sleep -Seconds 5
-			shutdown -r -t 0
-			Start-Sleep -Seconds 30
-			exit
-		}
-	}
-}
-Import-Module BitsTransfer -Verbose
-
-function Stop-Script { # This stops the Music running in the PowerShell 7 process before exiting
-	Stop-Process -Name pwsh -Force
-	exit
-}
-
-# You cannot use PSWindowsUpdate on 1507 and 1511.
-$wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
-if ($wupdated -ne 1) {
-    Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your build does not support Windows Update through PowerShell. Have you fully updated yet? (yes/no)"
-	if ($build -eq 10240) {Write-Host "On Windows 10 build 10240, updating is " -n; Write-Host "REQUIRED" -ForegroundColor Black -BackgroundColor Yellow -n; Write-Host " in order to be able to disable the LogonUI's background."}
-    Write-Host "Your answer: " -n ; $fullyupdated = Read-Host
-    switch ($fullyupdated) {
-        {$fullyupdated -like "yes"} {
-            Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Alright, the script will PROCEED."
-			Set-ItemProperty -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name "Wupdated" -Value 1 -Type DWord -Force
-        }
-        {$fullyupdated -like "no"} {
-            Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Then the script fell into darkness."
-            Start-Sleep -Seconds 4
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-            exit
-        }
-        {$fullyupdated -like '*fuck*'} {
-            Write-Host -ForegroundColor Red -BackgroundColor DarkGray "HAH, L"
-            Start-Sleep -Seconds 2
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-            exit
-        }
-		{$fullyupdated -like 'Julia loves RTM'} {
-            Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Yes absolutely"
-            Start-Sleep -Seconds 2
-			Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Wait, who asked? Read the question again you blind."
-			Start-Sleep -Seconds 3
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-            exit
-		}
-		default {
-			Write-Host -ForegroundColor Red -BackgroundColor DarkGray "You didn't answer appropriately. Exiting..."
-            Start-Sleep -Seconds 2
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-			exit
-		}
-    }
-}
-
-### ------- Functions ------
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Importing Functions"
-Function Set-WallPaper($Image) {
+# Importing some basic functions required for the modules menu
+function Set-WallPaper($Image) {
 Add-Type -TypeDefinition @" 
 using System; 
 using System.Runtime.InteropServices;
@@ -226,6 +120,122 @@ public class Params
     $SendChangeEvent = 0x02
     $fWinIni = $UpdateIniFile -bor $SendChangeEvent
     $ret = [Params]::SystemParametersInfo($SPI_SETDESKWALLPAPER, 0, $Image, $fWinIni)
+}
+
+& $PSScriptRoot\modules.ps1
+function Get-ConfigStat {
+	$confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
+	if ($confuled -eq 2) {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
+		exit
+	}
+	elseif ($confuled -eq 0) {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
+		exit
+	}
+}
+Get-ConfigStat
+##############################################################
+
+
+######################## BEGIN SCRIPT ########################
+
+# Show branding
+Show-Branding clear
+
+# Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
+$hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
+if ($hkm -eq 1) {
+	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing startup obstacles" -n; Write-Host ([char]0xA0)
+	& $PSScriptRoot\..\modules\removal\letsNOTfinish.ps1
+	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer" -n; Write-Host ([char]0xA0)
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
+	& $PSScriptRoot\hikaru.ps1
+}
+
+### ------ System Variables ------
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing environment" -n; Write-Host ([char]0xA0)
+
+$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
+$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
+$battery = (Get-CimInstance -ClassName Win32_Battery)
+Write-Host "You're running Windows 10 build"$build"."$ubr
+
+### ------ Continue importing required dependencies ------
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components" -n; Write-Host ([char]0xA0)
+
+switch ($build) {
+	{$_ -ge 17763} {
+		# I'm not sure if this will happen on older, but that's the oldest build I know to have Edge Chromium after updating
+		$chedgeck = Get-Process msedge -ErrorAction SilentlyContinue
+		if ($chedgeck) {
+			Write-Host "Getting Microsoft Edge out of the way" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+			Stop-Process -Name msedge -Force
+		}
+	}
+    {$_ -ge 10240} {
+        $pendingreboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
+        if ($pendingreboot -eq $true -and $build -ge 10240) {
+            Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your PC has a pending restart, which has to be done before running this script. Automatically restarting in 5 seconds..." -n; Write-Host ([char]0xA0)
+			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
+			& $PSScriptRoot\hikaru.ps1
+			Start-Sleep -Seconds 5
+			shutdown -r -t 0
+			Start-Sleep -Seconds 30
+			exit
+        }
+    }
+}
+Import-Module BitsTransfer -Verbose
+
+# You cannot use PSWindowsUpdate on 1507 and 1511.
+if ($pwsh -eq 5) {
+	$wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
+	if ($wupdated -ne 1) {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your build does not support Windows Update through PowerShell. Have you fully updated yet? (yes/no)"
+		if ($build -eq 10240) {Write-Host "On Windows 10 build 10240, updating is " -n; Write-Host "REQUIRED" -ForegroundColor Black -BackgroundColor Yellow -n; Write-Host " in order to be able to disable the LogonUI's background."}
+		Write-Host "Your answer: " -n ; $fullyupdated = Read-Host
+		switch ($fullyupdated) {
+			{$fullyupdated -like "yes"} {
+				Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Alright, the script will PROCEED."
+				Set-ItemProperty -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name "Wupdated" -Value 1 -Type DWord -Force
+			}
+			{$fullyupdated -like "no"} {
+				Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Then the script fell into darkness."
+				Start-Sleep -Seconds 4
+				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+				exit
+			}
+			{$fullyupdated -like '*fuck*'} {
+				Write-Host -ForegroundColor Red -BackgroundColor DarkGray "HAH, L"
+				Start-Sleep -Seconds 2
+				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+				exit
+			}
+			{$fullyupdated -like 'Julia loves RTM'} {
+				Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Yes absolutely"
+				Start-Sleep -Seconds 2
+				Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Wait, who asked? Read the question again you blind."
+				Start-Sleep -Seconds 3
+				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+				exit
+			}
+			default {
+				Write-Host -ForegroundColor Red -BackgroundColor DarkGray "You didn't answer appropriately. Exiting..."
+				Start-Sleep -Seconds 2
+				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+				exit
+			}
+		}
+	
+	}
+}
+
+##### ------ Functions ------
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Importing Functions" -n; Write-Host ([char]0xA0)
+function Stop-Script { # This stops the Music running in the PowerShell 7 process before exiting
+	Stop-Process -Name pwsh -Force
+	exit
 }
 
 function Take-Permissions {
@@ -290,11 +300,12 @@ Take-KeyPermissions $rootKey $key $sid $recurse
 ##################### Begin Script #####################
 Write-Host " "
 $dotnet35done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnet35
-$dotnet462done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnetrebooted
 
 switch ($true) {
     default {
-        Write-Host "You did not select anything to do. Press enter to exit." -ForegroundColor Red -BackgroundColor DarkGray
+        Write-Host "You did not select anything to do and will be taken back to the configuration screen next time you start the script. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
         Read-Host
 		exit
     }
@@ -302,28 +313,16 @@ switch ($true) {
     $setupmusic {
 		Write-Host "Setting up Music" -BackgroundColor DarkGray -ForegroundColor Cyan -n; Write-Host ([char]0xA0)
 		Start-Process powershell -Wait -ArgumentList "-Command $workdir\music\musicn.ps1" -WorkingDirectory $workdir\music
-        Start-Process pwsh -ArgumentList "-WindowStyle Hidden -Command $workdir\modules\essential\setupmusic5.ps1"
-		Start-Sleep -Seconds 10
-    }
-
-    $setwallpaper {
-        & $PSScriptRoot\..\modules\desktop\wallpaper.ps1
-    }
-    
-	$disableuac {
-		# This has to be done first, otherwise you'll get UAC prompting on script resume-on-reboot
-		# which is not ideal when the goal is to get fully automated
-        Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling UAC"
-        Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name ConsentPromptBehaviorAdmin -Value 0 -Type DWord -Force
+        Start-Process pwsh -ArgumentList "-WindowStyle Hidden -Command $workdir\modules\essential\setupmusic.ps1"
     }
 	
 	{$dotnet35 -eq $true -and $dotnet35done -ne 1} {
-        Write-Host "Enabling .NET 3.5" -ForegroundColor Cyan -BackgroundColor DarkGray
+        Write-Host "Enabling .NET 3.5" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
         Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3"
-		Set-ItemProperty -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name "dotnet35" -Value 1 -Type DWord -Force
-    }
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "dotnet35" -Value 1 -Type DWord -Force
+	}
 	
-	{$dotnet462 -eq $true -and $dotnet462done -ne 1 -and $build -lt 14393} {
+	{$dotnet462 -eq $true -and $dotnet462done -ne 1} {
 		Write-Host "Downloading .NET 4.6.2" -ForegroundColor Cyan -BackgroundColor DarkGray
 		Write-Host "If it fails to download, please manually download via this link:"  -BackgroundColor Cyan -ForegroundColor Black 
 		Write-Host "https://go.microsoft.com/fwlink/?LinkId=780600" -ForegroundColor Cyan
@@ -342,9 +341,17 @@ switch ($true) {
         & $PSScriptRoot\..\modules\taskbar\hidetaskbaricons.ps1
     }
 
+    {$replaceneticon -eq $true -and $build -ge 18362} {
+        & $PSScriptRoot\..\modules\taskbar\1903neticon.ps1
+    }
+
     $removeonedrive {
         & $PSScriptRoot\..\modules\removal\removeonedrive.ps1
     }  
+
+    {$removehomegroup -eq $true -and $build -lt 17134} {
+        & $PSScriptRoot\..\modules\removal\removehomegroup.ps1
+    }
 
     $desktopshortcuts {
         & $PSScriptRoot\..\modules\desktop\desktopshortcuts.ps1
@@ -371,7 +378,7 @@ switch ($true) {
     }
     
     $removeUWPapps {
-        Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing all UWP apps possible" 
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing all UWP apps possible" -n; Write-Host ([char]0xA0) 
         Start-Process powershell -Wait -ArgumentList "$PSScriptRoot\..\modules\removal\removeuwpapps.ps1"
     }
 
@@ -386,7 +393,7 @@ switch ($true) {
     {$explorericon -eq $true} {
         & $PSScriptRoot\..\modules\taskbar\explorericon.ps1
     }
-
+	
     $disableaddressbar {
         & $PSScriptRoot\..\modules\apps\addressbar.ps1
     }
@@ -416,13 +423,11 @@ switch ($true) {
     }
 }
 
-# One again clear out any pending script resume orders
-& $PSScriptRoot\unsume.ps1
-
+Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 Write-Host " " -n; Write-Host ([char]0xA0)
 Write-Host "This was the final step of the script. Press Enter to reboot, and then the IDKU will be fully setup!" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter, with Love from Vietnam <3" -ForegroundColor Magenta -n; Write-Host ([char]0xA0)
 Read-Host
-shutdown -r -t 5
+shutdown -r -t 5 -c "BioniDKU needs to restart your PC to complete the process"
 Stop-Script

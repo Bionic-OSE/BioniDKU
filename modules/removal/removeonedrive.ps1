@@ -52,5 +52,5 @@ Write-Output "Restarting Explorer"
 Start-Process "explorer.exe"
 
 Write-Output "Waiting for Explorer to complete loading"
-Write-Host -ForegroundColor Black -BackgroundColor Yellow "If an error poped up saying OneDrive has failed to uninstall, please uninstall it manually later" -n; Write-Host ([char]0xA0)
-Start-Sleep 10
+Write-Host -ForegroundColor Black -BackgroundColor Yellow "If an error pops up saying OneDrive has failed to uninstall, please uninstall it manually later" -n; Write-Host ([char]0xA0)
+Start-Sleep -Seconds 10

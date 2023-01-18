@@ -28,27 +28,25 @@ powershell Set-ExecutionPolicy -Force Unrestricted
 powershell .\nana.ps1
 for /f "tokens=3" %%a in ('reg query "HKCU\Software\AutoIDKU" /v Denied  ^|findstr /ri "REG_DWORD"') do set "ban=%%a"
 if %ban%==0x1 exit
-
-:PSSelect
-for /f "tokens=3" %%a in ('reg query "HKCU\Software\AutoIDKU" /v Pwsh  ^|findstr /ri "REG_DWORD"') do set "ps=%%a"
-if %ps%==0x5 goto BioniDKU5
-if %ps%==0x7 goto BioniDKU7
-echo Something went wrong and the script couldn't boot. Please contact Bionic. Press any key to exit.
-pause > nul
+goto BioniDKU
 
 :PSRestart
 for /f "tokens=3" %%a in ('reg query "HKCU\Software\AutoIDKU" /v RebootScript  ^|findstr /ri "REG_DWORD"') do set "re=%%a"
-if %re%==0x1 echo Time for the script container to restart the script...
-if %re%==0x1 goto PSSelect
+if %re%==0x1 echo Time for the launcher to restart the script...
+if %re%==0x1 goto BioniDKU
 exit
 
-:BioniDKU5
+:Hikarupdate
 timeout 1 /nobreak > nul
-powershell .\main5.ps1
+powershell .\hikarupdate.ps1
 goto PSRestart
 
-:BioniDKU7
+:BioniDKU
+for /f "tokens=3" %%a in ('reg query "HKCU\Software\AutoIDKU" /v HikaruMode  ^|findstr /ri "REG_DWORD"') do set "hku=%%a"
+if %hku%==0x2 goto Hikarupdate
 timeout 1 /nobreak > nul
-"C:\Program Files\PowerShell\7\pwsh.exe" .\main7.ps1
+powershell .\main.ps1
 goto PSRestart
 
+echo Something went wrong and the script couldn't boot. Please contact Bionic. Press any key to exit.
+pause > nul

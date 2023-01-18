@@ -50,7 +50,8 @@ switch ($true) {
 
     $removedownloads {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing Downloads Folder" -n; Write-Host ([char]0xA0)
-        Write-Host "DELETING YOUR DOWNLOADS FOLDER as you specified." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+		$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
+        if ($dlhasfiles -eq $true) {Write-Host "DELETING YOUR DOWNLOADS FOLDER as you specified." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)}
         Remove-Item -Path "$env:USERPROFILE\Downloads" -Force -Recurse
         Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}' -Force
         Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}' -Force 
@@ -111,7 +112,7 @@ switch ($true) {
 
     $registeredowner {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting Registered owner" -n; Write-Host ([char]0xA0)
-        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOwner' -Value 'Project BioniDKU - (c) Bionic.OSE' -Type String -Force
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOwner' -Value 'Project BioniDKU - (c) Bionic Butter and Sunryze' -Type String -Force
         Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOrganization' -Value "$butter" -Type String -Force
     }
 
