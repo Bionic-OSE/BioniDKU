@@ -386,10 +386,6 @@ switch ($true) {
         & $PSScriptRoot\..\modules\taskbar\removetaskbarpinneditems.ps1
     }
 
-    $explorerstartfldr {
-        & $PSScriptRoot\..\modules\desktop\explorerstartfldr.ps1
-    }
-
     {$explorericon -eq $true} {
         & $PSScriptRoot\..\modules\taskbar\explorericon.ps1
     }
@@ -425,6 +421,7 @@ switch ($true) {
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 Write-Host " " -n; Write-Host ([char]0xA0)
+Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 Write-Host "This was the final step of the script. Press Enter to reboot, and then the IDKU will be fully setup!" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter, with Love from Vietnam <3" -ForegroundColor Magenta -n; Write-Host ([char]0xA0)

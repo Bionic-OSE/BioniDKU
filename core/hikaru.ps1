@@ -4,6 +4,7 @@ function Start-HikaruChan($mode) {
 	if ($mode -eq 0) {
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'explorer.exe' -Type String
 		Start-Process $env:SYSTEMDRIVE\Windows\explorer.exe 
+		Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainAmbient.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 		Start-Sleep -Seconds 5
 	} elseif ($mode -eq 1) {
 		$manmode = Test-Path -Path "$PSScriptRoot\launcherman.bat" -PathType Leaf

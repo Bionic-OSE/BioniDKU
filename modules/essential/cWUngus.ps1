@@ -1,8 +1,8 @@
 if ($build -ge 16299) {exit}
-$chonked = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").cWUngus; if ($chonked -eq 1) {exit}
+$chonked = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").cWUfirm; if ($chonked -eq 0) {exit}
 
 Write-Host -ForegroundColor Cyan "On builds older than 16299 (version 1709), each build/version requires installing a HUGE corresponding update (>1GB). In order to reduce the hassle for PSWindowsUpdate, the script will now download the update have you install it first. "; Write-Host -ForegroundColor Cyan "Does that sound good?" 
-Write-Host "YES to continue, anything else to cancel updating."
+Write-Host "YES to proceed, anything else to skip and have PSWindowsUpdate do the job like usual."
 Write-Host "Your answer: " -n ; $confules = Read-Host
 switch ($confup) {
 	{$confules -like "yes"} {
@@ -15,11 +15,9 @@ switch ($confup) {
 }
 $chonkfirm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").cWUfirm; if ($chonkfirm -eq 0) {
 	Write-Host " "
-	Write-Host -ForegroundColor Cyan "You have canceled the update process, which is currently are requirement in order to continue running this script."
-	Write-Host 'To disable this requirement, rerun the script and set the "windowsupdate" value to FALSE. You will be taken to the configuration screen next time you run the script.'
-	Write-Host -ForegroundColor Cyan "Press Enter to exit."
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-	Read-Host
+	Write-Host -ForegroundColor Cyan "Alright, we will let PSWindowsUpdate handle the task."
+	Start-Sleep -Seconds 5
+	Write-Host " "
 	exit
 }
 
@@ -36,18 +34,24 @@ Start-BitsTransfer -Source $chonkdate -Destination $workdir\CHUNGUS.msu -RetryIn
 
 Write-Host "Download complete. Opening the MSU in wusa.exe so you can install it..."
 Start-Process wusa.exe -NoNewWindow -ArgumentList "$workdir\CHUNGUS.msu"
-Write-Host " "; Write-Host -ForegroundColor Yellow "Wait for a while, then when it prompts you to install, click Yes. Let it install the update, then when it's done and prompts for restart, " -n; Write-Host -ForegroundColor Black -BackgroundColor Yellow "DO NOT PRESS RESTART NOW!" -n; Write-Host -ForegroundColor Yellow " Come back here and press Enter TWICE in order to restart " -n; Write-Host "(so the script can save progress and be able to resume itself after restarting)."; Write-Host "Good luck updating!"
+Write-Host " "; Write-Host -ForegroundColor Yellow "Wait for a while, then when it prompts you to install, click Yes and let it install the update. When it's done, you can restart using the button on the prompt, or by coming back here and pressing Enter TWICE."; Write-Host "Good luck updating!"
 $hell = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WelcomeToHell
-if ($hell -eq 1 -and $setupmusic -eq $true) {
+if ($hell -eq 1 -and $hkau -eq 1) {
 	Start-Process pwsh -Wait -ArgumentList "-WindowStyle Hidden -Command $workdir\music\musicr.ps1" -WorkingDirectory $workdir\music
+	taskkill /f /im pwsh.exe
+	taskkill /f /im WinXShell.exe
+	Rename-Item -Path "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -NewName "oldground.jpg"
+	Copy-Item -Path "$workdir\utils\hellground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg"
 	Write-Host " "; Write-Host "1607 detected. " -n; Write-Host -ForegroundColor Black -BackgroundColor Red "WELCOME TO HELL" -n; Write-Host ([char]0xA0)
-	Music -Stop
-	Music $workdir\music\redstone2 -Shuffle -Loop
-	Write-Host -ForegroundColor Yellow "Again, press Enter TWICE in order to restart"
+	Start-Process "$env:SYSTEMDRIVE\Bionic\WinXShell\WinXShell.exe"
+	Start-Process pwsh -ArgumentList "-WindowStyle Hidden -Command $workdir\modules\essential\setupmusic.ps1"
+	Start-Sleep -Seconds 7
+	Move-Item -Path "$env:SYSTEMDRIVE\Bionic\WinXShell\oldground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -Force
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "WelcomeToHell" -Value 0 -Type DWord -Force
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "cWUfirm" -Value 0 -Type DWord -Force
 }
 Read-Host; Read-Host
-Write-Host "Looks like you're done. Saving progress and restarting..."
-Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "cWUngus" -Value 1 -Type DWord -Force
-& $PSScriptRoot\..\..\core\resume.ps1
-shutdown -r -t 5 -c "BioniDKU needs to restart your PC to finish installing updates"
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Looks like you're done. Restarting..." -n; Write-Host ([char]0xA0)
+Start-Sleep -Seconds 5
+shutdown -r -t 0
 Start-Sleep -Seconds 30

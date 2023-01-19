@@ -3,8 +3,11 @@ Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White 
 Write-Host "Starting up..." -ForegroundColor Magenta -BackgroundColor Gray
 Write-Host " "
 
+# Set Working Directory first before anything else
+$workdir = "$PSScriptRoot\.."
+
 # Script build number and the PowerShell 7 download link
-$scriptbuild = "Build 22107.201_b1.oseprod_betarel.230118-1802"
+$scriptbuild = "Build 22107.201_b2.oseprod_betarel.230120-0130"
 $pwsh7 = "https://github.com/PowerShell/PowerShell/releases/download/v7.3.1/PowerShell-7.3.1-win-x64.msi"
 
 # Create Registry Folder
@@ -18,7 +21,11 @@ if ($autoidku -eq $false) {
 
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").BootStrapped
-if ($booted -eq 1) {exit}
+if ($booted -eq 1) {
+	# Play the script startup sound
+	Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	exit
+}
 
 # Find the build number and the UBR of the OS. 
 # This script runs best on General Availability builds between 10240 and 19045. You can of course modify the lines below for it to run on untested builds, although stability will suffer and I will not be providing support for those scenarios.
@@ -61,6 +68,10 @@ if ($build -le 17134 -and $build -ge 10240) {
 # Get the utilities package
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Getting dependencies ready"
 Start-Process powershell -Wait -ArgumentList "-Command $PSScriptRoot\..\utils\utilsg.ps1" -WorkingDirectory $PSScriptRoot\..\utils
+
+# Immediately install the ambient sound package and play the script startup sound
+Expand-Archive -Path $workdir\utils\ambient.zip -DestinationPath $workdir\core\ambient
+Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 
 # Install PowerShell 7 for the music player cross-version
 Import-Module BitsTransfer

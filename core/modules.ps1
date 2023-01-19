@@ -85,7 +85,8 @@ function Show-ModulesConfig {
 function Start-InstallHikaru {
 	Write-Host " "
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling UAC" -n; Write-Host ([char]0xA0)
-    Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name ConsentPromptBehaviorAdmin -Value 0
+    Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name ConsentPromptBehaviorAdmin -Value 0 -Force
+	Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name EnableLUA -Value 0 -Force
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Hikaru-chan" -n; Write-Host ([char]0xA0)
 	Expand-Archive -Path $workdir\utils\Hikaru.zip -DestinationPath $env:SYSTEMDRIVE\Bionic\Hikaru
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
@@ -94,12 +95,15 @@ function Start-InstallHikaru {
 		& $PSScriptRoot\..\modules\desktop\wallpaper.ps1
 	} if ($setupmusic -eq $true) {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusic" -Value 1 -Type DWord -Force
+	} if ($explorerstartfldr -eq $true) {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting Explorer to open on This PC" -n; Write-Host " (will take effect next time Explorer starts)"
+		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'LaunchTo' -Value 1 -Type DWord -Force
 	} if ($windowsupdate -eq $true) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing PSWindowsUpdate" -n; Write-Host ([char]0xA0)
 		Install-PackageProvider -Name "NuGet" -Verbose -Force
 		Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 		Add-Type -AssemblyName presentationCore
-        Install-Module PSWindowsUpdate
+        Install-Module PSWindowsUpdate -Verbose
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 2 -Type DWord -Force
 	}
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ChangesMade" -Value 1 -Type DWord -Force
@@ -156,6 +160,7 @@ switch ($confules) {
 			}
 		}
 		Write-Host " "
+		Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainAccepted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 		Write-Host -ForegroundColor Green "You have accepted the current configuration. Alright, starting the script..."
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
 		Start-Sleep -Seconds 5
