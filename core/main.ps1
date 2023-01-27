@@ -22,10 +22,6 @@ $workdir = "$PSScriptRoot\.."
 ### only thing you should modify. PLEASE DO NOT MOFIDY 
 ### ANYTHING ELSE IN THIS FILE!
 
-### ------ REQUIRED MODULES, PLEASE DO NOT DISABLE ------
-	$manualstuffs =	        $true
-	$disableuac =           $true
-
 ### ------ SCRIPT CONFIGURATION: Module Switches ------
 
 	$setupmusic =           $true
@@ -39,8 +35,7 @@ if ($pwsh -eq 5) {
 	$dotnet35 =             $true
 	$requiredprograms =     $true
 	$hidetaskbaricons =     $true
-	$replaceneticon =       $true
-	$removeedge =           $true
+	$removeedgeshortcut =   $true
 	$setwallpaper =         $true
 	$desktopshortcuts =     $true 
 	$removeudpassistant =   $true 
@@ -99,8 +94,21 @@ if ($pwsh -eq 5) {
 	$remove3Dobjects =      $true
 	$hidebluetoothicon =    $true
 	$disablelogonbg =       $true
+	$removelckscrneticon =  $true
 	$svchostslimming =      $true
+	
+### ------ SCRIPT CONFIGURATION: TI Switches ------
+# During execution, the script will leverage TrustedInstaller 
+# for certain tasks that requires tinkering with system files.
+# Like the registry switches, you can turn the master switch,
+# or disable options one by one
 
+	$trustedinstaller =     $true # Master switch
+	
+	$removesystemapps =     $true
+	$removewinold =         $false
+	
+##############################################################
 # Importing some basic functions required for the modules menu
 function Set-WallPaper($Image) {
 Add-Type -TypeDefinition @" 
@@ -147,7 +155,7 @@ Show-Branding clear
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
 if ($hkm -eq 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing startup obstacles" -n; Write-Host ([char]0xA0)
-	& $PSScriptRoot\..\modules\removal\letsNOTfinish.ps1
+	& $workdir\modules\removal\letsNOTfinish.ps1
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer" -n; Write-Host ([char]0xA0)
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
 	& $PSScriptRoot\hikaru.ps1
@@ -164,14 +172,18 @@ Write-Host "You're running Windows 10 build"$build"."$ubr
 ### ------ Continue importing required dependencies ------
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components" -n; Write-Host ([char]0xA0)
 
-switch ($build) {
-	{$_ -ge 17763} {
-		# I'm not sure if this will happen on older, but that's the oldest build I know to have Edge Chromium after updating
-		$chedgeck = Get-Process msedge -ErrorAction SilentlyContinue
+function Clear-MSEdgePopup {
+	$chedgeck = Get-Process msedge -ErrorAction SilentlyContinue
 		if ($chedgeck) {
 			Write-Host "Getting Microsoft Edge out of the way" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
 			Stop-Process -Name msedge -Force
 		}
+}
+
+switch ($build) {
+	{$_ -ge 17763} {
+		# I'm not sure if this will happen on older, but that's the oldest build I know to have Edge Chromium after updating
+		Clear-MSEdgePopup
 	}
     {$_ -ge 10240} {
         $pendingreboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
@@ -300,8 +312,10 @@ Take-KeyPermissions $rootKey $key $sid $recurse
 ##################### Begin Script #####################
 Write-Host " "
 $dotnet35done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnet35
+$manualstuffs = $true
 
 switch ($true) {
+	
     default {
         Write-Host "You did not select anything to do and will be taken back to the configuration screen next time you start the script. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
@@ -329,99 +343,101 @@ switch ($true) {
 		$462dl = "https://download.visualstudio.microsoft.com/download/pr/8e396c75-4d0d-41d3-aea8-848babc2736a/80b431456d8866ebe053eb8b81a168b3/ndp462-kb3151800-x86-x64-allos-enu.exe"
 		Start-BitsTransfer -Source $462dl -Destination $workdir\dotnet462.exe
 		Start-Sleep -Seconds 2
-		Start-Process pwsh -ArgumentList "-Command $PSScriptRoot\..\modules\apps\dotnet462install.ps1"
+		Start-Process pwsh -ArgumentList "-Command $workdir\modules\apps\dotnet462install.ps1"
 		exit
     }
 	
 	$manualstuffs {
-		& $PSScriptRoot\..\modules\essential\manualstuffs.ps1
+		& $workdir\modules\essential\manualstuffs.ps1
 	}
 	
     $hidetaskbaricons {
-        & $PSScriptRoot\..\modules\taskbar\hidetaskbaricons.ps1
-    }
-
-    {$replaceneticon -eq $true -and $build -ge 18362} {
-        & $PSScriptRoot\..\modules\taskbar\1903neticon.ps1
+        & $workdir\modules\taskbar\hidetaskbaricons.ps1
     }
 
     $removeonedrive {
-        & $PSScriptRoot\..\modules\removal\removeonedrive.ps1
+        & $workdir\modules\removal\removeonedrive.ps1
     }  
 
     {$removehomegroup -eq $true -and $build -lt 17134} {
-        & $PSScriptRoot\..\modules\removal\removehomegroup.ps1
+        & $workdir\modules\removal\removehomegroup.ps1
     }
 
     $desktopshortcuts {
-        & $PSScriptRoot\..\modules\desktop\desktopshortcuts.ps1
+        & $workdir\modules\desktop\desktopshortcuts.ps1
     }
 
     $requiredprograms {
-        & $PSScriptRoot\..\modules\apps\requiredprograms.ps1
+        & $workdir\modules\apps\requiredprograms.ps1
     }
 
     $sharex462 {
-        & $PSScriptRoot\..\modules\apps\sharex462.ps1
+        & $workdir\modules\apps\sharex462.ps1
     }
 
     $paintdotnet462 {
-        & $PSScriptRoot\..\modules\apps\paintdotnet.ps1
+        & $workdir\modules\apps\paintdotnet.ps1
     }
 
-    $removeedge {
-        & $PSScriptRoot\..\modules\removal\removeedge.ps1
+    $removeedgeshortcut {
+        & $workdir\modules\removal\removeedgeshortcut.ps1
     }
 
     $removewaketimers {
-        & $PSScriptRoot\..\modules\removal\removewaketimers.ps1
+        & $workdir\modules\removal\removewaketimers.ps1
     }
     
     $removeUWPapps {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing all UWP apps possible" -n; Write-Host ([char]0xA0) 
-        Start-Process powershell -Wait -ArgumentList "$PSScriptRoot\..\modules\removal\removeuwpapps.ps1"
+        Start-Process powershell -Wait -ArgumentList "$workdir\modules\removal\removeuwpapps.ps1"
     }
 
     $taskbarpins {
-        & $PSScriptRoot\..\modules\taskbar\removetaskbarpinneditems.ps1
+        & $workdir\modules\taskbar\removetaskbarpinneditems.ps1
     }
 
     {$explorericon -eq $true} {
-        & $PSScriptRoot\..\modules\taskbar\explorericon.ps1
+        & $workdir\modules\taskbar\explorericon.ps1
     }
 	
     $disableaddressbar {
-        & $PSScriptRoot\..\modules\apps\addressbar.ps1
+        & $workdir\modules\apps\addressbar.ps1
     }
 
     $oldbatteryflyout {
-        & $PSScriptRoot\..\modules\taskbar\oldbatteryflyout.ps1
+        & $workdir\modules\taskbar\oldbatteryflyout.ps1
     }
 
     $classicapps {
-        & $PSScriptRoot\..\modules\apps\classicapps.ps1
+        & $workdir\modules\apps\classicapps.ps1
     }
 
     $openshellconfig {
-        & $PSScriptRoot\..\modules\apps\openshellconfig.ps1
+        & $workdir\modules\apps\openshellconfig.ps1
     }
 
     $registrytweaks {
-        & $PSScriptRoot\..\modules\essential\simpleregistry.ps1
+        & $workdir\modules\essential\simpleregistry.ps1
     }
 
     $customsounds {
-        & $PSScriptRoot\..\modules\desktop\customsounds.ps1
+        & $workdir\modules\desktop\customsounds.ps1
     }
 
     $replaceemojifont {
-        & $PSScriptRoot\..\modules\removal\replaceemojifont.ps1
+        & $workdir\modules\removal\replaceemojifont.ps1
     }
+	
+	$trustedinstaller {
+		& $workdir\modules\trustedinstaller\tisetup.ps1
+	}
+	
 }
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
+& $PSScriptRoot\hikarinstall.ps1
 Write-Host " " -n; Write-Host ([char]0xA0)
-Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 Write-Host "This was the final step of the script. Press Enter to reboot, and then the IDKU will be fully setup!" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter, with Love from Vietnam <3" -ForegroundColor Magenta -n; Write-Host ([char]0xA0)

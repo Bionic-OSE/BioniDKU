@@ -13,9 +13,8 @@ Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "In addition, if you 
 Write-Host " " 
 
 Start-Sleep -Seconds 5
-$pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
-if ($pwsh -eq 7) {Import-Module -Name Appx -UseWindowsPowerShell}
 Get-AppxPackage | Remove-AppxPackage
 Get-AppxPackage -AllUsers | Remove-AppxPackage
 Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Removal complete" -n; Write-Host ([char]0xA0)
 Start-Sleep -Seconds 10

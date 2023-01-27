@@ -33,6 +33,7 @@ if ($skdrv -eq $true) {
 
 $latest = "14393.2214","15063.1418","16299.1087","17134.1184","17763.1577","18362.1256","18363.1556","19041.1415","19042.1706","19043.2364","19044.2486","19045.2486"
 if ($latest.Contains($buubr)) {
+	Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "The latest updates have been installed." -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 	exit
@@ -58,6 +59,7 @@ Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikancel" -Value 1 -Type
 Start-Process pwsh -Wait -ArgumentList "-Command $PSScriptRoot\hikancel.ps1"
 $hkc = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Hikancel
 if ($hkc -eq 1) {
+	Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "You have aborted updates." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 	taskkill /f /im pwsh.exe

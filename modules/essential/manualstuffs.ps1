@@ -1,8 +1,9 @@
+if ($build -ge 17763) {Clear-MSEdgePopup}
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Let's get manually-only things out of the way!" -n; Write-Host ([char]0xA0)
 Write-Host " " -n; Write-Host ([char]0xA0)
 
 Write-Host "First, Explorer stuffs."
-Write-Host -ForegroundColor Yellow "Set the view in This PC to details, close it and reopen This PC several times to make sure the setting is saved." -n; Write-Host " (Explorer has Alzheimer's and will reset the view if you only open This PC once)."
+Write-Host -ForegroundColor Yellow "Set the view in This PC to details, close it and reopen This PC several times to make sure the setting is saved."; Write-Host " (Explorer has Alzheimer's and will reset the view if you only open This PC once)."
 Write-Host -ForegroundColor Yellow "Then, disable the following items on the taskbar if they are enabled or exists:"
 Write-Host -ForegroundColor Yellow "(Please also check in Taskbar Settings since some icons might not be shown at this moment)."
 Write-Host -ForegroundColor Yellow "- Input indicator"
@@ -15,8 +16,8 @@ if ($build -ge 18362) {
     Write-Host -ForegroundColor Yellow "- Microphone icon"
 	Write-Host -ForegroundColor Yellow "- Meet now icon"
 }
-if ($build -ge 19041) {
-    Write-Host -ForegroundColor Yellow "- News and interests"
+if ($build -ge 18363) {
+    Write-Host -ForegroundColor Yellow "- News and interests (if it's there)"
 }
 Write-Host -ForegroundColor Yellow "Finally, unpin Microsoft Edge and/or any other UWP apps present, and leave File Explorer pinned."
 Write-Host -ForegroundColor Cyan "Press Enter once you have done with those."
@@ -50,4 +51,3 @@ else {
 	
 Write-Host -ForegroundColor Cyan "Once you press Enter, everything else should be automated!"
 Read-Host
-

@@ -26,3 +26,8 @@ Start-BitsTransfer -Source $m4 -Destination $PSScriptRoot -RetryInterval 60 -Ret
 #Start-BitsTransfer -Source $m7 -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70
 
 Start-Process $PSScriptRoot\..\core\7za.exe -Wait -NoNewWindow -ArgumentList "e $PSScriptRoot\normal.7z.001 -o$PSScriptRoot\normal"
+Write-Host " "
+Write-Host -ForegroundColor Green -BackgroundColor Gray "Extraction complete." -n; Write-Host " (Ignore the warnings tho, the files should be fine.)"
+Write-Host -ForegroundColor Yellow "Some of the songs featured in this (nearly infinite) collection might be copyrighted. If you are planning to record and upload this run to public platforms, please beware of that. You can view this collection in $PSScriptRoot\normal"
+Write-Host -ForegroundColor Yellow "Continuing in 10 seconds" -n; Write-Host " (or you can skip by pressing Ctrl+C)"
+Start-Sleep -Seconds 10

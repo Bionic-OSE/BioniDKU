@@ -7,7 +7,7 @@ Write-Host " "
 $workdir = "$PSScriptRoot\.."
 
 # Script build number and the PowerShell 7 download link
-$scriptbuild = "Build 22107.201_b2.oseprod_betarel.230120-0130"
+$scriptbuild = "Build 22107.201_b3.oseprod_betarel.230126-2311"
 $pwsh7 = "https://github.com/PowerShell/PowerShell/releases/download/v7.3.1/PowerShell-7.3.1-win-x64.msi"
 
 # Create Registry Folder
@@ -17,6 +17,9 @@ if ($autoidku -eq $false) {
 	New-Item -Path 'HKCU:\SOFTWARE' -Name AutoIDKU
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "BootStrapped" -Value 0 -Type DWord -Force
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Butter" -Value $scriptbuild
+	Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe"
+	Remove-Item -Path "HKCU:\Console\%SystemRoot%_SysWOW64_WindowsPowerShell_v1.0_powershell.exe"
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation" -Name "DisableStartupSound" -Value 1 -Type DWord -Force
 }
 
 # Is the bootstrap process already completed?
@@ -28,8 +31,17 @@ if ($booted -eq 1) {
 }
 
 # Find the build number and the UBR of the OS. 
-# This script runs best on General Availability builds between 10240 and 19045. You can of course modify the lines below for it to run on untested builds, although stability will suffer and I will not be providing support for those scenarios.
+# This script runs best on General Availability builds between 10240 and 19045. You can of course modify the lines below for it to run on untested builds, although stability might suffer and I will not be providing support for those scenarios.
+# Your system must also be running a 64-bit OS.
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Checking your PC"
+$amd64 = [Environment]::Is64BitOperatingSystem
+if ($amd64 -ne $true) {
+	Write-Host "This script does not support 32-bit systems. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+	Write-Host "C'mon, the world has already moved on, why bothering with the past?"
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force
+    Read-Host
+    exit
+}
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 $gablds = 10240,10586,14393,15063,16299,17134,17763,18362,18363,19041,19042,19043,19044,19045

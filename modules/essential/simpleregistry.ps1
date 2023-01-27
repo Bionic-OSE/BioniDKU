@@ -1,4 +1,5 @@
 switch ($true) {
+	
     $applookupinstore {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling App Lookup in Microsoft Store" -n; Write-Host ([char]0xA0)
         $ifexist = (Test-Path -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer')
@@ -51,8 +52,13 @@ switch ($true) {
     $removedownloads {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing Downloads Folder" -n; Write-Host ([char]0xA0)
 		$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
-        if ($dlhasfiles -eq $true) {Write-Host "DELETING YOUR DOWNLOADS FOLDER as you specified." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)}
-        Remove-Item -Path "$env:USERPROFILE\Downloads" -Force -Recurse
+        if ($dlhasfiles -eq $true) {
+			Write-Host "DELETING YOUR DOWNLOADS FOLDER as you specified." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+			Import-Module -Name $PSScriptRoot\..\lib\Remove-ItemWithProgress.psm1
+			Remove-ItemWithProgress -Path "$env:USERPROFILE\Downloads"
+		} else {
+			Remove-Item -Path "$env:USERPROFILE\Downloads" -Force -Recurse
+		}
         Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}' -Force
         Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}' -Force 
         Remove-Item -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}' -Force
@@ -177,9 +183,15 @@ switch ($true) {
         Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name "DisableLogonBackgroundImage" -Value 1 -Type DWord -Force
     }
 
+	$removelckscrneticon {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing the network icon from LogonUI" -n; Write-Host ([char]0xA0)
+		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name "DontDisplayNetworkSelectionUI" -Value 1 -Type DWord -Force
+	}
+
     $svchostslimming {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting svchost.exe to max RAM" -n; Write-Host ([char]0xA0)
         $svchostvalue = (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum /1kb
         Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name "SvcHostSplitThresholdInKB" -Value $svchostvalue -Type DWord -Force
     }
+	
 }

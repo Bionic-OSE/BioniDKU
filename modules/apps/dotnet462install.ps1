@@ -13,8 +13,8 @@ Write-Host -ForegroundColor Yellow "Follow the installer's instructions. Then wh
 Start-Process $workdir\dotnet462.exe -NoNewWindow
 Read-Host
 reg add HKCU\Software\AutoIDKU /v dotnetrebooted /t REG_DWORD /d 0x1
-& $workdir\core\resume.ps1
+Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
+& $PSScriptRoot\hikaru.ps1
 Write-Host "Now restarting..."
 shutdown -r -t 5 -c "BioniDKU needs to restart your PC to finish installing .NET 4.6.2"
 Start-Sleep -Seconds 30
-
