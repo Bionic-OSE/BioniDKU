@@ -32,6 +32,25 @@ Yes. There are things that should be taken care of now due to how "dangerous" th
 ## About the definition of "IDKU" and the backstory
 [Click here to read them](https://github.com/Bionic-OSE/BioniDKU/blob/main/YEETME.md)
 
+## Windows Build support status
+BioniDKU works best with <ins>G</ins>eneral <ins>A</ins>vailability (GA) builds from **10.0.10240** to **10.0.19045**. 
+
+|   OS Build   |      Version      | Eligibility         |
+| ------------ | ----------------- | ------------------- |
+| 10176-       |                   | Not supported       |
+| 10240        | 1507 (RTM)        | Fully supported     |
+| 10586        | 1511 (NU)         | Fully supported     |
+| 14393        | 1607 (AU)         | Fully supported     |
+| 15063        | 1703 (CU)         | Fully supported     |
+| 16299        | 1709 (FCU)        | Fully supported     |
+| 17134        | 1803              | Fully supported     |
+| 17763        | 1809              | Fully supported     |
+| 18362/18363  | 1903/1909         | Fully supported     |
+| 19041→19045  | 2004→22H2         | Fully supported     |
+| 19536→21390  | Post-2004 non-GA  | Part. supported     |
+| 10240→19045  | 1507→22H2 non-GA  | Part. supported     |
+| 21996+       |                   | Not supported       |
+
 ## Credits
 - [Sunryze](https://github.com/sunryze-git), the original author of AutoIDKU.
 - [Julia](https://www.youtube.com/channel/UC6D_Ee3rLteOhGe-qD0Ku3A) for generously lending me her main PC over Parsec for back-to-back testings
