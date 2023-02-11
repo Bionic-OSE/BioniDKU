@@ -1,4 +1,4 @@
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze | TrustedInstaller mode"
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | TrustedInstaller mode"
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
@@ -6,9 +6,10 @@ function Show-Branding {
 	Write-Host " "
 }
 Show-Branding
+$workdir = "$PSScriptRoot\..\.."
 
 $removesystemapps = (Get-ItemProperty -Path "HKLM:\Software\AutoIDKU\TrustedInstaller").RemoveSystemApps
-$removewinold = (Get-ItemProperty -Path "HKLM:\Software\AutoIDKU\TrustedInstaller").RemoveWindowsOld
+$sltoshutdownwall = (Get-ItemProperty -Path "HKLM:\Software\AutoIDKU\TrustedInstaller").SlideToShutDownWallpaper
 
 switch (1) {
 	
@@ -16,8 +17,8 @@ switch (1) {
 		& $PSScriptRoot\removesystemapps.ps1
 	}
 	
-	$removewinold {
-		& $PSScriptRoot\removewinold.ps1
+	$sltoshutdownwall {
+		& $PSScriptRoot\slidetoshutdownwall.ps1
 	}
 	
 }

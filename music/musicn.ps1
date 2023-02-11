@@ -1,4 +1,4 @@
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze | Music fetcher module"
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Music fetcher module"
 function Show-Branding { # Has to declare it here again because of a different PowerShell process
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
@@ -27,7 +27,7 @@ Start-BitsTransfer -Source $m4 -Destination $PSScriptRoot -RetryInterval 60 -Ret
 
 Start-Process $PSScriptRoot\..\core\7za.exe -Wait -NoNewWindow -ArgumentList "e $PSScriptRoot\normal.7z.001 -o$PSScriptRoot\normal"
 Write-Host " "
-Write-Host -ForegroundColor Green -BackgroundColor Gray "Extraction complete." -n; Write-Host " (Ignore the warnings tho, the files should be fine.)"
+Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Extraction complete." -n; Write-Host " (Ignore the warnings tho, the files should be fine.)"
 Write-Host -ForegroundColor Yellow "Some of the songs featured in this (nearly infinite) collection might be copyrighted. If you are planning to record and upload this run to public platforms, please beware of that. You can view this collection in $PSScriptRoot\normal"
 Write-Host -ForegroundColor Yellow "Continuing in 10 seconds" -n; Write-Host " (or you can skip by pressing Ctrl+C)"
 Start-Sleep -Seconds 10

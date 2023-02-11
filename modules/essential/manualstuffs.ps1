@@ -3,7 +3,7 @@ Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Let's get manually-o
 Write-Host " " -n; Write-Host ([char]0xA0)
 
 Write-Host "First, Explorer stuffs."
-Write-Host -ForegroundColor Yellow "Set the view in This PC to details, close it and reopen This PC several times to make sure the setting is saved."; Write-Host " (Explorer has Alzheimer's and will reset the view if you only open This PC once)."
+Write-Host -ForegroundColor Yellow "Set the view in This PC to details, close it and reopen This PC several times to make sure the setting is saved."; Write-Host "(Explorer has Alzheimer's and will reset the view if you only open This PC once)."
 Write-Host -ForegroundColor Yellow "Then, disable the following items on the taskbar if they are enabled or exists:"
 Write-Host -ForegroundColor Yellow "(Please also check in Taskbar Settings since some icons might not be shown at this moment)."
 Write-Host -ForegroundColor Yellow "- Input indicator"
@@ -30,7 +30,7 @@ if ($build -ge 10586) {
 	Start-Process $workdir\utils\Wu10Man\Wu10Man.exe -WorkingDirectory $workdir\utils\Wu10Man
 	Write-Host 'In order to completely disable Windows Update, a program called "Wu10Man" will soon appear on your screen.'
 	Write-Host -ForegroundColor Black -BackgroundColor Cyan "FOLLOW THESE STEPS CLOSELY once it's opened:" -n; Write-Host ([char]0xA0)
-	Write-Host -ForegroundColor Yellow '- You are now in the first tab: "Windows Services". Click "Disable All Services" and wait for it to complete.'
+	Write-Host -ForegroundColor Yellow '- You are now in the first tab: "Windows Services". Click "Disable All Services" and wait for it to complete, then ' -n; Write-Host -ForegroundColor Magenta 'turn Windows Modules Installer back on. ' -n; Write-Host '(required for the TrustedInstaller modules to work later on)'
 	if ($build -ge 18362) {
 		Write-Host -ForegroundColor Yellow '- Now go to the Settings app > Windows Update and click Pause Updates (ignore this and the next step if the button is grayed out, you are out of luck).'
 		Write-Host -ForegroundColor Yellow '- Then, come back to Wu10Man and come over to the second tab: "Pause updates" and type your desired pause limit date in mm/dd/yyyy into both fields (I would recommend around 10 years from now XD). Then click Save and move on.'

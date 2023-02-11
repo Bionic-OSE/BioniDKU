@@ -1,18 +1,12 @@
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze"
-$butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Butter
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter"
+$releasetype = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseType
+$butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseID
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
-function Show-Branding($s1,$s2) {
+function Show-Branding($s1) {
 	if ($s1 -like "clear") {Clear-Host}
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
-	Write-Host "Stable Release - $butter" -ForegroundColor Magenta -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+	Write-Host "$releasetype - $butter" -ForegroundColor Magenta -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
-	if ($s2 -like "creds") {
-		Write-Host " "; Write-Host "--------------------------------------------------------------"; Write-Host " "
-		Write-Host "     Original author : @sunryze#5817"
-		Write-Host "     Testers         : @Julia#6033, @Zippykool#3826"
-		Write-Host "     And special thanks to everyone else's contributions"
-		Write-Host " "; Write-Host "--------------------------------------------------------------"; Write-Host " "
-	}
 }
 # Set Working Directory first before anything else
 $workdir = "$PSScriptRoot\.."
@@ -31,7 +25,7 @@ if ($pwsh -eq 7) {
 if ($pwsh -eq 5) {
 	$dotnet462 =            $true}
 	$sharex462 =            $true
-	$paintdotnet462 =       $true 
+	$paintdotnet462 =       $false 
 	$dotnet35 =             $true
 	$requiredprograms =     $true
 	$hidetaskbaricons =     $true
@@ -41,7 +35,7 @@ if ($pwsh -eq 5) {
 	$removeudpassistant =   $true 
 	$removewaketimers =     $true 
 	$removeUWPapps =        $true 
-	$openshellconfig =      $true 
+	$openshellconfig =      $true # Requires $requiredprograms
 	$explorericon =         $true
 	$classicapps =          $true 
 	$taskbarpins =          $true
@@ -96,6 +90,7 @@ if ($pwsh -eq 5) {
 	$disablelogonbg =       $true
 	$removelckscrneticon =  $true
 	$svchostslimming =      $true
+	$desktopversion =       $true
 	
 ### ------ SCRIPT CONFIGURATION: TI Switches ------
 # During execution, the script will leverage TrustedInstaller 
@@ -106,7 +101,7 @@ if ($pwsh -eq 5) {
 	$trustedinstaller =     $true # Master switch
 	
 	$removesystemapps =     $true
-	$removewinold =         $false
+	$sltoshutdownwall =		$true
 	
 ##############################################################
 # Importing some basic functions required for the modules menu
@@ -201,47 +196,7 @@ switch ($build) {
 Import-Module BitsTransfer -Verbose
 
 # You cannot use PSWindowsUpdate on 1507 and 1511.
-if ($pwsh -eq 5) {
-	$wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
-	if ($wupdated -ne 1) {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your build does not support Windows Update through PowerShell. Have you fully updated yet? (yes/no)"
-		if ($build -eq 10240) {Write-Host "On Windows 10 build 10240, updating is " -n; Write-Host "REQUIRED" -ForegroundColor Black -BackgroundColor Yellow -n; Write-Host " in order to be able to disable the LogonUI's background."}
-		Write-Host "Your answer: " -n ; $fullyupdated = Read-Host
-		switch ($fullyupdated) {
-			{$fullyupdated -like "yes"} {
-				Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Alright, the script will PROCEED."
-				Set-ItemProperty -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name "Wupdated" -Value 1 -Type DWord -Force
-			}
-			{$fullyupdated -like "no"} {
-				Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Then the script fell into darkness."
-				Start-Sleep -Seconds 4
-				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-				exit
-			}
-			{$fullyupdated -like '*fuck*'} {
-				Write-Host -ForegroundColor Red -BackgroundColor DarkGray "HAH, L"
-				Start-Sleep -Seconds 2
-				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-				exit
-			}
-			{$fullyupdated -like 'Julia loves RTM'} {
-				Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Yes absolutely"
-				Start-Sleep -Seconds 2
-				Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Wait, who asked? Read the question again you blind."
-				Start-Sleep -Seconds 3
-				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-				exit
-			}
-			default {
-				Write-Host -ForegroundColor Red -BackgroundColor DarkGray "You didn't answer appropriately. Exiting..."
-				Start-Sleep -Seconds 2
-				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-				exit
-			}
-		}
-	
-	}
-}
+
 
 ##### ------ Functions ------
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Importing Functions" -n; Write-Host ([char]0xA0)
@@ -312,6 +267,7 @@ Take-KeyPermissions $rootKey $key $sid $recurse
 ##################### Begin Script #####################
 Write-Host " "
 $dotnet35done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnet35
+$dotnet462done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnetrebooted
 $manualstuffs = $true
 
 switch ($true) {
@@ -337,14 +293,7 @@ switch ($true) {
 	}
 	
 	{$dotnet462 -eq $true -and $dotnet462done -ne 1} {
-		Write-Host "Downloading .NET 4.6.2" -ForegroundColor Cyan -BackgroundColor DarkGray
-		Write-Host "If it fails to download, please manually download via this link:"  -BackgroundColor Cyan -ForegroundColor Black 
-		Write-Host "https://go.microsoft.com/fwlink/?LinkId=780600" -ForegroundColor Cyan
-		$462dl = "https://download.visualstudio.microsoft.com/download/pr/8e396c75-4d0d-41d3-aea8-848babc2736a/80b431456d8866ebe053eb8b81a168b3/ndp462-kb3151800-x86-x64-allos-enu.exe"
-		Start-BitsTransfer -Source $462dl -Destination $workdir\dotnet462.exe
-		Start-Sleep -Seconds 2
-		Start-Process pwsh -ArgumentList "-Command $workdir\modules\apps\dotnet462install.ps1"
-		exit
+		& $workdir\modules\apps\dotnet462install.ps1
     }
 	
 	$manualstuffs {
@@ -437,8 +386,8 @@ switch ($true) {
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 & $PSScriptRoot\hikarinstall.ps1
 Write-Host " " -n; Write-Host ([char]0xA0)
-Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 Write-Host "This was the final step of the script. Press Enter to reboot, and then the IDKU will be fully setup!" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
+Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -Wait -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter, with Love from Vietnam <3" -ForegroundColor Magenta -n; Write-Host ([char]0xA0)
 Read-Host

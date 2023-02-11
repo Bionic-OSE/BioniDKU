@@ -13,8 +13,8 @@ switch ($true) {
 		Set-ItemProperty -Path "HKLM:\Software\AutoIDKU\TrustedInstaller" -Name "RemoveSystemApps" -Value 1 -Type DWord -Force
 	}
 	
-	$removewinold {
-		Set-ItemProperty -Path "HKLM:\Software\AutoIDKU\TrustedInstaller" -Name "RemoveWindowsOld" -Value 1 -Type DWord -Force
+	$sltoshutdownwall {
+		Set-ItemProperty -Path "HKLM:\Software\AutoIDKU\TrustedInstaller" -Name "SlideToShutDownWallpaper" -Value 1 -Type DWord -Force
 	}
 	
 }

@@ -1,6 +1,11 @@
 Write-Host "Installing ShareX 13.1.0" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
-Start-BitsTransfer -Source 'https://github.com/ShareX/ShareX/releases/download/v13.1.0/ShareX-13.1.0-setup.exe' -Destination $workdir\sharex462.exe
-Start-Process $workdir\sharex462.exe -Wait -NoNewWindow -ArgumentList "/VERYSILENT /NORUN"
+
+$dlfe = Test-Path -Path "$workdir\dls"
+if ($dlfe -eq $false) {
+	New-Item -Path $workdir -Name dls -itemType Directory
+}
+Start-BitsTransfer -Source 'https://github.com/ShareX/ShareX/releases/download/v13.1.0/ShareX-13.1.0-setup.exe' -Destination $workdir\dls\sharex462.exe
+Start-Process $workdir\dls\sharex462.exe -Wait -NoNewWindow -ArgumentList "/VERYSILENT /NORUN"
 
 Write-Host "Disabling ShareX's automatic update check"
 $sxnou = Test-Path -Path "$env:USERPROFILE\Documents\ShareX"

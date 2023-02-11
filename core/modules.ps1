@@ -1,6 +1,6 @@
 $confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
 if ($confuled -eq 1) {exit}
-Show-Branding clear creds
+Show-Branding clear
 Start-Sleep -Seconds 1
 
 function Show-ModulesConfig {
@@ -77,13 +77,14 @@ function Show-ModulesConfig {
 	Write-Host "disablelogonbg                 " -n; Write-Host "$disablelogonbg      "
 	Write-Host "removelckscrneticon            " -n; Write-Host "$removelckscrneticon "
 	Write-Host "svchostslimming                " -n; Write-Host "$svchostslimming     " 
+	Write-Host " "
 	Write-Host "------ SCRIPT CONFIGURATION: TI Switches ------" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
 	Write-Host "More details about what these options are for in the script file" -ForegroundColor Green
 	Write-Host " "
 	Write-Host "trustedinstaller               " -n; Write-Host "$trustedinstaller    "
 	Write-Host " " 
 	Write-Host "removesystemapps               " -n; Write-Host "$removesystemapps    "
-	Write-Host "removewinold                   " -n; Write-Host "$removewinold        "
+	Write-Host "sltoshutdownwall               " -n; Write-Host "$sltoshutdownwall    "
 	Write-Host " "
 	Write-Host "Now please scroll up to the top and review the options." -ForegroundColor Black -BackgroundColor Yellow -n; Write-Host ([char]0xA0)
 	Write-Host "UAC will be disabled immediately once you start the script."
@@ -132,6 +133,7 @@ if ($confulee -eq 1) {
 	Write-Host -ForegroundColor Yellow "What do you want to do?"
 	Write-Host -ForegroundColor White "1. Start the script with the default options"
 	Write-Host -ForegroundColor White "2. Configure options"
+	Write-Host -ForegroundColor White "3. Show credits"
 	if ($confuone -eq 0) {
 		Write-Host "Answer anything else to exit this script safely without any changes made to your PC" 
 		Write-Host "(except with PowerShell 7 installed)"
@@ -149,37 +151,61 @@ switch ($confules) {
 	{$confules -like "1"} {
 		Write-Host " "
 		$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
-		$winoldhasfiles = Test-Path -Path "$env:SYSTEMDRIVE\Windows.old\*"
-		if ($removedownloads -or $removewinold) {
-			if ($dlhasfiles -or $winoldhasfiles) {
-				Write-Host -ForegroundColor Black -BackgroundColor Red "---------- HOLD UP! ---------" -n; Write-Host ([char]0xA0)
-				Write-Host " "
-			}
-			if ($removedownloads -and $dlhasfiles) {
-				Write-Host -ForegroundColor Red 'You have selected to DELETE your Downloads folder during script exection. The script has deteced that you have files in this folder. Please back up anything necessary before proceeding any further.'
-				Write-Host 'In addition, if this script is also running from within Downloads, please CLOSE it and move the whole folder to somewhere safe (I would suggest C:\). The script is currently being placed inside (the parent folder of "core"):'
-				Write-Host -ForegroundColor Yellow "$PSScriptRoot"
-				Write-Host 'If you do not want Downloads to get deleted, answer anything else except YES to go back, select 2 then 2 to reconfigure the script and set the' -n; Write-Host -ForegroundColor Cyan ' "removedownloads" ' -n; Write-Host 'switch to FALSE under the' -n; Write-Host -ForegroundColor Green ' "SCRIPT CONFIGURATION: Registry Switches" ' -n; Write-Host 'section.'
-				Write-Host " "
-			}
-			if ($removewinold -and $winoldhasfiles) {
-				Write-Host -ForegroundColor Red 'You have selected to DELETE your Windows.old folder during script exection. The script has detected a previous installation (or any other files) exists in this folder. You will NOT be able to go back to your previous installation (or retrieve files from this location) if you accept this configuration.'
-				Write-Host 'If you do not want Windows.old to get deleted, answer anything else except YES to go back, select 2 then 2 to reconfigure the script and set the' -n; Write-Host -ForegroundColor Cyan ' "removewinold" ' -n; Write-Host 'switch to FALSE under the' -n; Write-Host -ForegroundColor Green ' "SCRIPT CONFIGURATION: TI Switches" ' -n; Write-Host 'section.'
-				Write-Host " "
-			}
-			if ($dlhasfiles -or $winoldhasfiles) {
-				Write-Host -ForegroundColor Black -BackgroundColor Red "THIS IS YOUR LAST WARNING!!!" 
-				Write-Host -ForegroundColor Cyan "If you are sure and want to proceed, answer YES."
-				Write-Host "Your answer: " -n ; $deload = Read-Host
-				switch ($deload) {
-					{$deload -like "yes"} {}
-					default {
-						Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 2 -Type DWord -Force
-						Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
-						exit
-					}
+		if ($removedownloads -and $dlhasfiles) {
+			Write-Host -ForegroundColor Black -BackgroundColor Red "---------- HOLD UP! ---------" -n; Write-Host ([char]0xA0)
+			Write-Host " "
+			Write-Host -ForegroundColor Red 'You have selected to DELETE your Downloads folder during script exection. The script has deteced that you have files in this folder. Please back up anything necessary before proceeding any further.'
+			Write-Host 'In addition, if this script is also running from within Downloads, please CLOSE it and move the whole folder to somewhere safe (I would suggest C:\). The script is currently being placed inside (the parent folder of "core"):'
+			Write-Host -ForegroundColor Yellow "$PSScriptRoot"
+			Write-Host 'If you do not want Downloads to get deleted, answer anything else except YES to go back, select 2 then 2 to reconfigure the script and set the' -n; Write-Host -ForegroundColor Cyan ' "removedownloads" ' -n; Write-Host 'switch to FALSE under the' -n; Write-Host -ForegroundColor Green ' "SCRIPT CONFIGURATION: Registry Switches" ' -n; Write-Host 'section.'
+			Write-Host " "
+			Write-Host -ForegroundColor Black -BackgroundColor Red "THIS IS YOUR LAST WARNING!!!" 
+			Write-Host -ForegroundColor Cyan "If you are sure and want to proceed, answer YES."
+			Write-Host "Your answer: " -n ; $deload = Read-Host
+			switch ($deload) {
+				{$deload -like "yes"} {}
+				default {
+					Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 2 -Type DWord -Force
+					Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
+					exit
 				}
-			}	
+			}
+		} if ($pwsh -eq 5) {
+			Write-Host " "
+			Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your build does not support Windows Update through PowerShell. Have you fully updated yet? (yes/no)"
+			if ($build -eq 10240 -and $disablelockscrn) {Write-Host "On Windows 10 build 10240, updating is " -n; Write-Host "REQUIRED" -ForegroundColor Black -BackgroundColor Yellow -n; Write-Host " in order to be able to disable the LogonUI's background."}
+			Write-Host "Your answer: " -n ; $fullyupdated = Read-Host
+			switch ($fullyupdated) {
+				{$fullyupdated -like "yes"} {
+					Write-Host -ForegroundColor Green "Cool!"
+				}
+				{$fullyupdated -like "no"} {
+					Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Then the script fell into darkness."
+					Start-Sleep -Seconds 5
+					Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+					exit
+				}
+				{$fullyupdated -like '*fuck*'} {
+					Write-Host -ForegroundColor Red -BackgroundColor DarkGray "HAH, L"
+					Start-Sleep -Seconds 2
+					Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+					exit
+				}
+				{$fullyupdated -like 'Julia loves RTM'} {
+					Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Yes absolutely"
+					Start-Sleep -Seconds 2
+					Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Wait, who asked? Read the question again you blind."
+					Start-Sleep -Seconds 3
+					Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+					exit
+				}
+				default {
+					Write-Host -ForegroundColor Red -BackgroundColor DarkGray "You didn't answer appropriately. Exiting..."
+					Start-Sleep -Seconds 2
+					Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
+					exit
+				}
+			}
 		}
 		Write-Host " "
 		Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainAccepted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
@@ -212,6 +238,11 @@ switch ($confules) {
 				exit
 			}
 		}
+	}
+	{$confules -like "3"} {
+		& $PSScriptRoot\credits.ps1
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 2 -Type DWord -Force
+		exit
 	}
 	default {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force

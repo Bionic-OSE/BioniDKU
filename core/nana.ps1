@@ -7,8 +7,9 @@ Write-Host " "
 $workdir = "$PSScriptRoot\.."
 
 # Script build number and the PowerShell 7 download link
-$scriptbuild = "Build 22107.201_b3.oseprod_betarel.230126-2311"
-$pwsh7 = "https://github.com/PowerShell/PowerShell/releases/download/v7.3.1/PowerShell-7.3.1-win-x64.msi"
+$releasetype = "Beta Release"
+$releaseid = "Build 22107.201_b4.oseprod_betarel.230211-2051"
+$pwsh7 = "https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/PowerShell-7.3.2-win-x64.msi"
 
 # Create Registry Folder
 $autoidku = Test-Path -Path 'HKCU:\SOFTWARE\AutoIDKU'
@@ -16,7 +17,8 @@ if ($autoidku -eq $false) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting up environment"
 	New-Item -Path 'HKCU:\SOFTWARE' -Name AutoIDKU
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "BootStrapped" -Value 0 -Type DWord -Force
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Butter" -Value $scriptbuild
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ReleaseType" -Value $releasetype
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ReleaseID" -Value $releaseid
 	Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe"
 	Remove-Item -Path "HKCU:\Console\%SystemRoot%_SysWOW64_WindowsPowerShell_v1.0_powershell.exe"
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation" -Name "DisableStartupSound" -Value 1 -Type DWord -Force

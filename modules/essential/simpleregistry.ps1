@@ -74,8 +74,12 @@ switch ($true) {
     $contextmenuentries {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Tuning the Context Menu" -n; Write-Host ([char]0xA0)
         New-PSDrive -PSProvider registry -Root HKEY_CLASSES_ROOT -Name HKCR
-        Remove-Item -LiteralPath "HKCR:\*\ShellEx\ContextMenuHandlers\ModernSharing" -Force -Recurse
-        Remove-Item -Path "HKCR:\CLSID\{09A47860-11B0-4DA5-AFA5-26D86198A780}" -Force -Recurse
+		$modernsharexists = Test-Path -LiteralPath "HKCR:\*\ShellEx\ContextMenuHandlers\ModernSharing"
+		$idkwhattocallthis = Test-Path -Path "HKCR:\CLSID\{09A47860-11B0-4DA5-AFA5-26D86198A780}"
+		switch ($true) {
+			$modernsharexists {Remove-Item -LiteralPath "HKCR:\*\ShellEx\ContextMenuHandlers\ModernSharing" -Force -Recurse}
+			$idkwhattocallthis {Remove-Item -Path "HKCR:\CLSID\{09A47860-11B0-4DA5-AFA5-26D86198A780}" -Force -Recurse}
+		}
     }
 
     $disableanimations {
@@ -160,6 +164,7 @@ switch ($true) {
     $disablelockscrn {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling LogonUI's Clock screen (aka the Lock Screen)" -n; Write-Host ([char]0xA0)
         Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\SessionData' -Name 'AllowLockScreen' -Value 0 -Type DWord -Force
+		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent' -Name DisableWindowsSpotlightFeatures -Value 1 -Type DWord -Force
     }
 
     $darkmodeoff {
@@ -174,8 +179,11 @@ switch ($true) {
     }
 
     $disablelocationicon {
-        Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling the Location icon" -n; Write-Host ([char]0xA0)
-        Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location' -Name Value -Value "Deny" -Type String -Force
+		$located = Test-Path -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location'
+		if ($located) {
+			Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling the Location icon" -n; Write-Host ([char]0xA0)
+			Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location' -Name Value -Value "Deny" -Type String -Force
+		}
     }
 
     $disablelogonbg {

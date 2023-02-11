@@ -1,4 +1,4 @@
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze | TrustedInstaller is starting..."
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | TrustedInstaller is starting..."
 # TrustedInstaller environment preparation phase
 function Show-Branding {
 	Clear-Host

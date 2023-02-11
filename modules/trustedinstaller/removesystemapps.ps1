@@ -10,20 +10,21 @@ $edgoogle = Test-Path "$edghouse\Edge"
 $edgecore = Test-Path "$edghouse\EdgeCore"
 $edgeview = Test-Path "$edghouse\EdgeWebView"
 $edgupdte = Test-Path "$edghouse\EdgeUpdate"
-taskkill /f /im msedge.exe
-taskkill /f /im msedgewebview.exe
-taskkill /f /im MicrosoftEdgeUpdate.exe
 switch ($true) {
 	$edgoogle {
+		taskkill /f /im msedge.exe
 		Rename-AppsFolder "$edghouse\Edge" "EEEE"
 	}
 	$edgecore {
+		taskkill /f /im msedge.exe
 		Rename-AppsFolder "$edghouse\EdgeCore" "EEEECCCC"
 	}
 	$edgeview {
+		taskkill /f /im msedgewebview.exe
 		Rename-AppsFolder "$edghouse\EdgeWebView" "EEEEWWWVVVV"
 	}
 	$edgupdte {
+		taskkill /f /im MicrosoftEdgeUpdate.exe
 		Rename-AppsFolder "$edghouse\EdgeUpdate" "EEEEUUUUUU"
 	}
 }
@@ -32,6 +33,8 @@ switch ($true) {
 $sappfldr = "$env:SYSTEMDRIVE\Windows\SystemApps"
 $edgexaml = Test-Path "$sappfldr\Microsoft.MicrosoftEdge_8wekyb3d8bbwe"
 $lockxaml = Test-Path "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy"
+$srchxaml = Test-Path "$sappfldr\Microsoft.Windows.Search_cw5n1h2txyewy"
+$startapp = Test-Path "$sappfldr\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy"
 taskkill /f /im ApplicationFrameHost.exe
 switch ($true) {
 	$edgexaml {
@@ -40,7 +43,15 @@ switch ($true) {
 	$lockxaml {
 		Rename-AppsFolder "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy" "Microsoft.LockApp_cw5n1h2txyewy.DISABLED"
 	}
+	$srchxaml {
+		taskkill /f /im SearchHost.exe
+		Rename-AppsFolder "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy" "Microsoft.Windows.Search_cw5n1h2txyewy.DISABLED"
+	}
+	$startapp {
+		taskkill /f /im StartMenuExperienceHost.exe
+		Rename-AppsFolder "$sappfldr\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy" "Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy.DISABLED"
+	}
 }
 
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "The Apps should be disabled now" -n; Write-Host ([char]0xA0)
-Start-Sleep -Seconds 5
+Start-Sleep -Seconds 3

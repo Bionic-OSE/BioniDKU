@@ -1,4 +1,4 @@
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze | Windows Update mode"
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode"
 $butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Butter
 function Show-Branding {
 	Clear-Host
@@ -21,14 +21,14 @@ function Stop-UpdateMode {
 	Start-Sleep -Seconds 5
 	$hldrv = (Test-Path -Path $env:LOCALAPPDATA\Microsoft\OneDrive\HellDrive.exe -PathType Leaf)
 	if ($hldrv -eq $true) {
-		Rename-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive\HellDrive.exe" -NewName "OneDrive.exe"
+		Move-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive\HellDrive.exe" -Destination "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe" -Force
 	}
 }
 
 # Temporarily disable OneDrive so it won't load on start of WinXShell
 $skdrv = (Test-Path -Path $env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe -PathType Leaf)
 if ($skdrv -eq $true) {
-	Rename-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe" -NewName "HellDrive.exe"
+	Move-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe" -Destination "$env:LOCALAPPDATA\Microsoft\OneDrive\HellDrive.exe" -Force
 }
 
 $latest = "14393.2214","15063.1418","16299.1087","17134.1184","17763.1577","18362.1256","18363.1556","19041.1415","19042.1706","19043.2364","19044.2486","19045.2486"

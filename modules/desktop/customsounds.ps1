@@ -33,6 +33,6 @@ Remove-Item -Path $env:SYSTEMDRIVE\windows\Media -Force -Recurse -ErrorAction Si
 Write-Host -ForegroundColor Cyan "Pass 5/5 complete, now placing new sounds in 3 seconds"
 Start-Sleep -Seconds 3
 
-$newmedia = (Test-Path -Path "C:\Windows\Media")
-if ($newmedia -eq $false) {New-Item -Path "C:\Windows" -Name "Media" -ItemType directory}
-Expand-Archive -Path $workdir\utils\Media8.zip -DestinationPath C:\Windows\Media
+$newmedia = (Test-Path -Path "$env:SYSTEMDRIVE\Windows\Media")
+if ($newmedia -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "Media" -ItemType directory}
+Expand-Archive -Path $workdir\utils\Media8.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media
