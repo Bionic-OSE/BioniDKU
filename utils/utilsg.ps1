@@ -1,7 +1,7 @@
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Utilites fetcher module"
 $uexists = Test-Path -Path "$PSScriptRoot\ambient.zip" -PathType Leaf
 if ($uexists) {exit}
-function Show-Branding { # Has to declare it here again because of a different PowerShell process
+function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
 	Write-Host "Utilites fetcher module" -ForegroundColor Cyan -BackgroundColor Gray -n; Write-Host ([char]0xA0)

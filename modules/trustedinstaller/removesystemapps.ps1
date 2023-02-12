@@ -38,9 +38,12 @@ $startapp = Test-Path "$sappfldr\Microsoft.Windows.StartMenuExperienceHost_cw5n1
 taskkill /f /im ApplicationFrameHost.exe
 switch ($true) {
 	$edgexaml {
+		taskkill /f /im MicrosoftEdgeCP.exe
+		taskkill /f /im MicrosoftEdge.exe
 		Rename-AppsFolder "$sappfldr\Microsoft.MicrosoftEdge_8wekyb3d8bbwe" "Microsoft.MicrosoftEdge_8wekyb3d8bbwe.DISABLED"
 	}
 	$lockxaml {
+		taskkill /f /im LockApp.exe
 		Rename-AppsFolder "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy" "Microsoft.LockApp_cw5n1h2txyewy.DISABLED"
 	}
 	$srchxaml {

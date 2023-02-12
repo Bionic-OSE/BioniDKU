@@ -154,6 +154,9 @@ if ($hkm -eq 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer" -n; Write-Host ([char]0xA0)
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
 	& $PSScriptRoot\hikaru.ps1
+	if ($build -ge 17763) {
+		Start-Process powershell -ArgumentList "-Command $workdir\modules\removal\edgekiller.ps1"
+	}
 }
 
 ### ------ System Variables ------
@@ -167,19 +170,9 @@ Write-Host "You're running Windows 10 build"$build"."$ubr
 ### ------ Continue importing required dependencies ------
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components" -n; Write-Host ([char]0xA0)
 
-function Clear-MSEdgePopup {
-	$chedgeck = Get-Process msedge -ErrorAction SilentlyContinue
-		if ($chedgeck) {
-			Write-Host "Getting Microsoft Edge out of the way" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
-			Stop-Process -Name msedge -Force
-		}
-}
+
 
 switch ($build) {
-	{$_ -ge 17763} {
-		# I'm not sure if this will happen on older, but that's the oldest build I know to have Edge Chromium after updating
-		Clear-MSEdgePopup
-	}
     {$_ -ge 10240} {
         $pendingreboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
         if ($pendingreboot -eq $true -and $build -ge 10240) {
@@ -268,7 +261,7 @@ Take-KeyPermissions $rootKey $key $sid $recurse
 Write-Host " "
 $dotnet35done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnet35
 $dotnet462done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnetrebooted
-$manualstuffs = $true
+$manualstuffs = $true # Please DO NOT set to false
 
 switch ($true) {
 	

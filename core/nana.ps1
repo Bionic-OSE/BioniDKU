@@ -8,7 +8,7 @@ $workdir = "$PSScriptRoot\.."
 
 # Script build number and the PowerShell 7 download link
 $releasetype = "Beta Release"
-$releaseid = "Build 22107.201_b4.oseprod_betarel.230211-2051"
+$releaseid = "Build 22107.201_b4.oseprod_betarel.230211-2146"
 $pwsh7 = "https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/PowerShell-7.3.2-win-x64.msi"
 
 # Create Registry Folder
@@ -110,4 +110,5 @@ Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 0 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ChangesMade" -Value 0 -Type DWord -Force
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 0 -Type DWord -Force
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
+Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "EdgeKilled" -Value 0 -Type DWord -Force
 exit
