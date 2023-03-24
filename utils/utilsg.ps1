@@ -11,9 +11,9 @@ Show-Branding
 Import-Module BitsTransfer
 
 function Start-UtilsDownload {
-	$u1 = "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/201_b4a/utils.7z.001"
-	$u2 = "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/201_b4a/utils.7z.002"
-	$u3 = "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/201_b4a/utils.7z.003"
+	$u1 = "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/201_b5b/utils.7z.001"
+	$u2 = "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/201_b5b/utils.7z.002"
+	$u3 = "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/201_b5b/utils.7z.003"
 	#$u4 = "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/201_xx/utils.7z.004"
 	Start-BitsTransfer -Source $u1 -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70
 	Start-BitsTransfer -Source $u2 -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70

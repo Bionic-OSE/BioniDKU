@@ -17,9 +17,14 @@ if ($build -ge 18362) {
     if ($explorerdir -eq $true) {New-Item -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'Explorer' -Force}
 }
 
-if ($build -ge 18363 -and $wureboot -ge 2) {
+$feeder = Test-Path -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds'
+
+if ($build -ge 18363) {
     Stop-Process -Name "explorer"
     Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -Name 'HideSCAMeetNow' -Value 1 -Type DWord -Force
-    Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds' -Name 'ShellFeedsTaskbarViewMode' -Value 2 -Type DWord -Force
-    Start-Process -Name "explorer"
+	if ($feeder) {
+		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds' -Name 'ShellFeedsTaskbarViewMode' -Value 2 -Type DWord -Force
+		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds' -Name 'IsFeedsAvailable' -Value 0 -Type DWord -Force
+	}
+    Start-Process explorer
 }

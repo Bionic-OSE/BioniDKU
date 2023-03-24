@@ -1,4 +1,4 @@
-$edgoogle = "$env:SYSTEMDRIVE\Program Files (x86)\Microsoft\Edge"
+$edgoogle = Test-Path "$env:SYSTEMDRIVE\Program Files (x86)\Microsoft\Edge"
 $edgedone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeKilled
 if ($edgoogle -eq $false -or $edgedone -eq 1) {exit}
 
@@ -10,6 +10,7 @@ function Show-Branding {
 	Write-Host " "
 }
 
+Show-Branding
 Write-Host "Guarding the script from Microsoft Edge poping up during startup" -ForegroundColor Cyan -BackgroundColor DarkGray 
 Write-Host "(If this window doesn't show any activity after a long while and you have confirmed that Edge isn't running, you can close it)"
 Write-Host " "
@@ -20,7 +21,7 @@ while ($true) {
 	if ($chedgeck) {
 		Write-Host "GOTCHA" -ForegroundColor Magenta
 		taskkill /f /im msedge.exe
-		Write-Host "Murder operation complete. Adiós" -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+		Write-Host "Murder operation complete. Adios" -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
 		Start-Sleep -Seconds 5
 		break
 	} elseif ($edgedone -eq 1) {

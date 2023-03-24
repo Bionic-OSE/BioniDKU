@@ -1,7 +1,8 @@
 $workdir = "$PSScriptRoot\..\.."
-$pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
+#$pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
 $hell = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WelcomeToHell
-if ($pwsh -eq 7) {
+#if ($pwsh -eq 7) {
+if ($build -ge 17763) {
 	$chichi = Get-Content -Path $workdir\utils\liyue.xml -Raw -Encoding utf8
 	$qiqi = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("$chichi"))
 	Copy-Item -Path $workdir\utils\statueof7.rar -Destination "$workdir\music\normal\$qiqi.mp3" -Force

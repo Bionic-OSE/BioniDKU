@@ -8,7 +8,7 @@ $workdir = "$PSScriptRoot\.."
 
 # Script build number and the PowerShell 7 download link
 $releasetype = "Beta Release"
-$releaseid = "Build 22107.201_b4.oseprod_betarel.230211-2146"
+$releaseid = "Build 22107.201_b5.oseprod_betarel.240323-2403"
 $pwsh7 = "https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/PowerShell-7.3.2-win-x64.msi"
 
 # Create Registry Folder
@@ -22,6 +22,16 @@ if ($autoidku -eq $false) {
 	Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe"
 	Remove-Item -Path "HKCU:\Console\%SystemRoot%_SysWOW64_WindowsPowerShell_v1.0_powershell.exe"
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation" -Name "DisableStartupSound" -Value 1 -Type DWord -Force
+}
+$meeter = Test-Path -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+$meetor = Test-Path -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer'
+switch ($false) {
+	{$meeter -eq $_} {
+		New-Item -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'Explorer'
+	}
+	{$meeter -eq $_} {
+		New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Explorer'
+	}
 }
 
 # Is the bootstrap process already completed?

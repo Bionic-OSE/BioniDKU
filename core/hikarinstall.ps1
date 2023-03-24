@@ -5,7 +5,7 @@ $hkreg = Test-Path -Path 'HKCU:\SOFTWARE\Hikaru-chan'
 if ($hkreg -eq $false) {
 	New-Item -Path 'HKCU:\SOFTWARE' -Name Hikaru-chan
 }
-Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "UseOSSEStartupSound" -Value 0 -Type DWord -Force
+Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value 1 -Type DWord -Force
 
 # Hikarun on-demand customization section
 if ($pwsh -eq 7) {
@@ -13,7 +13,7 @@ if ($pwsh -eq 7) {
 } else {$hkrdelwwa = ""}
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SkipNotGABWarn
 $edition = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").EditionID
-$editiok = "Professional","Core"
+$editiok = "Professional","Core","Enterprise"
 if ($desktopversion -and $ngawarn -ne 1 -and $editiok.Contains($edition)) {
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "PaintDesktopVersion" -Value 1 -Type DWord -Force
 	if ($pwsh -eq 5) {
@@ -29,7 +29,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t R
 	Write-Host -ForegroundColor Black -BackgroundColor Red "Welp,"
 	Write-Host -ForegroundColor Red "The script could not perform the DesktopVersion mod." -n; Write-Host "This is likely because:"
 	Write-Host "- Either you are not running on a General Availability build"
-	Write-Host "- Or you are not running Home or Pro editions of Windows 10"
+	Write-Host "- Or you are not running Home, Pro or Enterprise editions of Windows 10"
 	Start-Sleep -Seconds 3
 	$hkrdeskver = ""
 } else {$hkrdeskver = ""}

@@ -17,15 +17,12 @@ function Show-ModulesConfig {
 	Write-Host "setwallpaper                   " -n; Write-Host "$setwallpaper      "
 	Write-Host "dotnet35                       " -n; Write-Host "$dotnet35          " 
 	if ($pwsh -eq 5) {Write-Host "dotnet462                      " -n; Write-Host "$dotnet462         "}
-	Write-Host "sharex462                      " -n; Write-Host "$sharex462         "
-	Write-Host "paintdotnet462                 " -n; Write-Host "$paintdotnet462    "
 	Write-Host "desktopshortcuts               " -n; Write-Host "$desktopshortcuts  "
 	Write-Host "removeudpassistant             " -n; Write-Host "$removeudpassistant"
 	Write-Host "removewaketimers               " -n; Write-Host "$removewaketimers  "
 	Write-Host "removeUWPapps                  " -n; Write-Host "$removeUWPapps     "
 	Write-Host "openshellconfig                " -n; Write-Host "$openshellconfig   "
 	Write-Host "explorericon                   " -n; Write-Host "$explorericon      "
-	Write-Host "classicapps                    " -n; Write-Host "$classicapps       "
 	Write-Host "taskbarpins                    " -n; Write-Host "$taskbarpins       "
 	Write-Host "replaceemojifont               " -n; Write-Host "$replaceemojifont  "
 	Write-Host "defaultapps                    " -n; Write-Host "$defaultapps       "
@@ -38,6 +35,8 @@ function Show-ModulesConfig {
 	Write-Host "explorerstartfldr              " -n; Write-Host "$explorerstartfldr "
 	Write-Host "oldbatteryflyout               " -n; Write-Host "$oldbatteryflyout  "
 	Write-Host "customsounds                   " -n; Write-Host "$customsounds      "
+	Write-Host "removesystemapps               " -n; Write-Host "$removesystemapps    "
+	Write-Host "sltoshutdownwall               " -n; Write-Host "$sltoshutdownwall    "
 	Write-Host " "
 	Write-Host "------ SCRIPT CONFIGURATION: Registry Switches ------" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
 	Write-Host "More details about what these options are for in the script file" -ForegroundColor Green
@@ -77,14 +76,6 @@ function Show-ModulesConfig {
 	Write-Host "disablelogonbg                 " -n; Write-Host "$disablelogonbg      "
 	Write-Host "removelckscrneticon            " -n; Write-Host "$removelckscrneticon "
 	Write-Host "svchostslimming                " -n; Write-Host "$svchostslimming     " 
-	Write-Host " "
-	Write-Host "------ SCRIPT CONFIGURATION: TI Switches ------" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
-	Write-Host "More details about what these options are for in the script file" -ForegroundColor Green
-	Write-Host " "
-	Write-Host "trustedinstaller               " -n; Write-Host "$trustedinstaller    "
-	Write-Host " " 
-	Write-Host "removesystemapps               " -n; Write-Host "$removesystemapps    "
-	Write-Host "sltoshutdownwall               " -n; Write-Host "$sltoshutdownwall    "
 	Write-Host " "
 	Write-Host "Now please scroll up to the top and review the options." -ForegroundColor Black -BackgroundColor Yellow -n; Write-Host ([char]0xA0)
 	Write-Host "UAC will be disabled immediately once you start the script."

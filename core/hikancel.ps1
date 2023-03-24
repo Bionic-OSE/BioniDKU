@@ -1,4 +1,4 @@
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter and Sunryze | Windows Update mode"
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode"
 $butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Butter
 function Show-Branding {
 	Clear-Host

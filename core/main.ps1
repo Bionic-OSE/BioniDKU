@@ -24,10 +24,8 @@ if ($pwsh -eq 7) {
 	$windowsupdate =        $true}
 if ($pwsh -eq 5) {
 	$dotnet462 =            $true}
-	$sharex462 =            $true
-	$paintdotnet462 =       $false 
 	$dotnet35 =             $true
-	$requiredprograms =     $true
+	$essentialapps =     	$true
 	$hidetaskbaricons =     $true
 	$removeedgeshortcut =   $true
 	$setwallpaper =         $true
@@ -35,9 +33,8 @@ if ($pwsh -eq 5) {
 	$removeudpassistant =   $true 
 	$removewaketimers =     $true 
 	$removeUWPapps =        $true 
-	$openshellconfig =      $true # Requires $requiredprograms
+	$openshellconfig =      $true # Requires $essentialapps
 	$explorericon =         $true
-	$classicapps =          $true 
 	$taskbarpins =          $true
 	$replaceemojifont =     $true 
 	$defaultapps =          $true 
@@ -50,6 +47,8 @@ if ($pwsh -eq 5) {
 	$explorerstartfldr =    $true 
 	$oldbatteryflyout =     $true 
 	$customsounds =         $true
+	$removesystemapps =     $true
+	$sltoshutdownwall =		$true
 
 ### ------ SCRIPT CONFIGURATION: Registry Switches ------
 # Below are registry-applied tweaks. You can disable all of them,
@@ -91,17 +90,6 @@ if ($pwsh -eq 5) {
 	$removelckscrneticon =  $true
 	$svchostslimming =      $true
 	$desktopversion =       $true
-	
-### ------ SCRIPT CONFIGURATION: TI Switches ------
-# During execution, the script will leverage TrustedInstaller 
-# for certain tasks that requires tinkering with system files.
-# Like the registry switches, you can turn the master switch,
-# or disable options one by one
-
-	$trustedinstaller =     $true # Master switch
-	
-	$removesystemapps =     $true
-	$sltoshutdownwall =		$true
 	
 ##############################################################
 # Importing some basic functions required for the modules menu
@@ -146,20 +134,7 @@ Get-ConfigStat
 # Show branding
 Show-Branding clear
 
-# Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
-$hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
-if ($hkm -eq 1) {
-	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing startup obstacles" -n; Write-Host ([char]0xA0)
-	& $workdir\modules\removal\letsNOTfinish.ps1
-	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer" -n; Write-Host ([char]0xA0)
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
-	& $PSScriptRoot\hikaru.ps1
-	if ($build -ge 17763) {
-		Start-Process powershell -ArgumentList "-Command $workdir\modules\removal\edgekiller.ps1"
-	}
-}
-
-### ------ System Variables ------
+# System Variables
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing environment" -n; Write-Host ([char]0xA0)
 
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
@@ -167,10 +142,22 @@ $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersi
 $battery = (Get-CimInstance -ClassName Win32_Battery)
 Write-Host "You're running Windows 10 build"$build"."$ubr
 
-### ------ Continue importing required dependencies ------
+# Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
+$hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
+if ($hkm -eq 1) {
+	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing startup obstacles" -n; Write-Host ([char]0xA0)
+	& $workdir\modules\removal\letsNOTfinish.ps1
+	if ($build -ge 17763) {
+		Start-Process powershell -ArgumentList "-Command $workdir\modules\removal\edgekiller.ps1"
+		Start-Sleep -Seconds 3
+	}
+	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer" -n; Write-Host ([char]0xA0)
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
+	& $PSScriptRoot\hikaru.ps1
+}
+
+# Continue importing required dependencies
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components" -n; Write-Host ([char]0xA0)
-
-
 
 switch ($build) {
     {$_ -ge 10240} {
@@ -187,8 +174,6 @@ switch ($build) {
     }
 }
 Import-Module BitsTransfer -Verbose
-
-# You cannot use PSWindowsUpdate on 1507 and 1511.
 
 
 ##### ------ Functions ------
@@ -309,16 +294,8 @@ switch ($true) {
         & $workdir\modules\desktop\desktopshortcuts.ps1
     }
 
-    $requiredprograms {
-        & $workdir\modules\apps\requiredprograms.ps1
-    }
-
-    $sharex462 {
-        & $workdir\modules\apps\sharex462.ps1
-    }
-
-    $paintdotnet462 {
-        & $workdir\modules\apps\paintdotnet.ps1
+    $essentialapps {
+        & $workdir\modules\apps\essentialapps.ps1
     }
 
     $removeedgeshortcut {
@@ -350,10 +327,6 @@ switch ($true) {
         & $workdir\modules\taskbar\oldbatteryflyout.ps1
     }
 
-    $classicapps {
-        & $workdir\modules\apps\classicapps.ps1
-    }
-
     $openshellconfig {
         & $workdir\modules\apps\openshellconfig.ps1
     }
@@ -363,15 +336,21 @@ switch ($true) {
     }
 
     $customsounds {
-        & $workdir\modules\desktop\customsounds.ps1
+        Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing custom system sounds" -n; Write-Host ([char]0xA0) 
+        Start-Process powershell -Wait -ArgumentList "$workdir\modules\desktop\customsounds.ps1"
     }
 
     $replaceemojifont {
         & $workdir\modules\removal\replaceemojifont.ps1
     }
 	
-	$trustedinstaller {
-		& $workdir\modules\trustedinstaller\tisetup.ps1
+	$removesystemapps {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling system apps" -n; Write-Host ([char]0xA0) 
+        Start-Process powershell -Wait -ArgumentList "$workdir\modules\removal\removesystemapps.ps1"
+	}
+	
+	$sltoshutdownwall {
+		& $workdir\modules\desktop\slidetoshutdownwall.ps1
 	}
 	
 }
@@ -379,10 +358,10 @@ switch ($true) {
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 & $PSScriptRoot\hikarinstall.ps1
 Write-Host " " -n; Write-Host ([char]0xA0)
-Write-Host "This was the final step of the script. Press Enter to reboot, and then the IDKU will be fully setup!" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
+Write-Host "This was the final step of the script. Press Enter to restart and complete the setup" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
 Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -Wait -NoNewWindow -ArgumentList "-i $PSScriptRoot\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 & $PSScriptRoot\notefinish.ps1
-Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter, with Love from Vietnam <3" -ForegroundColor Magenta -n; Write-Host ([char]0xA0)
+Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta -n; Write-Host ([char]0xA0)
 Read-Host
-shutdown -r -t 5 -c "BioniDKU needs to restart your PC to complete the process"
+shutdown -r -t 5 -c "BioniDKU needs to restart your PC to complete the setup"
 Stop-Script
