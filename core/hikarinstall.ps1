@@ -43,8 +43,26 @@ $hkrdeskver
 "@ | Out-File -FilePath "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikarun.bat" -Encoding ascii
 
 # Install HikaruQM and pre-apply system restrictions (set restrictions but at disabled state)
-Move-Item -Path $env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe -Destination "$env:AppData\Microsoft\Windows\Start Menu\Programs\Startup\HikaruQML.exe"
+
+$WScriptObj = New-Object -ComObject ("WScript.Shell")
+$hkQML = "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe"
+$hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\Startup\HikaruQML.lnk"
+$hkQMLSh = $WscriptObj.CreateShortcut($hkQMLS)
+$hkQMLSh.TargetPath = $hkQML
+$hkQMLSh.Save()
+
+$hkF5action = New-ScheduledTaskAction -Execute "$env:SYSTEMDRIVE\Bionic\Hikarefresh\Hikarefresh.exe"
+$hkF5trigger = @(
+	$(New-ScheduledTaskTrigger -AtLogon),
+	$(New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At 8am)
+)
+$hkF5settings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+$hkF5 = New-ScheduledTask -Action $hkF5action -Trigger $hkF5trigger -Settings $hkF5settings
+Register-ScheduledTask 'BioniDKU Quick Menu Update Checker' -InputObject $hkF5
+
 Copy-Item -Path $env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ApplicationFrameHost.exe"
+Copy-Item -Path $PSScriptRoot\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
+Copy-Item -Path $PSScriptRoot\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
 taskkill /f /im ApplicationFrameHost.exe
 takeown /f "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe"
 icacls "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe" /grant Administrators:F

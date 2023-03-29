@@ -1,4 +1,4 @@
-Write-Host "Changing the background for SlideToShutdown.exe" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+Write-Host "Changing the background for SlideToShutdown.exe" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host " (given that you set the default ones in Settings)" -ForegroundColor White
 
 function Remove-SystemFile($item) {
 	takeown /f $item /r

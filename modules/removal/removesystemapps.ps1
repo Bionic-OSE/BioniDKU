@@ -1,10 +1,11 @@
 $workdir = "$PSScriptRoot\..\.."
+$keepedgechromium = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeNoMercy
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | System Apps disabler module"
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
-	Write-Host " System Apps disabler module" -ForegroundColor Cyan -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+	Write-Host "System Apps disabler module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
 Show-Branding
@@ -36,27 +37,29 @@ function Grant-Ownership($item) {
 }
 
 # Microsoft Edge Chromium
-$edghouse = "$env:SYSTEMDRIVE\Program Files (x86)\Microsoft"
-$edgoogle = "$edghouse\Edge\Application\msedge.exe"
-$edgecore = "EdgeCore"
-$edgeview = "EdgeWebView"
-$edgupdte = "$edghouse\EdgeUpdate\MicrosoftEdgeUpdate.exe"
-$edgefami = $edgoogle, $edgupdte
-$edgeFOLD = $edgecore, $edgeview
-
-foreach ($edgefile in $edgefami) {
-	Stop-Processes
-	if (Test-Path $edgefile) {
-		Grant-Ownership $edgefile 
-		Disable-Executable $edgefile
+if ($keepedgechromium -eq 1) {
+	$edghouse = "$env:SYSTEMDRIVE\Program Files (x86)\Microsoft"
+	$edgoogle = "$edghouse\Edge\Application\msedge.exe"
+	$edgecore = "EdgeCore"
+	$edgeview = "EdgeWebView"
+	$edgupdte = "$edghouse\EdgeUpdate\MicrosoftEdgeUpdate.exe"
+	$edgefami = $edgoogle, $edgupdte
+	$edgeFOLD = $edgecore, $edgeview
+	
+	foreach ($edgefile in $edgefami) {
+		Stop-Processes
+		if (Test-Path $edgefile) {
+			Grant-Ownership $edgefile 
+			Disable-Executable $edgefile
+		}
 	}
-}
-foreach ($edgefldr in $edgeFOLD) {
-	Stop-Processes
-	$edgefldd = "$edghouse\$edgefldr"
-	if (Test-Path -Path $edgefldd) {
-		Grant-Ownership $edgefldd
-		Rename-AppsFolder $edgefldd "$edgefldr.FOLDED"
+	foreach ($edgefldr in $edgeFOLD) {
+		Stop-Processes
+		$edgefldd = "$edghouse\$edgefldr"
+		if (Test-Path -Path $edgefldd) {
+			Grant-Ownership $edgefldd
+			Rename-AppsFolder $edgefldd "$edgefldr.FOLDED"
+		}
 	}
 }
 
@@ -94,7 +97,7 @@ switch ($true) {
 	}
 	$srchxaml {
 		taskkill /f /im SearchHost.exe
-		Rename-AppsFolder "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy" "Microsoft.Windows.Search_cw5n1h2txyewy.DISABLED"
+		Rename-AppsFolder "$sappfldr\Microsoft.Windows.Search_cw5n1h2txyewy" "Microsoft.Windows.Search_cw5n1h2txyewy.DISABLED"
 	}
 	$startapp {
 		taskkill /f /im StartMenuExperienceHost.exe

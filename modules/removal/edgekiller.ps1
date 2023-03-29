@@ -1,3 +1,5 @@
+# This module does NOT remove Microsoft Edge Chromium, but rather terminate the task on shell startup
+
 $edgoogle = Test-Path "$env:SYSTEMDRIVE\Program Files (x86)\Microsoft\Edge"
 $edgedone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeKilled
 if ($edgoogle -eq $false -or $edgedone -eq 1) {exit}
@@ -6,7 +8,7 @@ $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Microsoft E
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
-	Write-Host "Microsoft Edge Chromium terminator module" -ForegroundColor Cyan -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+	Write-Host "Microsoft Edge Chromium terminator module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
 

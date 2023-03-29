@@ -4,7 +4,7 @@ $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Custom soun
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
-	Write-Host "Custom sound installer module" -ForegroundColor Cyan -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+	Write-Host "Custom sound installer module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
 Show-Branding
@@ -28,5 +28,5 @@ for ($count = 1; $count -le 5; $count++) {
 $newmedia = (Test-Path -Path "$env:SYSTEMDRIVE\Windows\Media")
 if ($newmedia -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "Media" -ItemType directory}
 Expand-Archive -Path $workdir\utils\Media8.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media
-Write-Host -ForegroundColor Cyan "Custom system sounds have been installed"
+Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Custom system sounds have been installed"
 Start-Sleep -Seconds 3

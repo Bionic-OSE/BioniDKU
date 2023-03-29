@@ -29,6 +29,7 @@ Write-Hhhh " - T-Clock" ": https://github.com/White-Tiger/T-Clock"
 Write-Hhhh " - Mozilla Firefox ESR" ": https://www.mozilla.org/en-US/firefox/enterprise"
 Write-Hhhh " - ShareX" ": https://getsharex.com"
 Write-Hhhh " - Notepad++" ": https://notepad-plus-plus.org"
+Write-Hhhh " - DesktopInfo" ": https://www.glenn.delahoy.com/desktopinfo/"
 Write-Host " Cosmetic elements:" -ForegroundColor Blue
 Write-Hhhh " - Desktop background" " (Normal mode): 
    https://www.reddit.com/r/Genshin_Impact/comments/sk74fe/chinju_forest_inazuma_viewpoint_art"
@@ -45,5 +46,5 @@ Write-Host " - AutoIDKU author" -ForegroundColor Green -n; Write-Host ": @sunryz
 Write-Hhhh " - Volunteered testers" ": @Julia#6033, @Zippykool#3826"
 Write-Host " "
 Write-Host " "
-Write-Host "Press Enter to return to the selection screen." -ForegroundColor Yellow
+Write-Host "Press Enter to return to main menu." -ForegroundColor Yellow
 Read-Host

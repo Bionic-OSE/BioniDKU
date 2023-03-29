@@ -12,7 +12,7 @@ switch ($true) {
         Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' -Name 'HubMode' -Value 1 -Type DWord -Force
     }
 
-    {$disablestartupitems -eq $true -and $build -ge 14393} {
+    {$disabledefenderstart -eq $true -and $build -ge 14393} {
         Write-Host  -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling Windows Defender on startup" -n; Write-Host ([char]0xA0)
         Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run' -Name 'SecurityHealth' -Value ([byte[]](0x33,0x32,0xFF))
     }
@@ -38,7 +38,7 @@ switch ($true) {
         Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'MMTaskbarEnabled' -Value 0 -Type DWord -Force
     }
 
-    $transparencydisable {
+    $disabletransparency {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling Transparency" -n; Write-Host ([char]0xA0)
         Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0 -Type DWord -Force
     }
@@ -122,7 +122,7 @@ switch ($true) {
 
     $registeredowner {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting Registered owner" -n; Write-Host ([char]0xA0)
-        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOwner' -Value 'Project BioniDKU - (c) Bionic Butter and Sunryze' -Type String -Force
+        Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOwner' -Value 'Project BioniDKU - (c) Bionic Butter' -Type String -Force
         Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOrganization' -Value "$butter" -Type String -Force
     }
 

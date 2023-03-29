@@ -32,8 +32,12 @@ goto BioniDKU
 
 :PSRestartS
 for /f "tokens=3" %%a in ('reg query "HKCU\Software\AutoIDKU" /v RebootScript  ^|findstr /ri "REG_DWORD"') do set "re=%%a"
+if %re%==0x1 title BioniDKU is restarting...
+if %re%==0x3 title Please wait...
 if %re%==0x1 echo Time for the launcher to restart the script...
 if %re%==0x1 goto BioniDKU
+if %re%==0x3 goto BioniDKU
+echo Thanks for using my product ^.^
 exit
 
 :Hikarupdate

@@ -1,5 +1,5 @@
 # BioniDKU .gitattributes file
-# A lesson 201_b1 and 201_b2: GitHub will always convert things from CRLF to LF unless if you do this
+# A lesson from 201_b1 and 201_b2: GitHub will always convert things from CRLF to LF unless if you do this
 
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
