@@ -33,7 +33,6 @@ function Show-ModulesConfig {
 	Write-Host "Don't touch Edge Chromium                     " -n; Write-Host "$keepedgechromium    "
 	Write-Host " "
 	Write-Host "------ SCRIPT CONFIGURATION: Registry Switches ------" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
-	Write-Host "More details about what these options are for in the script file" -ForegroundColor Green
 	Write-Host " "        
 	Write-Host "Enable registry tweaks                        " -n; Write-Host "$registrytweaks      "
 	Write-Host " "
@@ -59,7 +58,6 @@ function Show-ModulesConfig {
 	Write-Host "Enable classic ballon notifications           " -n; Write-Host "$balloonnotifs       "
 	Write-Host "Show all icons in taskbar tray                " -n; Write-Host "$showalltrayicons    "
 	Write-Host "Disable Lock screen                           " -n; Write-Host "$disablelockscrn     "
-	Write-Host "Turn off dark mode                            " -n; Write-Host "$darkmodeoff         "
 	Write-Host "Use classic Alt+Tab                           " -n; Write-Host "$classicalttab       "
 	Write-Host "Use classic volume control                    " -n; Write-Host "$oldvolcontrol       "
 	Write-Host "Set accent color to Default Blue              " -n; Write-Host "$defaultcolor        "
@@ -68,37 +66,64 @@ function Show-ModulesConfig {
 	Write-Host "Disable Login screen background               " -n; Write-Host "$disablelogonbg      "
 	Write-Host "Remove Network icon from login screen         " -n; Write-Host "$removelckscrneticon "
 	Write-Host "Reduce the amount of svchost.exes             " -n; Write-Host "$svchostslimming     "
-	Write-Host "Enable ?????.???? desktop version             " -n; Write-Host "$svchostslimming     "
+	Write-Host "Enable ?????.???? desktop version             " -n; Write-Host "$desktopversion      "
 	Write-Host " "
 	Write-Host "Now please scroll up to the top and review the options." -ForegroundColor Black -BackgroundColor Yellow -n; Write-Host ([char]0xA0)
 	Write-Host "UAC will be disabled immediately once you start the script."
 }
 
 function Start-InstallHikaru {
+	Show-WindowTitle noclose
+	Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 	Write-Host " "
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling UAC" -n; Write-Host ([char]0xA0)
 	Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name ConsentPromptBehaviorAdmin -Value 0 -Force
 	Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name EnableLUA -Value 0 -Force
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Hikaru-chan" -n; Write-Host ([char]0xA0)
-	Copy-Item "$PSScriptRoot\ambient\FFPlay.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru"
+	Copy-Item "$coredir\ambient\FFPlay.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru"
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
-	& $PSScriptRoot\hikaru.ps1
+	& $coredir\kernel\hikaru.ps1
 	$setwallpaper = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SetWallpaper
 	if ($keepedgechromium) {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "EdgeNoMercy" -Value 1 -Type DWord -Force
 	} if ($setwallpaper -eq 1) {
-		& $PSScriptRoot\..\modules\desktop\wallpaper.ps1
+		Copy-Item $workdir\utils\background.png -Destination "$env:SYSTEMDRIVE\Bionic\BioniDKU.png"
+		& $workdir\modules\desktop\wallpaper.ps1
 	} if ($explorerstartfldr) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting Explorer to open on This PC" -n; Write-Host " (will take effect next time Explorer starts)"
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'LaunchTo' -Value 1 -Type DWord -Force
-	} if ($windowsupdate) {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing PSWindowsUpdate" -n; Write-Host ([char]0xA0)
-		Install-PackageProvider -Name "NuGet" -Verbose -Force
-		Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-		Add-Type -AssemblyName presentationCore
-		Install-Module PSWindowsUpdate -Verbose
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 2 -Type DWord -Force
+	} 
+	$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation" -Name "DisableStartupSound" -Value 1 -Type DWord -Force
+	if ($windowsupdate -and $ngawarn -ne 1) {
+		# Take control over Windows Update so it doesn't do stupid, unless if it's Home or Server edition.
+		if ($edition -notlike "Core" -or $edition -notlike "ServerStandard" -or $edition -notlike "ServerDatacenter") {
+			Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Taking control over Windows Update" -n; Write-Host " (so it doesn't do stupid)" -ForegroundColor White
+			switch ($build) {
+				{$_ -ge 10240 -and $_ -le 19041} {$version = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').ReleaseId}
+				{$_ -ge 19042 -and $_ -le 19044} {$version = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').DisplayVersion}
+			}
+			$wudir = (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate)
+			if ($wudir -eq $false) {New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name 'WindowsUpdate'}
+			if ($build -ge 17134) {
+				Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name 'TargetReleaseVersionInfo' -Value $version -Type String -Force
+				Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name 'TargetReleaseVersion' -Value 1 -Type DWord -Force
+			}
+			$msrtdir = (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\MRT)
+			if ($msrtdir -eq $false) {New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft" -Name 'MRT'}
+			Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\MRT" -Name 'DontOfferThroughWUAU' -Value 1 -Type DWord -Force
+			$noau = Test-Path -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+			if ($noau -eq $false) {New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name AU}
+			Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name AllowAutoUpdate -Value 5 -Type DWord -Force
+			Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name AUOptions -Value 2 -Type DWord -Force
+			Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate -Value 1 -Type DWord -Force
+		}
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "WUmode" -Value 1 -Type DWord -Force
 	}
+	if ($essentialapps) {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "EssentialApps" -Value 1 -Type DWord -Force
+	}
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 4 -Type DWord -Force
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ChangesMade" -Value 1 -Type DWord -Force
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device in 5 seconds... The script will start doing its job after the restart." -n; Write-Host ([char]0xA0)
 	Start-Sleep -Seconds 5
@@ -111,8 +136,8 @@ function Confirm-DeleteDownloads {
 	Write-Host -ForegroundColor Black -BackgroundColor Red "---------- HOLD UP! ---------" -n; Write-Host ([char]0xA0)
 	Write-Host " "
 	Write-Host -ForegroundColor Red 'You have selected to DELETE your Downloads folder during script exection. The script has deteced that you have files in this folder. Please back up anything necessary before proceeding any further.'
-	Write-Host 'In addition, if this script is also running from within Downloads, please CLOSE it and move the whole folder to somewhere safe (I would suggest C:\). The script is currently being placed inside (the parent folder of "core"):'
-	Write-Host -ForegroundColor Yellow "$PSScriptRoot"
+	Write-Host 'In addition, if this script is also running from within Downloads, please CLOSE it and move the whole folder to somewhere safe (I would suggest C:\). The script is currently being placed inside:'
+	Write-Host -ForegroundColor Yellow "$wordkir"
 	Write-Host 'If you do not want Downloads to get deleted, answer anything else except YES to go back, select 2 then 2 to reconfigure the script and set the' -n; Write-Host -ForegroundColor Cyan ' "Remove Downloads folder" ' -n; Write-Host 'switch to FALSE under the' -n; Write-Host -ForegroundColor Green ' "SCRIPT CONFIGURATION: Registry Switches" ' -n; Write-Host 'section.'
 	Write-Host " "
 	Write-Host -ForegroundColor Black -BackgroundColor Red "THIS IS YOUR LAST WARNING!!!" 
@@ -183,6 +208,17 @@ function Select-Disenabled($regvalue) {
 	}
 }
 
+function Get-RemoteSoftware {
+	# Right now, only AnyDesk and Parsec are supported
+	$anydesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files (x86)\AnyDesk\AnyDesk.exe"
+	$rustdesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files\RustDesk\RustDesk.exe"
+	$anydeskon = Get-Process AnyDesk -ErrorAction SilentlyContinue
+	$rustdeskon = Get-Process RustDesk -ErrorAction SilentlyContinue
+	if ($anydesk -or $rustdesk -or $anydeskon -or $rustdeskon) {
+		return $true
+	} else {return $false}
+}
+
 $confulee = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigEditing
 $confuone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ChangesMade
 if ($confulee -eq 2) {$confules = 2} elseif ($confulee -eq 3) {$confules = 3}
@@ -194,17 +230,21 @@ else {
 	Write-Host -ForegroundColor White "2. Configure the script"
 	Write-Host -ForegroundColor White "3. Customize your script running experience"
 	Write-Host -ForegroundColor White "4. Show credits"
-	if ($confuone -eq 0) {
-		Write-Host "Answer anything else to exit this script safely without any changes made to your PC" 
-		Write-Host "(except with PowerShell 7 installed)"
+	if ($confuone -eq 0 -and $edition -like "Core") {
+		Write-Host "Answer anything else to exit this script safely without any changes made to your PC."
 		Write-Host "UAC will be disabled immediately once you start the script."
-		Write-Host " "
-		Write-Host "Your selection: " -n ; $confules = Read-Host
+	} elseif ($confuone -eq 0) {
+		Write-Host "Answer anything else to exit this script."
+		Write-Host "UAC will be disabled immediately once you start the script."
 	} else {
-		Write-Host "Answer anything else to exit this script"
-		Write-Host " "
-		Write-Host "Your selection: " -n ; $confules = Read-Host
+		Write-Host "Answer anything else to exit this script."
 	}
+	if (Get-RemoteSoftware) {
+		Write-Host " "
+		Write-Host "HINT: " -ForegroundColor Magenta -n; Write-Host "Running this remotely? " -ForegroundColor White -n; Write-Host 'Select 3 and enable "Increase wait time" to make your life easier!' -ForegroundColor Cyan
+	}
+	Write-Host " "
+	Write-Host "Your selection: " -n ; $confules = Read-Host
 }
 
 switch ($confules) {
@@ -217,7 +257,7 @@ switch ($confules) {
 			Confirm-Wupdated
 		}
 		Write-Host " "
-		Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $PSScriptRoot\ambient\DomainAccepted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+		Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainAccepted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 		Write-Host -ForegroundColor Green "You have accepted the current configuration. Alright, starting the script..."
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
 		Start-Sleep -Seconds 5
@@ -256,18 +296,21 @@ switch ($confules) {
 		Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
 		$setwallpaper = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SetWallpaper
 		$setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
+		$increasewait = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRemotely
 		Write-Host " "
 		Write-Host -ForegroundColor Yellow "To customize your script running experience, tune the following options to your desire."
 		Write-Host -ForegroundColor White "1. Set desktop wallpaper to the one from the script" -n; Show-Disenabled $setwallpaper
 		Write-Host -ForegroundColor White "2. Toggle background music" -n; Show-Disenabled $setupmusic
-		if ($setupmusic -eq 1) {Write-Host -ForegroundColor White "3. Customize your music selection"}
+		Write-Host -ForegroundColor White "3. Increase wait time (ideal for remote setups)" -n; Show-Disenabled $increasewait
+		if ($setupmusic -eq 1) {Write-Host -ForegroundColor White "4. Customize your music selection"}
 		Write-Host -ForegroundColor White "0. Accept the current configuration and return to main menu"
 		Write-Host " "
 		Write-Host "Your selection: " -n ; $confulee = Read-Host
 		switch ($confulee) {
 			{$_ -like "1"} {Select-Disenabled SetWallpaper; exit}
 			{$_ -like "2"} {Select-Disenabled HikaruMusic; exit}
-			{$_ -like "3"} {if ($setupmusic -eq 1) {& $workdir\music\musicp.ps1}; exit}
+			{$_ -like "3"} {Select-Disenabled RunningThisRemotely; exit}
+			{$_ -like "4"} {if ($setupmusic -eq 1) {& $workdir\music\musicp.ps1}; exit}
 			{$_ -like "0"} {
 				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 0 -Type DWord -Force
 				exit

@@ -12,14 +12,9 @@ if ($build -ge 16299) {
     Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'PeopleBand' -Value 0 -Type DWord -Force
 }
 
-if ($build -ge 18362) {
-    $explorerdir = (Test-Path -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer')
-    if ($explorerdir -eq $true) {New-Item -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'Explorer' -Force}
-}
-
 $feeder = Test-Path -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds'
 
-if ($build -ge 18363) {
+if ($build -ge 18362 -and $feeder) {
     Stop-Process -Name "explorer"
     Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -Name 'HideSCAMeetNow' -Value 1 -Type DWord -Force
 	if ($feeder) {

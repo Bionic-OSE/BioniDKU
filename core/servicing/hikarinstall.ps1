@@ -24,14 +24,20 @@ if ($desktopversion -and $ngawarn -ne 1 -and $editiok.Contains($edition)) {
 	$hkrdeskver = 
 @"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Uh oh..." /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "If you are seeing this message, the OS might have been improperly shut down during startup and as a result, your desktop's bottom right corner will reveal the build string. Please contact your challenge host to resolve this issue, and until then, do not sign in (or you will regret what you may see)." /f
 "@
 } elseif ($desktopversion) {
 	Write-Host -ForegroundColor Black -BackgroundColor Red "Welp,"
-	Write-Host -ForegroundColor Red "The script could not perform the DesktopVersion mod." -n; Write-Host "This is likely because:"
+	Write-Host -ForegroundColor Red "The script could not perform the DesktopVersion mod." -n; Write-Host " This is likely because:"
 	Write-Host "- Either you are not running on a General Availability build"
 	Write-Host "- Or you are not running Home, Pro or Enterprise editions of Windows 10"
 	Start-Sleep -Seconds 3
-	$hkrdeskver = ""
+	$hkrdeskver = 
+@"
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Uh oh..." /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "If you are seeing this message, the OS might have been improperly shut down during startup. Your system may continue to load properly despite the issue, but it is recommended to contact your challenge host as soon as possible." /f
+"@
 } else {$hkrdeskver = ""}
 
 @"
@@ -61,8 +67,8 @@ $hkF5 = New-ScheduledTask -Action $hkF5action -Trigger $hkF5trigger -Settings $h
 Register-ScheduledTask 'BioniDKU Quick Menu Update Checker' -InputObject $hkF5
 
 Copy-Item -Path $env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ApplicationFrameHost.exe"
-Copy-Item -Path $PSScriptRoot\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
-Copy-Item -Path $PSScriptRoot\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
+Copy-Item -Path $coredir\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
+Copy-Item -Path $coredir\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
 taskkill /f /im ApplicationFrameHost.exe
 takeown /f "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe"
 icacls "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe" /grant Administrators:F

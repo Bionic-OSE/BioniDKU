@@ -10,11 +10,14 @@ if ($build -ge 17763) {
 		Copy-Item -Path $PSScriptRoot\..\utils\statueof7.rar -Destination "$PSScriptRoot\normal\7. Easter Egg\$qiqi.mp3" -Force
 	}
 }
-function Show-NotifyBalloon($title,$message) {
+function Show-NotifyBalloon($title,$message1,$message2) {
 	[system.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null
 	$Global:Balloon = New-Object System.Windows.Forms.NotifyIcon
 	$Balloon.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon("$PSScriptRoot\musics.ico")
-	$Balloon.BalloonTipText = $message
+	$Balloon.BalloonTipText = @"
+$message1
+$message2
+"@
 	$Balloon.BalloonTipTitle = $title
 	$Balloon.Visible = $true
 	$Balloon.ShowBalloonTip(1000)
@@ -32,7 +35,7 @@ function Show-Branding {
 }
 
 if ($hell -eq 1) {
-	$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Music player module (HELL MODE)"
+	$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Music player module - HELL MODE"
 	Show-Branding
 	
 	Write-Host "Shuffling..." -ForegroundColor Yellow
@@ -44,8 +47,10 @@ if ($hell -eq 1) {
 		Show-Branding
 		$songfile = $song.Substring($song.LastIndexOf("\")+1)
 		$songname = $songfile.Substring(0, $songfile.LastIndexOf("."))
-		Show-NotifyBalloon "Now playing" $songname
-		Write-Host "Now playing:" -ForegroundColor Black -BackgroundColor Red -n; Write-Host " $songname" -ForegroundColor Yellow; Write-Host ' '
+		Show-NotifyBalloon "Now playing" "Album: HELL MODE" "Title: $songname"
+		Write-Host "Now playing:" -ForegroundColor Black -BackgroundColor Red
+		Write-Host "Album:" -ForegroundColor Yellow -n; Write-Host " HELL MODE" -ForegroundColor White
+		Write-Host "Title:" -ForegroundColor Yellow -n; Write-Host " $songname" -ForegroundColor White; Write-Host ' '
 		Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -Wait -NoNewWindow -ArgumentList "-i `"$song`" -nodisp -loglevel quiet -stats -hide_banner -autoexit"
 		#$Balloon.Dispose()
 		$Balloon.Visible = $false
@@ -65,8 +70,13 @@ if ($hell -eq 1) {
 		Show-Branding
 		$songfile = $song.Substring($song.LastIndexOf("\")+1)
 		$songname = $songfile.Substring(0, $songfile.LastIndexOf("."))
-		Show-NotifyBalloon "Now playing" $songname
-		Write-Host "Now playing:" -ForegroundColor Black -BackgroundColor Cyan -n; Write-Host " $songname" -ForegroundColor White; Write-Host ' '
+		$songfpth = $song.Substring(0, $song.LastIndexOf("\"))
+		$songalbp = $songfpth.Substring($songfpth.LastIndexOf("\")+1)
+		$songalbm = $songalbp.Substring($songalbp.LastIndexOf(".")+2)
+		Show-NotifyBalloon "Now playing" "Album: $songalbm" "Title: $songname"
+		Write-Host "Now playing:" -ForegroundColor Black -BackgroundColor Cyan
+		Write-Host "Album:" -ForegroundColor Cyan -n; Write-Host " $songalbm" -ForegroundColor White
+		Write-Host "Title:" -ForegroundColor Cyan -n; Write-Host " $songname" -ForegroundColor White; Write-Host ' '
 		Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -Wait -NoNewWindow -ArgumentList "-i `"$song`" -nodisp -loglevel quiet -stats -hide_banner -autoexit"
 		#$Balloon.Dispose()
 		$Balloon.Visible = $false

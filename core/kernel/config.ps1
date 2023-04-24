@@ -63,7 +63,6 @@
 <# Enable classic ballon notifications #>                     $balloonnotifs =               $true 
 <# Show all icons in taskbar tray #>                          $showalltrayicons =            $false 
 <# Disable Lock screen #>                                     $disablelockscrn =             $true
-<# Turn off dark mode #>                                      $darkmodeoff =                 $true 
 <# Use classic Alt+Tab #>                                     $classicalttab =               $true
 <# Use classic volume control #>                              $oldvolcontrol =               $true
 <# Set accent color to Default Blue #>                        $defaultcolor =                $true

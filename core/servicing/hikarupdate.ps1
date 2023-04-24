@@ -1,21 +1,30 @@
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode"
-$butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Butter
+function Show-WindowTitle($s1) {
+	if ($s1 -like "noclose") {
+		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode - DO NOT CLOSE THIS WINDOW"
+	} else {
+		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode"
+	}
+}
+Show-WindowTitle
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
 	Write-Host "Windows Update mode" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
-$workdir = "$PSScriptRoot\.."
+$workdir = Split-Path(Split-Path "$PSScriptRoot")
+$coredir = Split-Path "$PSScriptRoot"
+
 Show-Branding
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components" -n; Write-Host ([char]0xA0)
 
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 $buubr = "$build.$ubr"
-Write-Host "You're running Windows 10 build $buubr"
+. $workdir\modules\lib\getedition.ps1
+Write-Host "You're running Windows $editiond, OS build"$build"."$ubr
 
-$latest = "14393.2214","15063.1418","16299.1087","17134.1304","17763.1577","18362.1256","18363.1556","19041.1415","19042.1706","19043.2364","19044.2728","19045.2728"
+$latest = "14393.2214","15063.1418","16299.1087","17134.1304","17763.1577","18362.1256","18363.1556","19041.1415","19042.1706","19043.2364","19044.2846","19045.2846"
 if ($latest.Contains($buubr)) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU"  -Name "Wupdated" -Value 1 -Type DWord -Force}
 $wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
 $global:hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
@@ -27,27 +36,23 @@ function Stop-UpdateMode {
 	Stop-Process -Name "WinXShell" -Force -ErrorAction SilentlyContinue
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 	Stop-Process -Name "FFPlay" -Force -ErrorAction SilentlyContinue
-	$hldrv = (Test-Path -Path $env:LOCALAPPDATA\Microsoft\OneDrive\HellDrive.exe -PathType Leaf)
-	if ($hldrv -eq $true) {
-		Move-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive\HellDrive.exe" -Destination "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe" -Force
-	}
+	exit
 }
 function Stop-UpdateModeSuccess {
-	Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $PSScriptRoot\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Show-WindowTitle noclose
+	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $PSScriptRoot\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "The latest updates have been installed." -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
-	exit
 }
 function Stop-UpdateModeAborted {
-	Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $PSScriptRoot\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Show-WindowTitle noclose
+	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $PSScriptRoot\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "You have aborted updates." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
-	exit
 }
 function Start-HikaruMusicAndShell {
 	if ($hkau -eq 1) {
-		$workdir = "$PSScriptRoot\.."
-		Start-Process powershell -Wait -ArgumentList "-Command $workdir\music\musicn.ps1" -WorkingDirectory $workdir\music
+		$workdir = Split-Path(Split-Path "$PSScriptRoot")
 		Start-Process powershell -ArgumentList "-Command $workdir\music\musics.ps1"
 	}
 	Write-Host "Starting WinXShell" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ", a lightweight desktop environment used in Windows Preinstalled Environments (Windows PE)"
@@ -62,7 +67,7 @@ function Start-Wumgr {
 	Write-Host " "
 	Write-Host "Starting Windows Update mode with Wumgr" -ForegroundColor Cyan -BackgroundColor DarkGray
 	Start-HikaruMusicAndShell
-	$workdir = "$PSScriptRoot\.."
+	$workdir = Split-Path(Split-Path "$PSScriptRoot")
 	$hkwumgr = Test-Path -Path "$env:SYSTEMDRIVE\Bionic\Wumgr"
 	if ($hkwumgr -eq $false) {
 		Expand-Archive -Path $workdir\utils\Wumgr.zip -DestinationPath $env:SYSTEMDRIVE\Bionic\Wumgr
@@ -80,11 +85,15 @@ function Restart-UpdateMode {
 		shutdown -r -t 0
 		Start-Sleep -Seconds 30
 		exit
-	} else {Stop-UpdateModeSuccess}
+	} else {
+		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'null' -Type String
+		& $workdir\modules\lib\interuptmessage.ps1
+		Stop-UpdateModeSuccess
+	}
 }
 function Show-StuckHelp {
 	$targetcheck = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -ErrorAction SilentlyContinue).TargetReleaseVersion
-	if ($targetcheck -eq 1) {
+	if ($targetcheck -eq 1 -and $edition -notlike "Core") {
 		Write-Host " "
 		Write-Host "HINT: " -ForegroundColor Magenta -n; Write-Host "If you got stuck at a Feature Update, try the following fix" -ForegroundColor Cyan
 		Write-Host "- Start Windows Update mode with Wumgr (option 2)"
@@ -92,7 +101,13 @@ function Show-StuckHelp {
 		Write-Host "  HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -ForegroundColor White
 		Write-Host "- Change value" -n; Write-Host ' "TargetReleaseVersionInfo" ' -ForegroundColor White -n; Write-Host "to an older version"
 		Write-Host "  (say if it's 2004, change it to 1909)"
-		Write-Host "- After that check for updates in Wumgr. If update shows and it's not a Feature Update, you fixed it!"
+		Write-Host "- Then, switch value" -n; Write-Host ' "TargetReleaseVersion" ' -ForegroundColor White -n; Write-Host "to 0"
+		Write-Host '- After that, via Run, open a Command Prompt and type ' -n; Write-Host '"powershell Restart-Service -Name wuauserv"' -ForegroundColor White
+		Write-Host "- Switch value" -n; Write-Host ' "TargetReleaseVersion" ' -ForegroundColor White -n; Write-Host "back to 1"
+		Write-Host "- Run the restart service command again"
+		Write-Host "- Finally check for updates in Wumgr. If update shows and it's not a Feature Update, you fixed it!"
+		Write-Host "- If the problem can't still be solved, try repeating from step 4 again. And if it still does no extra damage,"
+		Write-Host "  your only choice then is to give Microsoft a middle finger, and abort WU mode."
 	}
 }
 
@@ -134,14 +149,6 @@ if ($hkc -eq 1) {
 }
 Write-Host " "
 Write-Host "Starting Windows Update mode normally" -ForegroundColor Cyan -BackgroundColor DarkGray
-
-# Temporarily disable OneDrive so it won't load on start of WinXShell
-$skdrv = (Test-Path -Path $env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe -PathType Leaf)
-if ($skdrv -eq $true) {
-	Move-Item -Path "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe" -Destination "$env:LOCALAPPDATA\Microsoft\OneDrive\HellDrive.exe" -Force
-}
-
-# And here goes the main part, the update script
 
 Start-HikaruMusicAndShell
 

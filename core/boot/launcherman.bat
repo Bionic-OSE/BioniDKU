@@ -32,24 +32,30 @@ goto BioniDKU
 
 :PSRestartS
 for /f "tokens=3" %%a in ('reg query "HKCU\Software\AutoIDKU" /v RebootScript  ^|findstr /ri "REG_DWORD"') do set "re=%%a"
-if %re%==0x1 title BioniDKU is restarting...
+if %re%==0x1 title BioniDKU is restarting... - DO NOT CLOSE THIS WINDOW
 if %re%==0x3 title Please wait...
 if %re%==0x1 echo Time for the launcher to restart the script...
 if %re%==0x1 goto BioniDKU
 if %re%==0x3 goto BioniDKU
-echo Thanks for using my product ^.^
+echo https://youtu.be/zry4zeN0SHw
 exit
 
 :Hikarupdate
 timeout 1 /nobreak > nul
-powershell .\hikarupdate.ps1
+powershell ..\servicing\hikarupdate.ps1
+goto PSRestartS
+
+:DownloadMode
+timeout 1 /nobreak > nul
+powershell ..\servicing\downloader.ps1
 goto PSRestartS
 
 :BioniDKU
 for /f "tokens=3" %%a in ('reg query "HKCU\Software\AutoIDKU" /v HikaruMode  ^|findstr /ri "REG_DWORD"') do set "hku=%%a"
 if %hku%==0x2 goto Hikarupdate
+if %hku%==0x4 goto DownloadMode
 timeout 1 /nobreak > nul
-powershell .\main.ps1
+powershell ..\kernel\main.ps1
 goto PSRestartS
 
 echo Something went wrong and the script couldn't boot. Please contact Bionic. Press any key to exit.

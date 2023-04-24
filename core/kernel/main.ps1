@@ -1,6 +1,13 @@
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter"
+function Show-WindowTitle($s1) {
+	if ($s1 -like "noclose") {
+		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter - DO NOT CLOSE THIS WINDOW"
+	} else {
+		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter"
+	}
+}
+Show-WindowTitle
 $releasetype = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseType
-$butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseID
+$butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseIDEx
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
 function Show-Branding($s1) {
 	if ($s1 -like "clear") {Clear-Host}
@@ -9,34 +16,18 @@ function Show-Branding($s1) {
 	Write-Host " "
 }
 # Set Working Directory first before anything else
-$workdir = "$PSScriptRoot\.."
+$workdir = Split-Path(Split-Path "$PSScriptRoot")
+$coredir = Split-Path "$PSScriptRoot"
 
 ##############################################################
 # Load variables from the configuration file
-. $PSScriptRoot\config.ps1
+. $coredir\kernel\config.ps1
+. $workdir\modules\lib\getedition.ps1
+$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
+$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 
-# Importing some basic functions required for the modules menu
-function Set-WallPaper($Image) {
-Add-Type -TypeDefinition @" 
-using System; 
-using System.Runtime.InteropServices;
-public class Params
-{ 
-    [DllImport("User32.dll",CharSet=CharSet.Unicode)] 
-    public static extern int SystemParametersInfo (Int32 uAction, 
-                                                   Int32 uParam, 
-                                                   String lpvParam, 
-                                                   Int32 fuWinIni);
-}
-"@ 
-    $SPI_SETDESKWALLPAPER = 0x0014
-    $UpdateIniFile = 0x01
-    $SendChangeEvent = 0x02
-    $fWinIni = $UpdateIniFile -bor $SendChangeEvent
-    $ret = [Params]::SystemParametersInfo($SPI_SETDESKWALLPAPER, 0, $Image, $fWinIni)
-}
-
-& $PSScriptRoot\modules.ps1
+# Main menu section
+& $coredir\kernel\menu.ps1
 function Get-ConfigStat {
 	$confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
 	if ($confuled -eq 2) {
@@ -56,14 +47,12 @@ Get-ConfigStat
 
 # Show branding
 Show-Branding clear
+Show-WindowTitle noclose
 
 # System Variables
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing environment" -n; Write-Host ([char]0xA0)
-
-$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
-$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 $battery = (Get-CimInstance -ClassName Win32_Battery)
-Write-Host "You're running Windows 10 build"$build"."$ubr
+Write-Host "You're running Windows $editiond, OS build"$build"."$ubr
 
 # Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
@@ -76,7 +65,9 @@ if ($hkm -eq 1) {
 	}
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer" -n; Write-Host ([char]0xA0)
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
-	& $PSScriptRoot\hikaru.ps1
+	& $coredir\kernel\hikaru.ps1
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ClearBootMessage" -Value 1 -Type DWord -Force
+	& $workdir\modules\lib\interuptmessage.ps1
 }
 
 # Continue importing required dependencies
@@ -86,8 +77,9 @@ $pendingreboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Com
 $pendingrebootcount = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").PendingRebootCount
 if ($pendingreboot -eq $true -and $build -ge 10240) {
 	if ($pendingrebootcount -gt 3) {
+		Show-WindowTitle
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
-		& $PSScriptRoot\hikaru.ps1
+		& $coredir\kernel\hikaru.ps1
 		Write-Host -ForegroundColor Black -BackgroundColor Yellow "Your PC have queued a restart more than 3 times!" -n; Write-Host ([char]0xA0)
 		Write-Host -ForegroundColor Yellow "This is likely due to Windows Update being busy at the moment. I suggest checking the page in Settings for any on-going updates, or check in Task Manager for any WU-related processes and wait for them to finish if possible."
 		Write-Host -ForegroundColor White "If you wish to continue the script despite the pending restart, press Enter twice. Otherwise, please restart the system manually (the script will automatically resume when you do so)."
@@ -95,10 +87,12 @@ if ($pendingreboot -eq $true -and $build -ge 10240) {
 		Read-Host
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'explorer.exe' -Type String
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
+		Show-WindowTitle noclose
 	} else {
+		Show-WindowTitle
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your PC has a pending restart, which has to be done before running this script. Automatically restarting in 5 seconds..." -n; Write-Host ([char]0xA0)
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
-		& $PSScriptRoot\hikaru.ps1
+		& $coredir\kernel\hikaru.ps1
 		$pendingrebootcounting = $pendingrebootcount + 1
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "PendingRebootCount" -Value $pendingrebootcounting -Type DWord -Force
 		Start-Sleep -Seconds 5
@@ -113,7 +107,6 @@ Import-Module BitsTransfer -Verbose
 
 ##### ------ Functions ------
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Importing Functions" -n; Write-Host ([char]0xA0)
-$global:musicplayer = ""
 function Stop-Script {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 	Stop-Process -Name "FFPlay" -Force -ErrorAction SilentlyContinue
@@ -187,7 +180,6 @@ $setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 $manualstuffs = $true # Please DO NOT set to false
 if ($setupmusic -eq 1) {
 	Write-Host "Setting up Music" -BackgroundColor DarkGray -ForegroundColor Cyan -n; Write-Host ([char]0xA0)
-	Start-Process powershell -Wait -ArgumentList "-Command $workdir\music\musicn.ps1" -WorkingDirectory $workdir\music
 	Start-Process powershell -WindowStyle Hidden -ArgumentList "-Command $workdir\music\musics.ps1"
 }
 
@@ -195,7 +187,7 @@ if ($setupmusic -eq 1) {
 switch ($true) {
 	
 	default {
-		Write-Host "You did not select anything to do and will be taken back to the configuration screen next time you start the script. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+		Write-Host "You did not select anything to do and will be taken back to the main menu next time you start the script. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 		Read-Host
@@ -294,10 +286,11 @@ switch ($true) {
 }
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
-& $PSScriptRoot\hikarinstall.ps1
+& $coredir\servicing\hikarinstall.ps1
 Write-Host " " -n; Write-Host ([char]0xA0)
+Show-WindowTitle
 Write-Host "This was the final step of the script. Press Enter to restart and complete the setup" -ForegroundColor Black -BackgroundColor Green -n; Write-Host ([char]0xA0)
-Start-Process "$PSScriptRoot\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $PSScriptRoot\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+Start-Process "$coredir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta -n; Write-Host ([char]0xA0)
 Read-Host

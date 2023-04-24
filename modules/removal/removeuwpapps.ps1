@@ -6,8 +6,7 @@ function Show-Branding {
 	Write-Host " "
 }
 Show-Branding
-Write-Host -ForegroundColor Black -BackgroundColor Yellow "DO NOT CLOSE THIS WINDOW!" -n; Write-Host ([char]0xA0)
-Write-Host " " 
+
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "This process will spit out A LOT of errors, and that is normal. It will start in 5 seconds." -n; Write-Host ([char]0xA0)
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "In addition, if you are sensitive to flashes, please minimize or do not look at this window." -n; Write-Host ([char]0xA0)
 Write-Host " " 
