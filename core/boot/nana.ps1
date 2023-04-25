@@ -1,6 +1,6 @@
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
 	Write-Host "Starting up..." -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
@@ -16,8 +16,8 @@ $coredir = Split-Path "$PSScriptRoot"
 
 # Script build number
 $releasetype = "Beta Release"
-$releaseid = "22107.300_beta1"
-$releaseidex = "22107.300_b1.oseprod_rcrel.230425-0105"
+$releaseid = "22107.300_beta2"
+$releaseidex = "22107.300_b2.oseprod_betarel.230425-1847"
 
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped

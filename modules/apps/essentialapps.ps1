@@ -2,7 +2,7 @@
 
 # Install zip-based installers
 $deskinfo = "$env:SYSTEMDRIVE\Program Files\DesktopInfo"
-New-Item -Path $env:USERPROFILE -Name "tclock" -ItemType Directory
+New-Item -Path $env:USERPROFILE -Name "tclock" -ItemType Directory | Out-Null
 Expand-Archive -Path $workdir\dls\winaero.zip -DestinationPath $workdir\dls
 Expand-Archive -Path $workdir\dls\tclock.zip -DestinationPath $env:USERPROFILE\tclock
 Expand-Archive -Path $workdir\utils\penm.zip -DestinationPath "$env:SYSTEMDRIVE\Windows\PENetwork"

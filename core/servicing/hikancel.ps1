@@ -2,7 +2,7 @@ $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Upd
 $butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Butter
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
 	Write-Host "Windows Update mode" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }

@@ -7,7 +7,7 @@ switch ($true) {
         Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name "NoUseStoreOpenWith" -Value 1 -Type DWord -Force
     }
 
-    $removequickaccess {
+    {$removequickaccess -and $explorerstartfldr} {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing Quick Access" -n; Write-Host ([char]0xA0)
         Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' -Name 'HubMode' -Value 1 -Type DWord -Force
     }
@@ -22,7 +22,7 @@ switch ($true) {
         Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications' -Name 'ToastEnabled' -Value 0 -Type DWord -Force
     }
 
-    {$disablegamebar -eq $true -and $build -ge 15063} {
+    {$disablegamebar -and $build -ge 15063} {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling Game Bar" -n; Write-Host ([char]0xA0)
         Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR' -Name 'AppCaptureEnabled' -Value 0 -Type DWord -Force
     }
@@ -43,7 +43,7 @@ switch ($true) {
         Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'EnableTransparency' -Value 0 -Type DWord -Force
     }
 
-    {$disablewinink -eq $true -and $build -ge 14393} {
+    {$disablewinink -and $build -ge 14393} {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling Windows Ink Workspace" -n; Write-Host ([char]0xA0)
         New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft' -Name 'WindowsInkWorkspace' -Force
         Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsInkWorkspace' -Name 'AllowWindowsInkWorkspace' -Value 0 -Type DWord -Force
@@ -65,7 +65,7 @@ switch ($true) {
         Remove-Item -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}' -Force
     }
 
-    {$classicpaint -eq $true -and $build -ge 15063} {
+    {$classicpaint -and $build -ge 15063} {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Enabling Classic Paint" -n; Write-Host ([char]0xA0)
         New-item -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Applets\Paint' -Name "Settings"
         Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Applets\Paint' -Name "DisableModernPaintBootstrap" -Value 1 -Type DWord -Force
@@ -87,7 +87,7 @@ switch ($true) {
         Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop\WindowMetrics' -Name 'MinAnimate' -Type String -Value '0'
     }
 
-    {$remove3Dobjects -eq $true -and $build -ge 16299} {
+    {$remove3Dobjects -and $build -ge 16299} {
         Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing 3D Objects from This PC" -n; Write-Host ([char]0xA0)
         Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}' -Force
     }

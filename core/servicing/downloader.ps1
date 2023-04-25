@@ -19,7 +19,7 @@ if ($hkm -eq 0) {
 	exit
 }
 
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Download mode - DO NOT CLOSE THIS WINDOW"
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Download mode - DO NOT CLOSE THIS WINDOW OR DISCONNECT INTERNET"
 function Stop-DownloadMode($nhkm) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value $nhkm -Type DWord -Force
@@ -28,7 +28,7 @@ function Stop-DownloadMode($nhkm) {
 }
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
 	Write-Host "Download mode" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
@@ -40,7 +40,9 @@ $dlfe = Test-Path -Path "$workdir\dls"
 if ($dlfe -eq $false) {
 	New-Item -Path $workdir -Name dls -itemType Directory | Out-Null
 }
-Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\MidnightWait.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
+$n = Get-Random -Minimum 1 -Maximum 3
+Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
+Write-Host -ForegroundColor White "For more information on the currently playing music, later in either Run or CMD, type `"notepad $coredir\ambient\ChillWaitInfo.txt`""
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting Utilities package"
 Start-Process powershell -Wait -ArgumentList "-Command $workdir\utils\utilsg.ps1" -WorkingDirectory $workdir\utils

@@ -21,6 +21,6 @@ public class Params
 }
 
 Write-Host "Setting Wallpaper" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
-Write-Host "Wallpaper source:" -ForegroundColor Cyan -n; Write-Host "https://www.reddit.com/r/Genshin_Impact/comments/sk74fe/chinju_forest_inazuma_viewpoint_art/"
+Write-Host "Wallpaper source: " -ForegroundColor Cyan -n; Write-Host "https://www.reddit.com/r/Genshin_Impact/comments/sk74fe/chinju_forest_inazuma_viewpoint_art/"
 Set-WallPaper -Image "$env:SYSTEMDRIVE\Bionic\BioniDKU.png"
 Start-Sleep -Seconds 2

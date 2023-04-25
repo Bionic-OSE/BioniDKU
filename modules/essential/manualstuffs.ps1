@@ -20,7 +20,8 @@ if ($build -ge 18363) {
     Write-Host -ForegroundColor White " - News and interests*"
 }
 Write-Host -ForegroundColor Yellow '3. While still in Settings, head over to Lock screen Settings and switch the background type to "Picture"'
-Write-Host -ForegroundColor Yellow "4. Finally, unpin Microsoft Edge and/or any other UWP apps present, and leave File Explorer pinned."
+Write-Host -ForegroundColor Yellow "4. Then, try your best to turn on Focus Assist (Do Not Distrub), and leave no exceptions (Alarms only and uncheck all checkboxes)"
+Write-Host -ForegroundColor Yellow "5. Finally, unpin Microsoft Edge and/or any other UWP apps present, and leave File Explorer pinned."
 Write-Host -ForegroundColor Cyan "Press Enter once you have done with those."
 Read-Host
 

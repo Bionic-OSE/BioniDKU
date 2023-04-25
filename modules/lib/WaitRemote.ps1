@@ -1,7 +1,7 @@
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Startup interrupter"
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
 	Write-Host "Startup interrupter" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }

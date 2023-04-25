@@ -6,7 +6,7 @@ if ($build -ge 17763) {
 	$chichi = Get-Content -Path $PSScriptRoot\..\utils\liyue.xml -Raw -Encoding utf8
 	$qiqi = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("$chichi"))
 	if ((Test-Path -Path "$PSScriptRoot\normal\7. Easter Egg") -eq $false) {
-		New-Item -Path $PSScriptRoot\normal -Name "7. Easter Egg" -ItemType Directory
+		New-Item -Path $PSScriptRoot\normal -Name "7. Easter Egg" -ItemType Directory | Out-Null
 		Copy-Item -Path $PSScriptRoot\..\utils\statueof7.rar -Destination "$PSScriptRoot\normal\7. Easter Egg\$qiqi.mp3" -Force
 	}
 }
@@ -24,7 +24,7 @@ $message2
 }
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
 	if ($hell -eq 1) {
 		Write-Host "Music player module" -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " (HELL MODE)" -ForegroundColor Red
 		Write-Host " "

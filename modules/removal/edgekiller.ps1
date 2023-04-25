@@ -7,7 +7,7 @@ if ($edgoogle -eq $false -or $edgedone -eq 1) {exit}
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Microsoft Edge Chromium terminator module"
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
 	Write-Host "Microsoft Edge Chromium terminator module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }

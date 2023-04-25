@@ -8,7 +8,7 @@ function Show-WindowTitle($s1) {
 Show-WindowTitle
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
 	Write-Host "Windows Update mode" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
@@ -40,20 +40,21 @@ function Stop-UpdateMode {
 }
 function Stop-UpdateModeSuccess {
 	Show-WindowTitle noclose
-	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $PSScriptRoot\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "The latest updates have been installed." -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 }
 function Stop-UpdateModeAborted {
 	Show-WindowTitle noclose
-	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $PSScriptRoot\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "You have aborted updates." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 }
 function Start-HikaruMusicAndShell {
+	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainChallengeStart.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	if ($hkau -eq 1) {
 		$workdir = Split-Path(Split-Path "$PSScriptRoot")
-		Start-Process powershell -ArgumentList "-Command $workdir\music\musics.ps1"
+		Start-Process powershell -ArgumentList "-Command $workdir\music\musicplayer.ps1"
 	}
 	Write-Host "Starting WinXShell" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ", a lightweight desktop environment used in Windows Preinstalled Environments (Windows PE)"
 	$hkws = Test-Path -Path "$env:SYSTEMDRIVE\Bionic\WinXShell"

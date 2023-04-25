@@ -3,7 +3,7 @@ $workdir = "$PSScriptRoot\..\.."
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Custom sound installer module"
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Magenta -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
 	Write-Host "Custom sound installer module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
@@ -21,7 +21,7 @@ Write-Host -ForegroundColor Cyan "Removing old system sounds with 5 passes, star
 Start-Sleep -Seconds 3
 for ($count = 1; $count -le 5; $count++) {
 	Remove-SystemFile $env:SYSTEMDRIVE\Windows\Media
-	if ($count -lt 5) {Write-Host -ForegroundColor Cyan "Pass $count/5 complete, next in 3 seconds" -n; Write-Host " (you may see errors and that's normal)"} else {Write-Host -ForegroundColor Cyan "Pass 5/5 complete, now placing new sounds in 3 seconds"}
+	if ($count -lt 5) {Write-Host -ForegroundColor Cyan "Pass $count/5 complete, next in 3 seconds" -n; Write-Host -ForegroundColor White " (you may see errors and that's normal)"} else {Write-Host -ForegroundColor Cyan "Pass 5/5 complete, now placing new sounds in 3 seconds"}
 	Start-Sleep -Seconds 3
 }
 

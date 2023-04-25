@@ -1,7 +1,7 @@
 Write-Host "Installing .NET 4.6.2" -ForegroundColor Cyan -BackgroundColor DarkGray
 reg add HKCU\Software\AutoIDKU /v dotnetrebooted /t REG_DWORD /d 0x1
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
-& $workdir\core\hikaru.ps1
+& $coredir\kernel\hikaru.ps1
 Write-Host " "
 Write-Host -ForegroundColor Yellow "Until .NET finishes the installation and automatically restarts the system, please DO NOT:"
 Write-Host -ForegroundColor Yellow "- Try to stop the installation process"
