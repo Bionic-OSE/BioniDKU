@@ -1,7 +1,7 @@
 $letsdestroy = Test-Path -Path "$env:SYSTEMDRIVE\windows\system32\wwahost.exe" -PathType Leaf
 if ($letsdestroy -eq $false) {exit}
 if ($build -ge 18362) {
-	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Let's NOT finish setting up your device"
+	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Let's NOT finish setting up your device" -n; Write-Host ([char]0xA0)
 	Write-Host '(You do not want to get that thing interrupting the automation.)'
 	Write-Host 'More information about this: https://youtu.be/jtQCLgba4Xg'
 	Start-Sleep -Seconds 2

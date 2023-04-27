@@ -68,9 +68,8 @@ if ($hell -eq 1 -and $hkau -eq 1) {
 	taskkill /f /im FFPlay.exe
 	Start-Sleep -Seconds 3
 	Rename-Item -Path "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -NewName "oldground.jpg"
-	Start-Process $coredir\7za.exe -Wait -WindowStyle Hidden -ArgumentList "e $workdir\utils\statueof6.7z -pWELCOMETOHELL -o$workdir\utils"
 	Copy-Item -Path "$workdir\utils\hellground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg"
-	Write-Host " "; Write-Host "1607 detected. " -n; Write-Host -ForegroundColor Black -BackgroundColor Red "WELCOME TO HELL"
+	Write-Host " "; Write-Host "1607 detected. " -n; Write-Host -ForegroundColor Black -BackgroundColor Red "WELCOME TO HELL" -n; Write-Host ([char]0xA0)
 	Rename-Item -Path "$env:SYSTEMDRIVE\Bionic\Hikaru\AdvancedRun.exe" -NewName "AdvancedRun.DISABLED"
 	Start-Process "$env:SYSTEMDRIVE\Bionic\WinXShell\WinXShell.exe"
 	Start-Process powershell -ArgumentList "-Command $workdir\music\musicplayer.ps1"
@@ -81,7 +80,7 @@ if ($hell -eq 1 -and $hkau -eq 1) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "cWUfirm" -Value 0 -Type DWord -Force
 }
 Read-Host; Read-Host
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Looks like you're done. Restarting..."
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Looks like you're done. Restarting..." -n; Write-Host ([char]0xA0)
 Start-Sleep -Seconds 5
 shutdown -r -t 0
 Start-Sleep -Seconds 30

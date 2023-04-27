@@ -1,4 +1,4 @@
-Write-Host "Creating desktop shortcuts" -ForegroundColor Cyan -BackgroundColor DarkGray
+Write-Host "Creating desktop shortcuts" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
 
 New-Item -Path $env:USERPROFILE -Name DL -itemType Directory
 

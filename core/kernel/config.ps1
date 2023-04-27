@@ -12,14 +12,16 @@
 ## These are most of the things the script will do during its execution. The configuration presented here is the
 ## recommended default.
 
+<# Run Windows Updates (14393+) #> if ($pwsh -eq 7) {         $windowsupdate =               $true }
 <# Install .NET 4.6.2 (10586-) #>  if ($pwsh -eq 5) {         $dotnet462 =                   $true }
 <# Enable .NET 3.5 #>                                         $dotnet35 =                    $true
+<# Install Essential Apps package** #>                        $essentialapps =               $true
 <# Hide system icons from the taskbar #>                      $hidetaskbaricons =            $true
 <# Remove Microsoft Edge Shortcuts #>                         $removeedgeshortcut =          $true
-<# Create desktop shortcuts #>                                $desktopshortcuts =            $true
-<# Disable Wake timers #>                                     $removewaketimers =            $true
-<# Remove all UWP apps possible #>                            $removeUWPapps =               $true
-<# Use script's Open-Shell config* #>                         $openshellconfig =             $true
+<# Create desktop shortcuts #>                                $desktopshortcuts =            $true 
+<# Disable Wake timers #>                                     $removewaketimers =            $true 
+<# Remove all UWP apps possible #>                            $removeUWPapps =               $true 
+<# Use script's Open-Shell config #>                          $openshellconfig =             $true # Requires $essentialapps
 <# Replace Explorer taskbar icon (17763-) #>                  $explorericon =                $true
 <# Remove taskbar pins #>                                     $taskbarpins =                 $true
 <# Replace seguiemj.ttf with Windows 11's #>                  $replaceemojifont =            $true 
@@ -27,15 +29,12 @@
 <# Remove Explorer address bar #>                             $disableaddressbar =           $true
 <# Remove Microsoft OneDrive #>                               $removeonedrive =              $true
 <# Remove HomeGroup (16299-) #>                               $removehomegroup =             $true
-<# Defaults Explorer to This PC #>                            $explorerstartfldr =           $true
-<# Use classic battery flyout #>                              $oldbatteryflyout =            $true
+<# Defaults Explorer to This PC #>                            $explorerstartfldr =           $true 
+<# Use classic battery flyout #>                              $oldbatteryflyout =            $true 
 <# Install custom system sound #>                             $customsounds =                $true
 <# Disable some system apps #>                                $removesystemapps =            $true
 <# Replace SlideToShutDown.exe background #>                  $sltoshutdownwall =            $true
-<# Don't touch Edge Chromium** #>                             $keepedgechromium =            $false
-
-<#  *Essential Apps required #>
-<# **Affects $removeedgeshortcut and $removesystemapps #>
+<# Don't touch Edge Chromium #>                               $keepedgechromium =            $false # Affects $removeedgeshortcut and $removesystemapps
 
 ## ================================================ REGISTRY SWICHES ===============================================
 ## Below are registry-applied tweaks. You can enable/disable all of them, or toggle individual options.
@@ -63,7 +62,6 @@
 <# Disable automatic update of UWPs #>                        $disablestoreautoupd =         $true
 <# Enable classic ballon notifications #>                     $balloonnotifs =               $true 
 <# Show all icons in taskbar tray #>                          $showalltrayicons =            $false 
-<# Show hidden system files and folders #>                    $showsuperhidden =             $false 
 <# Disable Lock screen #>                                     $disablelockscrn =             $true
 <# Use classic Alt+Tab #>                                     $classicalttab =               $true
 <# Use classic volume control #>                              $oldvolcontrol =               $true

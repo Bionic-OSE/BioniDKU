@@ -3,13 +3,13 @@ $workdir = "$PSScriptRoot\..\.."
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Custom sound installer module"
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
-	Write-Host "Custom sound installer module" -ForegroundColor Blue -BackgroundColor Gray
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
+	Write-Host "Custom sound installer module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
 Show-Branding
 
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Custom system sounds"
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Custom system sounds" -n; Write-Host ([char]0xA0)
 
 function Remove-SystemFile($item) {
 	takeown /f $item /r

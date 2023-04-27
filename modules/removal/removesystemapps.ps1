@@ -4,13 +4,13 @@ $keepedgechromium = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeNoMer
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | System Apps disabler module"
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
-	Write-Host "System Apps disabler module" -ForegroundColor Blue -BackgroundColor Gray
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
+	Write-Host "System Apps disabler module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
 Show-Branding
 
-Write-Host "Disabling some System Apps" -ForegroundColor Cyan -BackgroundColor DarkGray
+Write-Host "Disabling some System Apps" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
 Start-Sleep -Seconds 3
 
 function Rename-AppsFolder($ogn,$nwn) {
@@ -37,7 +37,7 @@ function Grant-Ownership($item) {
 }
 
 # Microsoft Edge Chromium
-if ($keepedgechromium -ne 1) {
+if ($keepedgechromium -eq 1) {
 	$edghouse = "$env:SYSTEMDRIVE\Program Files (x86)\Microsoft"
 	$edgoogle = "$edghouse\Edge\Application\msedge.exe"
 	$edgecore = "EdgeCore"
@@ -105,5 +105,5 @@ switch ($true) {
 	}
 }
 
-Write-Host -ForegroundColor Green -BackgroundColor DarkGray "The Apps should be disabled now"
+Write-Host -ForegroundColor Green -BackgroundColor DarkGray "The Apps should be disabled now" -n; Write-Host ([char]0xA0)
 Start-Sleep -Seconds 3

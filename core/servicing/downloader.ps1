@@ -1,36 +1,16 @@
-# BioniDKU software downloader - (c) Bionic Butter
-# The purpose is to save bandwidth, and later to allow you to have the main stage running completely offline without any problems
-
-$WinaeroTweaker = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").WinaeroTweaker
-$OpenShell      = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").OpenShell
-$TClock         = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").TClock
-$Firefox        = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").Firefox
-$NPP            = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").NPP
-$ShareX         = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").ShareX
-$PDN            = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").PDN
-$PENM           = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").PENM
-$ClassicTM      = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").ClassicTM
-$DesktopInfo    = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").DesktopInfo
-$essentialnone  = $false
 function Write-AppsList($action) {
 	Write-Host -ForegroundColor Cyan "The following programs will be $action"
-	switch (1) {
-		$WinaeroTweaker {Write-Host -ForegroundColor Cyan "- Winaero Tweaker"} #dl1
-		$OpenShell      {Write-Host -ForegroundColor Cyan "- Open-Shell" -n; Write-Host " (4.4.170)"} #dl2
-		$TClock         {Write-Host -ForegroundColor Cyan "- T-Clock" -n; Write-Host " (2.4.4)"} #dl4
-		$Firefox        {Write-Host -ForegroundColor Cyan "- Mozilla Firefox ESR"} #dl6
-		$NPP            {Write-Host -ForegroundColor Cyan "- Notepad++" -n; Write-Host " (8.5)"} #dl8
-		$ShareX         {Write-Host -ForegroundColor Cyan "- ShareX" -n; Write-Host " (13.1.0)"} #dl9
-		$PDN            {Write-Host -ForegroundColor Cyan "- Paint.NET" -n; Write-Host " (4.0.19)"} #dl10 but same as dl5
-		$PENM           {Write-Host -ForegroundColor Cyan "- PENetwork Manager"}
-		$ClassicTM      {Write-Host -ForegroundColor Cyan "- Classic Task Manager & Classic System Configuration"} #dl11 but same as dl5
-		$DesktopInfo    {Write-Host -ForegroundColor Cyan "- DesktopInfo" -n; Write-Host " (2.10.2, with custom configuration)"}
-		default {
-			Write-Host -ForegroundColor Red "You selected NONE, are you kidding me???"
-			$essentialnone = $true
-		}
-	}
-	if ($essentialnone -ne $true) {Write-Host "Some of these might not be on their latest releases. You can update them on your own later."}
+	Write-Host -ForegroundColor Cyan "- Winaero Tweaker" #dl1
+	Write-Host -ForegroundColor Cyan "- Open-Shell" -n; Write-Host " (4.4.170)" #dl2
+	Write-Host -ForegroundColor Cyan "- T-Clock" -n; Write-Host " (2.4.4)" #dl4
+	Write-Host -ForegroundColor Cyan "- PENetwork Manager" -n; Write-Host " (Hi Julia)" #dl5 but built-in, so no dl
+	Write-Host -ForegroundColor Cyan "- Mozilla Firefox ESR" #dl6
+	Write-Host -ForegroundColor Cyan "- Notepad++" -n; Write-Host " (8.5, Hi Zach)" #dl8
+	Write-Host -ForegroundColor Cyan "- ShareX (13.1.0)" #dl9
+	Write-Host -ForegroundColor Cyan "- Paint.NET (4.0.19)" #dl10 but same as dl5
+	Write-Host -ForegroundColor Cyan "- Classic Task Manager & Classic System Configuration" #dl11 but same as dl5
+	Write-Host -ForegroundColor Cyan "- DesktopInfo (2.10.2, with custom configuration)"
+	Write-Host "Some of these might not be on their latest releases. You can update them on your own later."
 }
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).HikaruMode
 if ($hkm -eq 0) {
@@ -44,66 +24,56 @@ function Stop-DownloadMode($nhkm) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value $nhkm -Type DWord -Force
 	Stop-Process -Name "FFPlay" -Force -ErrorAction SilentlyContinue
-	Stop-Process -Name "SndVol" -Force -ErrorAction SilentlyContinue
 	exit
 }
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
-	Write-Host "Download mode" -ForegroundColor Blue -BackgroundColor Gray
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
+	Write-Host "Download mode" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
 Show-Branding
 $workdir = Split-Path(Split-Path "$PSScriptRoot")
 $coredir = Split-Path "$PSScriptRoot"
-
 # Create downloads folder
 $dlfe = Test-Path -Path "$workdir\dls"
 if ($dlfe -eq $false) {
 	New-Item -Path $workdir -Name dls -itemType Directory | Out-Null
 }
-$hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
-if ($hkau -eq 1) {
-	$n = Get-Random -Minimum 1 -Maximum 3
-	Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
-	Start-Process "$env:SYSTEMDRIVE\Windows\SysWOW64\SndVol.exe"
-	Write-Host -ForegroundColor White "For more information on the currently playing music, refer to $coredir\ambient\ChillWaitInfo.txt"
-	Write-Host -ForegroundColor Yellow "DO NOT adjust the volume of FFPlay! It will affect your music experience later on!"
-}
-Start-Sleep -Seconds 3
+$n = Get-Random -Minimum 1 -Maximum 3
+Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
+Write-Host -ForegroundColor White "For more information on the currently playing music, later in either Run or CMD, type `"notepad $coredir\ambient\ChillWaitInfo.txt`""
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting Utilities package"
 Start-Process powershell -Wait -ArgumentList "-Command $workdir\utils\utilsg.ps1" -WorkingDirectory $workdir\utils
 
+$hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 if ($hkau -eq 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting music packages"
 	Start-Process powershell -Wait -ArgumentList "-Command $workdir\music\musicn.ps1" -WorkingDirectory $workdir\music
 }
 
+# To-do for this part: Make a registry system for switching each app on and off
 $esapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).EssentialApps
 if ($esapps -eq 1) {
 	Write-Host " "
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Downloading essential programs"
 	Write-AppsList "downloaded:"
-	if ($essentialnone -ne $true) {
-		Import-Module BitsTransfer
-		# Download links
-		$dl1 = "https://winaerotweaker.com/download/winaerotweaker.zip"
-		$dl2 = "https://github.com/Open-Shell/Open-Shell-Menu/releases/download/v4.4.170/OpenShellSetup_4_4_170.exe"
-		$dl4 = "https://github.com/White-Tiger/T-Clock/releases/download/v2.4.4%23492-rc/T-Clock.zip"
-		$dl6 = "https://download.mozilla.org/?product=firefox-esr-latest&os=win64&lang=en-US"
-		$dl8 = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.5/npp.8.5.Installer.x64.exe"
-		$dl9 = "https://github.com/ShareX/ShareX/releases/download/v13.1.0/ShareX-13.1.0-setup.exe"
-		# Download'em all
-		switch (1) {
-			$WinaeroTweaker {Start-BitsTransfer -Source $dl1 -Destination $workdir\dls\winaero.zip -RetryInterval 60}
-			$OpenShell {Start-BitsTransfer -Source $dl2 -Destination $workdir\dls\openshellinstaller.exe -RetryInterval 60}
-			$TClock {Start-BitsTransfer -Source $dl4 -Destination $workdir\dls\tclock.zip -RetryInterval 60}
-			$Firefox {Start-BitsTransfer -Source $dl6 -Destination $workdir\dls\firefoxesr.exe -RetryInterval 60}
-			$NPP {Start-BitsTransfer -Source $dl8 -Destination $workdir\dls\npp.exe -RetryInterval 60}
-			$ShareX {Start-BitsTransfer -Source $dl9 -Destination $workdir\dls\sharex462.exe -RetryInterval 60}
-		}
-	}
+	Import-Module BitsTransfer
+	# Download links
+	$dl1 = "https://winaerotweaker.com/download/winaerotweaker.zip"
+	$dl2 = "https://github.com/Open-Shell/Open-Shell-Menu/releases/download/v4.4.170/OpenShellSetup_4_4_170.exe"
+	$dl4 = "https://github.com/White-Tiger/T-Clock/releases/download/v2.4.4%23492-rc/T-Clock.zip"
+	$dl6 = "https://download.mozilla.org/?product=firefox-esr-latest&os=win64&lang=en-US"
+	$dl8 = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.5/npp.8.5.Installer.x64.exe"
+	$dl9 = "https://github.com/ShareX/ShareX/releases/download/v13.1.0/ShareX-13.1.0-setup.exe"
+	# Download'em all
+	Start-BitsTransfer -Source $dl1 -Destination $workdir\dls\winaero.zip -RetryInterval 60
+	Start-BitsTransfer -Source $dl2 -Destination $workdir\dls\openshellinstaller.exe -RetryInterval 60
+	Start-BitsTransfer -Source $dl4 -Destination $workdir\dls\tclock.zip -RetryInterval 60
+	Start-BitsTransfer -Source $dl6 -Destination $workdir\dls\firefoxesr.exe -RetryInterval 60
+	Start-BitsTransfer -Source $dl8 -Destination $workdir\dls\npp.exe -RetryInterval 60
+	Start-BitsTransfer -Source $dl9 -Destination $workdir\dls\sharex462.exe -RetryInterval 60
 }
 
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh

@@ -3,10 +3,10 @@
 Show-WindowTitle noclose
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Write-Host " "
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling UAC"
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling UAC" -n; Write-Host ([char]0xA0)
 Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name ConsentPromptBehaviorAdmin -Value 0 -Force
 Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name EnableLUA -Value 0 -Force
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Hikaru-chan"
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Hikaru-chan" -n; Write-Host ([char]0xA0)
 Copy-Item "$coredir\ambient\FFPlay.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru"
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
 & $coredir\kernel\hikaru.ps1
@@ -21,12 +21,12 @@ if ($keepedgechromium) {
 	Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'LaunchTo' -Value 1 -Type DWord -Force
 }
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'HideFileExt' -Value 0 -Type DWord -Force
+Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'ShowSuperHidden' -Value 1 -Type DWord -Force
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'SeparateProcess' -Value 1 -Type DWord -Force
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'DontUsePowerShellOnWinX' -Value 1 -Type DWord -Force
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation" -Name "DisableStartupSound" -Value 1 -Type DWord -Force
-$windowsupdate = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmode
-if ($windowsupdate -eq 1 -and $ngawarn -ne 1) {
+if ($windowsupdate -and $ngawarn -ne 1) {
 	# Take control over Windows Update so it doesn't do stupid, unless if it's Home or Server edition.
 	if ($edition -notlike "Core" -or $edition -notlike "ServerStandard" -or $edition -notlike "ServerDatacenter") {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Taking control over Windows Update" -n; Write-Host " (so it doesn't do stupid)" -ForegroundColor White
@@ -51,12 +51,12 @@ if ($windowsupdate -eq 1 -and $ngawarn -ne 1) {
 	}
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "WUmode" -Value 1 -Type DWord -Force
 }
-if ($build -le 14393) {
-	Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 1 -Type DWord -Force
+if ($essentialapps) {
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "EssentialApps" -Value 1 -Type DWord -Force
 }
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 4 -Type DWord -Force
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ChangesMade" -Value 1 -Type DWord -Force
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device in 5 seconds... The script will start doing its job after the restart."
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device in 5 seconds... The script will start doing its job after the restart." -n; Write-Host ([char]0xA0)
 Start-Sleep -Seconds 5
 shutdown -r -t 0
 Start-Sleep -Seconds 30

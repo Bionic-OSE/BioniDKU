@@ -1,8 +1,8 @@
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update suspender module"
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
-	Write-Host "Windows Update suspender module" -ForegroundColor Blue -BackgroundColor Gray
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
+	Write-Host "Windows Update suspender module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
 	Write-Host " "
 }
 
