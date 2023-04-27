@@ -7,8 +7,8 @@ if ($edgoogle -eq $false -or $edgedone -eq 1) {exit}
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Microsoft Edge Chromium terminator module"
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
-	Write-Host "Microsoft Edge Chromium terminator module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
+	Write-Host "Microsoft Edge Chromium terminator module" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
 
@@ -23,11 +23,11 @@ while ($true) {
 	if ($chedgeck) {
 		Write-Host "GOTCHA" -ForegroundColor Magenta
 		taskkill /f /im msedge.exe
-		Write-Host "Murder operation complete. Adios" -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+		Write-Host "Murder operation complete. Adios" -ForegroundColor Green -BackgroundColor DarkGray
 		Start-Sleep -Seconds 5
 		break
 	} elseif ($edgedone -eq 1) {
-		Write-Host "Looks like Edge is a good boy today. It didn't pop up. Exiting..." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+		Write-Host "Looks like Edge is a good boy today. It didn't pop up. Exiting..." -ForegroundColor Yellow -BackgroundColor DarkGray
 		Start-Sleep -Seconds 5
 		break
 	}

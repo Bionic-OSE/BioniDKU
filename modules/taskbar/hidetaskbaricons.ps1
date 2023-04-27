@@ -1,4 +1,4 @@
-Write-Host "Hiding Taskbar Icons" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+Write-Host "Hiding Taskbar Icons" -ForegroundColor Cyan -BackgroundColor DarkGray
 
 $explorerdir = (Test-Path -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer')
 if ($explorerdir -eq $false) {New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Explorer' -Force}

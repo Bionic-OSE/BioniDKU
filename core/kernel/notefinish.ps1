@@ -1,9 +1,12 @@
+# This is the note message that gets printed at the end of script execution
 
-Write-Host "NOTE: Due to the script's limited ability, the following stuffs might have not been setup properly as planned:" -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host ([char]0xA0) -BackgroundColor Black
+Write-Host "But before you do that..." -ForegroundColor Yellow
+Write-Host "Due to the script's limited ability, the following stuffs might have not been setup properly as planned:" -ForegroundColor Yellow -BackgroundColor DarkGray
 
 switch ($build) {
 	default {}
 	{$_ -ge 10240} {
+		Write-Host "- Toast Notification won't be disabled completely " -n; Write-Host -ForegroundColor Yellow "until you turn on Focus Assist (Do Not Distrub) in Settings, without exceptions (Alarms only and uncheck all checkboxes)."
 		Write-Host "- The Lock screen might not be disabled. If that's the case, " -n; Write-Host -ForegroundColor Yellow 'please use Winaero Tweaker to disable it instead.'
 	}
 	{$_ -le 15063} {
@@ -17,4 +20,4 @@ switch ($build) {
 	}
 }
 
-Write-Host "If you do find more stuffs, please do them manually and report back to me. I will look into it and see if it's possible to get fixed." -ForegroundColor White
+Write-Host "If you do find more stuffs or problems, please do or fix them manually and report back to me. I appreciate all feedbacks!" -ForegroundColor White

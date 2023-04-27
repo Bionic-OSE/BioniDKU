@@ -3,16 +3,16 @@ $uexists = Test-Path -Path "$PSScriptRoot\WinXShell.zip" -PathType Leaf
 if ($uexists) {exit}
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
-	Write-Host "Utilites fetcher module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
+	Write-Host "Utilites fetcher module" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
 Show-Branding
 Import-Module BitsTransfer
 
 # IMPORTANT SECTION
-$utag = "201_b6c"
-$unum = 3
+$utag = "300_stable"
+$unum = 4
 
 for ($u = 1; $u -le $unum; $u++) {
 	while ($true) {

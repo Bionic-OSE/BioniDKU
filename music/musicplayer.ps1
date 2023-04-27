@@ -1,3 +1,5 @@
+# BioniDKU music player - Powered by FFPlay - (c) Bionic Butter
+
 [console]::CursorVisible = $false
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 0 -Type DWord -Force
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
@@ -24,12 +26,12 @@ $message2
 }
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
 	if ($hell -eq 1) {
 		Write-Host "Music player module" -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " (HELL MODE)" -ForegroundColor Red
 		Write-Host " "
 	} else {
-		Write-Host "Music player module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+		Write-Host "Music player module" -ForegroundColor Blue -BackgroundColor Gray
 		Write-Host " "
 	}
 }

@@ -1,3 +1,5 @@
+# Nana, the BioniDKU bootloader - (c) Bionic Butter
+
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
@@ -10,14 +12,14 @@ function Show-Edition {
 }
 Show-Branding
 
-# Set Working Directory first before anything else
+# Set working directory first before anything else
 $workdir = Split-Path(Split-Path "$PSScriptRoot")
 $coredir = Split-Path "$PSScriptRoot"
 
 # Script build number
-$releasetype = "Beta Release"
-$releaseid = "22107.300_beta2"
-$releaseidex = "22107.300_b2.oseprod_betarel.230425-1847"
+$releasetype = "Stable Release"
+$releaseid = "22107.300_stable"
+$releaseidex = "22107.300_stable.oseprod_mainrel.230427-2237"
 
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped
@@ -49,7 +51,7 @@ if ($autoidku -eq $false) {
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Checking your PC"
 $amd64 = [Environment]::Is64BitOperatingSystem
 if ($amd64 -ne $true) {
-	Write-Host "This script does not support 32-bit systems. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+	Write-Host "This script does not support 32-bit systems. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray
 	Write-Host "C'mon, the world has already moved on, why bothering with the past?"
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force
 	Read-Host
@@ -61,10 +63,10 @@ $gablds = 10240,10586,14393,15063,16299,17134,17763,18362,18363,19041,19042,1904
 switch ($build) {
 	{$_ -ge 10240 -and $_ -le 21390 -and $_ -ne 20348} {
 		if ($gablds.Contains($_) -eq $true) {
-			Write-Host "Supported stable build of Windows 10 detected" -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+			Write-Host "Supported stable build of Windows 10 detected" -ForegroundColor Green -BackgroundColor DarkGray
 			Show-Edition
 		} else {
-			Write-Host "Your Windows 10 build appears to be in the supported range, but doesn't seem to be a General Availability build. `r`nStability might suffer and I will not be providing support for issues happening on such builds." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+			Write-Host "Your Windows 10 build appears to be in the supported range, but doesn't seem to be a General Availability build. `r`nStability might suffer and I will not be providing support for issues happening on such builds." -ForegroundColor Yellow -BackgroundColor DarkGray
 			Show-Edition
 			$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
 			if ($ngawarn -ne 1) {
@@ -74,11 +76,11 @@ switch ($build) {
 		}
 	}
 	{$_ -eq 20348} {
-		Write-Host "Supported stable build of Windows 10 detected" -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+		Write-Host "Supported stable build of Windows 10 detected" -ForegroundColor Green -BackgroundColor DarkGray
 		Show-Edition
 	}
 	default {
-		Write-Host "You're not running a supported build of Windows for this script. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+		Write-Host "You're not running a supported build of Windows for this script. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force
 		Read-Host
 		exit
@@ -94,6 +96,8 @@ function Set-AutoIDKUValue($type,$value,$data) {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $value -Value $data -Type DWord -Force
 	} elseif ($type -like "str") {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $value -Value $data
+	} elseif ($type -like "app") {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps" -Name $value -Value $data -Type DWord -Force
 	}
 }
 Set-AutoIDKUValue str "ReleaseType" $releasetype
@@ -103,6 +107,18 @@ New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Music
 for ($m = 1; $m -le 5; $m++) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music" -Name $m -Value 1 -Type DWord -Force
 }
+New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Apps
+Set-AutoIDKUValue app WinaeroTweaker 1
+Set-AutoIDKUValue app OpenShell 1
+Set-AutoIDKUValue app TClock 1
+Set-AutoIDKUValue app Firefox 1
+Set-AutoIDKUValue app NPP 1
+Set-AutoIDKUValue app ShareX 1
+Set-AutoIDKUValue app PDN 1
+Set-AutoIDKUValue app PENM 1
+Set-AutoIDKUValue app ClassicTM 1
+Set-AutoIDKUValue app DesktopInfo 1
+
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_SysWOW64_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue
 $meeter = Test-Path -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
@@ -112,7 +128,7 @@ switch ($false) {
 	{$meeter -eq $_} {
 		New-Item -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'Explorer'
 	}
-	{$meeter -eq $_} {
+	{$meetor -eq $_} {
 		New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Explorer'
 	}
 	{$meesys -eq $_} {
@@ -129,11 +145,14 @@ if ($build -ge 14393) {
 }
 Set-AutoIDKUValue d "ConfigSet" 0
 Set-AutoIDKUValue d "ConfigEditing" 0 
+Set-AutoIDKUValue d "ConfigEditingSub" 0 
 Set-AutoIDKUValue d "ChangesMade" 0
 Set-AutoIDKUValue d "Denied" 0
 Set-AutoIDKUValue d "HikaruMode" 0
 Set-AutoIDKUValue d "SetWallpaper" 1
 Set-AutoIDKUValue d "HikaruMusic" 1
+Set-AutoIDKUValue d "EssentialApps" 1
+Set-AutoIDKUValue d "WUmode" 1
 Set-AutoIDKUValue d "EdgeKilled"  0
 Set-AutoIDKUValue d "PendingRebootCount" 0
 Set-AutoIDKUValue d "RunningThisRemotely" 0

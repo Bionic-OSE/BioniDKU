@@ -1,4 +1,4 @@
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing OneDrive" -n; Write-Host ([char]0xA0)
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing OneDrive"
 Import-Module -DisableNameChecking $PSScriptRoot\..\lib\New-FolderForced.psm1
 Import-Module -DisableNameChecking $PSScriptRoot\..\lib\take-own.psm1
 
@@ -52,5 +52,5 @@ Write-Output "Restarting Explorer"
 Start-Process "explorer.exe"
 
 Write-Output "Waiting for Explorer to complete loading"
-Write-Host -ForegroundColor Black -BackgroundColor Yellow "If an error pops up saying OneDrive has failed to uninstall, please uninstall it manually later" -n; Write-Host ([char]0xA0)
+Write-Host -ForegroundColor Black -BackgroundColor Yellow "If an error pops up saying OneDrive has failed to uninstall, please uninstall it manually later"
 Start-Sleep -Seconds 10

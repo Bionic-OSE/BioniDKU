@@ -1,8 +1,8 @@
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Music fetcher module"
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
-	Write-Host "Music fetcher module" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
+	Write-Host "Music fetcher module" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
 $mexists = Test-Path -Path "$PSScriptRoot\normal"
