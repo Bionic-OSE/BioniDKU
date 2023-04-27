@@ -22,7 +22,7 @@ Write-Hhhh " - Paint.NET" ": https://www.getpaint.net"
 Write-Hhhh " - Classic Task manager & System Configuration" ": https://win7games.com/#taskmgr7"
 Write-Hhhh " - WinXShell" " (Windows Update mode shell): https://theoven.org/viewtopic.php?t=89"
 Write-Hhhh " - Wu10Man" ": https://github.com/WereDev/Wu10Man"
-Write-Host " Programs installed during script execution:" -ForegroundColor Blue
+Write-Host " Programs included in the Essential Apps kit:" -ForegroundColor Blue
 Write-Hhhh " - Winaero Tweaker" ": https://winaerotweaker.com"
 Write-Hhhh " - Open-Shell" ": https://github.com/Open-Shell/Open-Shell-Menu"
 Write-Hhhh " - T-Clock" ": https://github.com/White-Tiger/T-Clock"
@@ -37,6 +37,8 @@ Write-Hhhh " - Desktop background" " (Windows Update mode):
    https://msdesign.blob.core.windows.net/wallpapers/microsoft_brand_heritage_04.jpg"
 Write-Hhhh " - Ambient sound package" " (Script sound effects and Hikaru startup sounds): 
    Extracted from Genshin Impact in-game sounds effects. (c) COGNOSPHERE PTE. LTD."
+Write-Hhhh " - FFPlay" " (Hand-crafted music player):
+   https://ffmpeg.org/ffplay.html#Description"
 Write-Host " "
 Write-Host "####### SECTION 3: BioniDKU Contributors ########" -ForegroundColor Cyan
 Write-Host " "

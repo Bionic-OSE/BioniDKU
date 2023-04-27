@@ -1,3 +1,5 @@
+# BioniDKU launcher - (c) Bionic Butter
+
 @echo off
 title BioniDKU is starting...
 

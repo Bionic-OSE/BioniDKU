@@ -1,4 +1,4 @@
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Configuring Hikaru-chan" -n; Write-Host ([char]0xA0)
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Configuring Hikaru-chan"
 
 reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\ShellHikaru.reg"
 $hkreg = Test-Path -Path 'HKCU:\SOFTWARE\Hikaru-chan'
@@ -59,14 +59,13 @@ rem ####### Hikaru-chan by Bionic Butter #######
 $hkrdelwwa
 $hkrdeskver
 $hkrdockico
-start $env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe
 "@ | Out-File -FilePath "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikarun.bat" -Encoding ascii
 
 # Install HikaruQM and pre-apply system restrictions (set restrictions but at disabled state)
 
 $WScriptObj = New-Object -ComObject ("WScript.Shell")
 $hkQML = "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe"
-$hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\Hikaru Quick Menu Tray.lnk"
+$hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\Startup\BioniDKU Quick Menu Tray.lnk"
 $hkQMLSh = $WscriptObj.CreateShortcut($hkQMLS)
 $hkQMLSh.TargetPath = $hkQML
 $hkQMLSh.Save()

@@ -1,3 +1,6 @@
+# BioniDKU Windows Update mode - A decicated mode with a lightweight shell just to run Windows Update
+# The purpose is so that the system can focus on the task at hand, without too much resources being used by the regular Explorer shell
+
 function Show-WindowTitle($s1) {
 	if ($s1 -like "noclose") {
 		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode - DO NOT CLOSE THIS WINDOW"
@@ -8,15 +11,15 @@ function Show-WindowTitle($s1) {
 Show-WindowTitle
 function Show-Branding {
 	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue -n; Write-Host ([char]0xA0)
-	Write-Host "Windows Update mode" -ForegroundColor Blue -BackgroundColor Gray -n; Write-Host ([char]0xA0)
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
+	Write-Host "Windows Update mode" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
 $workdir = Split-Path(Split-Path "$PSScriptRoot")
 $coredir = Split-Path "$PSScriptRoot"
 
 Show-Branding
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components" -n; Write-Host ([char]0xA0)
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components"
 
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
@@ -81,7 +84,7 @@ function Restart-UpdateMode {
 	Start-Process powershell -Wait -ArgumentList "-Command $PSScriptRoot\hikancel.ps1"
 	$hkbrb = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Hikareboot
 	if ($hkbrb -eq 0) {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting to finish installing updates" -n; Write-Host ([char]0xA0)
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting to finish installing updates"
 		Start-Sleep -Seconds 5
 		shutdown -r -t 0
 		Start-Sleep -Seconds 30
@@ -153,7 +156,7 @@ Write-Host "Starting Windows Update mode normally" -ForegroundColor Cyan -Backgr
 
 Start-HikaruMusicAndShell
 
-Write-Host "Getting Windows ready" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ([char]0xA0)
+Write-Host "Getting Windows ready" -ForegroundColor Cyan -BackgroundColor DarkGray
 if ($wupdated -ne 1) {& $workdir\modules\essential\cWUngus.ps1}
 Import-Module PSWindowsUpdate -Verbose
 Import-Module BitsTransfer -Verbose

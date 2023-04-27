@@ -1,5 +1,5 @@
-# Bionic note: This doesn't seem to work reliably and it seems really complicated.
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing HomeGroup" -n; Write-Host ([char]0xA0)
+# This doesn't seem to work reliably and it seems really complicated.
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing HomeGroup"
 
 function Take-Permissions {
     # Developed for PowerShell v4.0

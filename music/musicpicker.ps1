@@ -1,3 +1,5 @@
+# Music picker module, part of the main menu - Still in the works
+
 Show-Branding clear
 
 Write-Host -ForegroundColor Yellow "This feature is currently in development. Stay tuned for future updates!"
