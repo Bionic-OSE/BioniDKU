@@ -7,7 +7,7 @@
 switch ($edition) {
 	
 	# Consumer and any other editions
-	{$_ -notlike "Enterprise" -or $_ -notlike "Education"} {$latest = @(
+	default {$latest = @(
 		<# ======= EOL builds ======= #>
 		<# 1607 #>          "14393.2214"
 		<# 1703 #>          "15063.1418"
@@ -20,8 +20,8 @@ switch ($edition) {
 		<# 20H2 #>          "19042.1706"
 		<# 21H1 #>          "19043.2364"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "14044.2965"
-		<# 22H2 #>          "14045.2965"
+		<# 21H2 #>          "19044.2965"
+		<# 22H2 #>          "19045.2965"
 	)}
 	
 	# Commerical editions
@@ -38,8 +38,8 @@ switch ($edition) {
 		<# 20H2 #>          "19042.2965"
 		<# 21H1 #>          "19043.2364"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "14044.2965"
-		<# 22H2 #>          "14045.2965"
+		<# 21H2 #>          "19044.2965"
+		<# 22H2 #>          "19045.2965"
 	)}
 	
 	# Long-term servicing editions
@@ -47,7 +47,7 @@ switch ($edition) {
 		<# ====== Alive builds ====== #>
 		<# LTSB 2016 #>     "14393.5921"
 		<# LTSC 2019 #>     "14393.4377"
-		<# LTSC 2021 #>     "14044.2965"
+		<# LTSC 2021 #>     "19044.2965"
 	)}
 	
 	# Server editions (Why? Perhaps Nana can answer that question...)
