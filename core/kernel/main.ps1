@@ -36,19 +36,22 @@ $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 
 # Main menu section
-& $coredir\kernel\menu.ps1
-function Get-ConfigStat {
+$confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
+if ($confuled -eq 0 -or $confuled -eq 2) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force}
+while ($true) {
 	$confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
-	if ($confuled -eq 2) {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 3 -Type DWord -Force
-		exit
-	}
-	elseif ($confuled -eq 0) {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
-		exit
-	}
+	if ($confuled -eq 0 -or $confuled -eq 1 -or $confuled -eq 2) {break} else {& $coredir\kernel\menu.ps1}
 }
-Get-ConfigStat
+
+if ($confuled -eq 2) {
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 3 -Type DWord -Force
+	exit
+}
+elseif ($confuled -eq 0) {
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
+	exit
+}
+
 ##############################################################
 
 
@@ -57,20 +60,21 @@ Get-ConfigStat
 # Show branding
 Show-Branding clear
 Show-WindowTitle noclose
+Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 
 # Get system variables
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing environment"
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Switching to normal mode"
 $battery = (Get-CimInstance -ClassName Win32_Battery)
-Write-Host "You're running Windows $editiond, OS build"$build"."$ubr
 
 # Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
 if ($hkm -eq 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing startup obstacles"
 	& $workdir\modules\removal\letsNOTfinish.ps1
-	if ($build -ge 18362) {
+	if ($build -ge 18362 -and $build -le 19042) {
 		Start-Process powershell -ArgumentList "-Command $workdir\modules\removal\edgekiller.ps1"
 		Start-Sleep -Seconds 3
+	} elseif ($build -ge 18362) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling App Dark Mode, forcing Dark Taskbar"
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'AppsUseLightTheme' -Value 1 -Type DWord -Force
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'SystemUsesLightTheme' -Value 0 -Type DWord -Force
@@ -128,6 +132,7 @@ if ($setupmusic -eq 1) {
 	Start-Process powershell -WindowStyle Hidden -ArgumentList "-Command $workdir\music\musicplayer.ps1"
 }
 
+& $workdir\modules\removal\unsealtheclasses.ps1
 
 switch ($true) {
 	
@@ -139,6 +144,18 @@ switch ($true) {
 	
 	{$dotnet462 -and $dotnet462done -ne 1} {
 		& $workdir\modules\apps\dotnet462install.ps1
+	}
+	
+	{$removehomegroup -eq $true -and $build -lt 17134} {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Partially removing HomeGroup"
+		# First, with the permission seal removed earlier, DESTROY the key
+		Remove-Item "HKLM:\SOFTWARE\Classes\CLSID\{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}" -Recurse
+		# Then, we need to disable the service.
+		Stop-Service -Name HomeGroupProvider
+		Stop-Service -Name HomeGroupListener
+		Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "config HomeGroupProvider start= DISABLED"
+		Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "config HomeGroupListener start= DISABLED"
+		# And all it's left is to tell the user to right click and delete the key in Explorer, done!
 	}
 	
 }
@@ -183,10 +200,6 @@ switch ($true) {
 
 	$removeonedrive {
 		& $workdir\modules\removal\removeonedrive.ps1
-	}
-
-	{$removehomegroup -eq $true -and $build -lt 17134} {
-		& $workdir\modules\removal\removehomegroup.ps1
 	}
 
 	$removewaketimers {
@@ -238,6 +251,7 @@ Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -
 Write-Host " "
 Show-WindowTitle
 Write-Host "This was the final step of the script. In order to complete the setup, please press Enter to restart" -ForegroundColor Black -BackgroundColor Green
+Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 Start-Process "$coredir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta

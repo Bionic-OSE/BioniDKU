@@ -15,7 +15,11 @@ switch ($true) {
 
 	{$removequickaccess -and $explorerstartfldr} {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing Quick Access"
-		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' -Name 'HubMode' -Value 1 -Type DWord -Force
+		if ($pwsh -eq 7) {
+			Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' -Name 'HubMode' -Value 1 -Type DWord -Force
+		} else {
+			Set-ItemProperty -Path "HKLM:\SOFTWARE\Classes\CLSID\{679f85cb-0220-4080-b29b-5540cc05aab6}\ShellFolder" -Name 'Attributes' -Value 0xA0600000 -Type DWord -Force
+		}
 	}
 
 	{$disabledefenderstart -eq $true -and $build -ge 14393} {

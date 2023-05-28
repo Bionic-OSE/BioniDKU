@@ -1,5 +1,6 @@
 $workdir = "$PSScriptRoot\..\.."
 $keepedgechromium = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeNoMercy
+$keepsearch = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SearchNoMercy
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | System Apps disabler module"
 function Show-Branding {
@@ -85,6 +86,8 @@ $lockxaml = Test-Path "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy"
 $srchxaml = Test-Path "$sappfldr\Microsoft.Windows.Search_cw5n1h2txyewy"
 $startapp = Test-Path "$sappfldr\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy"
 taskkill /f /im ApplicationFrameHost.exe
+Stop-Process -Name explorer
+Start-Sleep -Seconds 2
 switch ($true) {
 	$edgexaml {
 		taskkill /f /im MicrosoftEdgeCP.exe
@@ -95,7 +98,7 @@ switch ($true) {
 		taskkill /f /im LockApp.exe
 		Rename-AppsFolder "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy" "Microsoft.LockApp_cw5n1h2txyewy.DISABLED"
 	}
-	$srchxaml {
+	{$srchxaml -and $keepsearch -ne 1} {
 		taskkill /f /im SearchHost.exe
 		Rename-AppsFolder "$sappfldr\Microsoft.Windows.Search_cw5n1h2txyewy" "Microsoft.Windows.Search_cw5n1h2txyewy.DISABLED"
 	}
@@ -105,5 +108,6 @@ switch ($true) {
 	}
 }
 
+Start-Process explorer.exe
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "The Apps should be disabled now"
 Start-Sleep -Seconds 3

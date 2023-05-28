@@ -11,8 +11,8 @@ Show-Branding
 Import-Module BitsTransfer
 
 # IMPORTANT SECTION
-$utag = "300_stable"
-$unum = 4
+$utag = "300_u1"
+$unum = 2
 
 for ($u = 1; $u -le $unum; $u++) {
 	while ($true) {

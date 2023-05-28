@@ -3,7 +3,11 @@ Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Let's get manually-o
 Write-Host " "
 
 Write-Host -ForegroundColor Cyan "First, Explorer stuffs."
-Write-Host -ForegroundColor Yellow "1. Set the view in This PC to details, close it and reopen This PC several times to make sure the setting is saved."; Write-Host "   (Explorer has Alzheimer's and will reset the view if you only open This PC once)."
+Write-Host -ForegroundColor Yellow "1. Open File Explorer, it should take you straight to This PC. There:"
+Write-Host -ForegroundColor Yellow " - Set the view to details, close Explorer and reopen it several times to make sure the setting is saved."; Write-Host "   (Explorer has Alzheimer's and will reset the view if you only open it once)."
+if ($build -lt 17134) {
+	Write-Host -ForegroundColor Yellow ' - After that, on the navigation (left) pane, right click on "HomeGroup (32-bit)" and select "Delete".'
+}
 Write-Host -ForegroundColor Yellow "2. Then, disable the following items on the taskbar if they (*exist and) are enabled:"
 Write-Host "   (Please also check in Taskbar Settings since some icons might not be shown at this moment, make sure Windows is"; Write-Host "   activated tho)."
 Write-Host -ForegroundColor White " - Input indicator"

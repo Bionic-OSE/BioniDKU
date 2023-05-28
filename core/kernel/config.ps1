@@ -33,6 +33,7 @@
 <# Disable some system apps #>                                $removesystemapps =            $true
 <# Replace SlideToShutDown.exe background #>                  $sltoshutdownwall =            $true
 <# Don't touch Edge Chromium** #>                             $keepedgechromium =            $false
+<# Keep Windows Search** #>                                   $keepsearch =                  $true
 
 <#  *Essential Apps required #>
 <# **Affects $removeedgeshortcut and $removesystemapps #>

@@ -1,6 +1,17 @@
 # BioniDKU software downloader - (c) Bionic Butter
 # The purpose is to save bandwidth, and later to allow you to have the main stage running completely offline without any problems
 
+function Start-DownloadLoop($link,$destfile) {
+	while ($true) {
+		Start-BitsTransfer -Source $link -Destination $workdir\dls\$destfile -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+		if (Test-Path -Path "$workdir\dls\$destfile" -PathType Leaf) {break} else {
+			Write-Host " "
+			Write-Host -ForegroundColor Black -BackgroundColor Red "Ehhhhhhh"
+			Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
+		}
+	}
+}
+
 $WinaeroTweaker = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").WinaeroTweaker
 $OpenShell      = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").OpenShell
 $TClock         = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").TClock
@@ -64,7 +75,7 @@ if ($dlfe -eq $false) {
 }
 $hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 if ($hkau -eq 1) {
-	$n = Get-Random -Minimum 1 -Maximum 3
+	$n = Get-Random -Minimum 1 -Maximum 4
 	Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
 	Start-Process "$env:SYSTEMDRIVE\Windows\SysWOW64\SndVol.exe"
 	Write-Host -ForegroundColor White "For more information on the currently playing music, refer to $coredir\ambient\ChillWaitInfo.txt"
@@ -74,6 +85,9 @@ Start-Sleep -Seconds 3
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting Utilities package"
 Start-Process powershell -Wait -ArgumentList "-Command $workdir\utils\utilsg.ps1" -WorkingDirectory $workdir\utils
+if ((Test-Path -Path "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer") -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "ContextMenuNormalizer" -ItemType directory}
+Copy-Item "$workdir\utils\ContextMenuNormalizer.exe" -Destination "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer"
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer\ContextMenuNormalizer.exe" -Type String -Force
 
 if ($hkau -eq 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting music packages"
@@ -96,18 +110,19 @@ if ($esapps -eq 1) {
 		$dl9 = "https://github.com/ShareX/ShareX/releases/download/v13.1.0/ShareX-13.1.0-setup.exe"
 		# Download'em all
 		switch (1) {
-			$WinaeroTweaker {Start-BitsTransfer -Source $dl1 -Destination $workdir\dls\winaero.zip -RetryInterval 60}
-			$OpenShell {Start-BitsTransfer -Source $dl2 -Destination $workdir\dls\openshellinstaller.exe -RetryInterval 60}
-			$TClock {Start-BitsTransfer -Source $dl4 -Destination $workdir\dls\tclock.zip -RetryInterval 60}
-			$Firefox {Start-BitsTransfer -Source $dl6 -Destination $workdir\dls\firefoxesr.exe -RetryInterval 60}
-			$NPP {Start-BitsTransfer -Source $dl8 -Destination $workdir\dls\npp.exe -RetryInterval 60}
-			$ShareX {Start-BitsTransfer -Source $dl9 -Destination $workdir\dls\sharex462.exe -RetryInterval 60}
+			$WinaeroTweaker {Start-DownloadLoop $dl1 winaero.zip}
+			$OpenShell {Start-DownloadLoop $dl2 openshellinstaller.exe}
+			$TClock {Start-DownloadLoop $dl4 tclock.zip}
+			$Firefox {Start-DownloadLoop $dl6 firefoxesr.exe}
+			$NPP {Start-DownloadLoop $dl8 npp.exe}
+			$ShareX {Start-DownloadLoop $dl9 sharex462.exe}
 		}
 	}
 }
 
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
-if ($pwsh -eq 5) {
+$dotnet462d = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").NET462
+if ($pwsh -eq 5 -and $dotnet462d -eq 1) {
 	Write-Host " "
 	Write-Host "Downloading .NET 4.6.2" -ForegroundColor Cyan -BackgroundColor DarkGray
 	Write-Host "If it fails to download, please manually download via this link:"  -BackgroundColor Cyan -ForegroundColor Black 
@@ -115,10 +130,12 @@ if ($pwsh -eq 5) {
 	$462dl = "https://download.visualstudio.microsoft.com/download/pr/8e396c75-4d0d-41d3-aea8-848babc2736a/80b431456d8866ebe053eb8b81a168b3/ndp462-kb3151800-x86-x64-allos-enu.exe"
 	Start-BitsTransfer -Source $462dl -Destination $workdir\dls\dotnet462.exe
 	Stop-DownloadMode 1
-}
+} elseif ($pwsh -eq 5) {Stop-DownloadMode 1}
 
 $wu = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).WUmode
-if ($wu -eq 1) {
+$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
+if ($wu -eq 1 -and $ngawarn -ne 1) {
+	Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU/raw/main/PATCHME.ps1" "PATCHME.ps1"
 	Write-Host " "
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Downloading and installing PSWindowsUpdate"
 	Install-PackageProvider -Name "NuGet" -Verbose -Force

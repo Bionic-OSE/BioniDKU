@@ -25,9 +25,9 @@ $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 $buubr = "$build.$ubr"
 . $workdir\modules\lib\getedition.ps1
-Write-Host "You're running Windows $editiond, OS build"$build"."$ubr
+Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 
-$latest = "14393.2214","15063.1418","16299.1087","17134.1304","17763.1577","18362.1256","18363.1556","19041.1415","19042.1706","19043.2364","19044.2846","19045.2846"
+. $workdir\dls\PATCHME.ps1
 if ($latest.Contains($buubr)) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU"  -Name "Wupdated" -Value 1 -Type DWord -Force}
 $wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
 $global:hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic

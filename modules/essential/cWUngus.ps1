@@ -59,27 +59,7 @@ Write-Host " "; Write-Host -ForegroundColor Yellow "Wait for a while, then when 
 Write-Host "If wusa.exe fails to open, you can manually open the update at $workdir\dls\$cwuf"
 Write-Host "Good luck updating!" -ForegroundColor White
 
-$hell = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WelcomeToHell
-if ($hell -eq 1 -and $hkau -eq 1) {
-	Start-Process powershell -WindowStyle Hidden -Wait -ArgumentList "-Command $workdir\music\musicr.ps1" -WorkingDirectory $workdir\music
-	taskkill /f /im WinXShell.exe
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
-	Start-Sleep -Seconds 1
-	taskkill /f /im FFPlay.exe
-	Start-Sleep -Seconds 3
-	Rename-Item -Path "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -NewName "oldground.jpg"
-	Start-Process $coredir\7za.exe -Wait -WindowStyle Hidden -ArgumentList "e $workdir\utils\statueof6.7z -pWELCOMETOHELL -o$workdir\utils"
-	Copy-Item -Path "$workdir\utils\hellground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg"
-	Write-Host " "; Write-Host "1607 detected. " -n; Write-Host -ForegroundColor Black -BackgroundColor Red "WELCOME TO HELL"
-	Rename-Item -Path "$env:SYSTEMDRIVE\Bionic\Hikaru\AdvancedRun.exe" -NewName "AdvancedRun.DISABLED"
-	Start-Process "$env:SYSTEMDRIVE\Bionic\WinXShell\WinXShell.exe"
-	Start-Process powershell -ArgumentList "-Command $workdir\music\musicplayer.ps1"
-	Start-Sleep -Seconds 6
-	Move-Item -Path "$env:SYSTEMDRIVE\Bionic\WinXShell\oldground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -Force
-	Rename-Item -Path "$env:SYSTEMDRIVE\Bionic\Hikaru\AdvancedRun.DISABLED" -NewName "AdvancedRun.exe"
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "WelcomeToHell" -Value 0 -Type DWord -Force
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "cWUfirm" -Value 0 -Type DWord -Force
-}
+& $workdir\modules\essential\cWUngun.ps1
 Read-Host; Read-Host
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Looks like you're done. Restarting..."
 Start-Sleep -Seconds 5

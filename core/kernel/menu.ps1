@@ -1,14 +1,10 @@
 # BioniDKU main menu - The thing that appears on first run of the script
 
-$confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
-if ($confuled -eq 1) {exit}
-Show-Branding clear
-Start-Sleep -Seconds 1
-
 function Show-ModulesConfig {
 	Show-Branding clear
-	Write-Host "------ SCRIPT CONFIGURATION: Module Switches ------" -ForegroundColor Black -BackgroundColor Green
-	Write-Host "Here's an overview of what the script will do to your PC" -ForegroundColor Green
+	Write-Host "------ ADVANCED SCRIPT CONFIGURATION: Module Switches ------" -ForegroundColor Black -BackgroundColor Green
+	Write-Host 'BioniDKU is a script bundle consisting multiple script files, called "(BioniDKU) Modules".' -ForegroundColor Green
+	Write-Host 'Below are most of the function modules you can adjust, each should be self-explainatory:' -ForegroundColor Green
 	Write-Host " "; if ($pwsh -eq 5) {
 	Write-Host "Install .NET 4.6.2 (10586-)                   " -n; Write-Host -ForegroundColor White "$dotnet462           "}
 	Write-Host "Enable .NET 3.5                               " -n; Write-Host -ForegroundColor White "$dotnet35            "
@@ -31,12 +27,13 @@ function Show-ModulesConfig {
 	Write-Host "Disable some system apps**                    " -n; Write-Host -ForegroundColor White "$removesystemapps    "
 	Write-Host "Replace SlideToShutDown.exe background        " -n; Write-Host -ForegroundColor White "$sltoshutdownwall    "
 	Write-Host "Don't touch Edge Chromium**                   " -n; Write-Host -ForegroundColor White "$keepedgechromium    "
+	Write-Host "Keep Windows Search**                         " -n; Write-Host -ForegroundColor White "$keepsearch          "
 	Write-Host " "
-	Write-Host " * You MUST enable the option to install Essential Apps or this option will disable itself" -ForegroundColor Cyan
-	Write-Host "** If you enable this option, other options with ** will be affected" -ForegroundColor Cyan
+	Write-Host " * You MUST enable the installation of Essential Apps or this option will disable itself" -ForegroundColor Cyan
+	Write-Host "** If you enable these option, other options with ** will be affected" -ForegroundColor Cyan
 	Write-Host " "
-	Write-Host "------ SCRIPT CONFIGURATION: Registry Switches ------" -ForegroundColor Black -BackgroundColor Green
-	Write-Host " "        
+	Write-Host "------ ADVANCED SCRIPT CONFIGURATION: Registry Switches ------" -ForegroundColor Black -BackgroundColor Green
+	Write-Host " "
 	Write-Host "Enable registry tweaks                        " -n; Write-Host -ForegroundColor White "$registrytweaks      "
 	Write-Host " "
 	Write-Host "Disable Defender startup entry                " -n; Write-Host -ForegroundColor White "$disabledefenderstart"
@@ -72,9 +69,8 @@ function Show-ModulesConfig {
 	Write-Host "Reduce the amount of svchost.exes             " -n; Write-Host -ForegroundColor White "$svchostslimming     "
 	Write-Host "Enable ?????.???? desktop version             " -n; Write-Host -ForegroundColor White "$desktopversion      "
 	Write-Host " "
-	Write-Host "Now please scroll up to the top and review the options." -ForegroundColor Black -BackgroundColor Yellow
-	Write-Host "UAC will be disabled immediately once you start the script." -ForegroundColor Red
-	Write-Host "To toggle Windows Update mode, use option 3 at the main menu." -ForegroundColor White
+	Write-Host "You are now in Advanced configuration mode, where you can adjust individual functions of the script." -ForegroundColor Black -BackgroundColor Yellow
+	Write-Host "Scroll up to the top and view the options." -ForegroundColor Yellow
 }
 
 function Start-InstallHikaru {
@@ -95,48 +91,17 @@ function Confirm-DeleteDownloads {
 	switch ($deload) {
 		{$deload -like "yes"} {}
 		default {
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 2 -Type DWord -Force
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
+			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 			exit
 		}
 	}
 }
 
 function Confirm-Wupdated {
-	Write-Host " "
-	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your build does not support Windows Update through PowerShell. Have you fully updated yet? (yes/no)"
-	if ($build -eq 10240 -and $disablelockscrn) {Write-Host "On Windows 10 build 10240, updating is " -n; Write-Host "REQUIRED" -ForegroundColor Black -BackgroundColor Yellow -n; Write-Host " in order to be able to disable the LogonUI's background."}
-	Write-Host "Your answer: " -n ; $fullyupdated = Read-Host
-	switch ($fullyupdated) {
-		{$fullyupdated -like "yes"} {
-			Write-Host -ForegroundColor Green "Cool!"
-		}
-		{$fullyupdated -like "no"} {
-			Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Then the script fell into darkness."
-			Start-Sleep -Seconds 5
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-			exit
-		}
-		{$fullyupdated -like '*fuck*'} {
-			Write-Host -ForegroundColor Red -BackgroundColor DarkGray "HAH, L"
-			Start-Sleep -Seconds 2
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-			exit
-		}
-		{$fullyupdated -like 'Julia loves RTM'} {
-			Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Yes absolutely"
-			Start-Sleep -Seconds 2
-			Write-Host -ForegroundColor Red -BackgroundColor DarkGray "Wait, who asked? Read the question again you blind."
-			Start-Sleep -Seconds 3
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-			exit
-		}
-		default {
-			Write-Host -ForegroundColor Red -BackgroundColor DarkGray "You didn't answer appropriately. Exiting..."
-			Start-Sleep -Seconds 2
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-			exit
-		}
+	switch ($build) {
+		{$_ -eq 10240} {$mrubr = 17394; if ($ubr -ge $mrubr) {return $true} else {return $false}}
+		{$_ -eq 10586} {$mrubr =  1176; if ($ubr -ge $mrubr) {return $true} else {return $false}}
+		default {return $true}
 	}
 }
 
@@ -198,25 +163,47 @@ $confulee = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigEditing
 $confuone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ChangesMade
 if ($confulee -eq 2) {$confules = 2} elseif ($confulee -eq 3) {$confules = 3}
 else {
+	$snareason1 = " - For this version of Windows 10, you must be running at least build $build.$mrubr in order to execute this script.`r`n   Please update your device and try again."
+	$snareason2 = " - You did not select enough options in Advanced script configuration to proceed.`r`n   Try select a few more options, and try again."
+	switch ($false) {
+		{(Confirm-Wupdated) -eq $_} {$snarscode = 1; $startallowed = $false}
+		{(Check-EnoughActions) -eq $_} {$snarscode = 2; $startallowed = $false}
+		{(Confirm-Wupdated) -eq $_ -and (Check-EnoughActions) -eq $_} {$snarscode = 3; $startallowed = $false}
+		default {$startallowed = $true}
+	}
+	Show-Branding clear
+	Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 	Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
-	Write-Host " "
-	Write-Host -ForegroundColor Yellow "What do you want to do?"
-	Write-Host -ForegroundColor White "1. Start the script"
-	Write-Host -ForegroundColor White "2. Configure the script"
-	Write-Host -ForegroundColor White "3. Customize your script running experience"
-	Write-Host -ForegroundColor White "4. Show credits"
-	if ($confuone -eq 0 -and $edition -like "Core") {
-		Write-Host "Answer anything else to exit this script safely without any changes made to your PC."
-		Write-Host "UAC will be disabled immediately once you start the script." -ForegroundColor Red
-	} elseif ($confuone -eq 0) {
-		Write-Host "Answer anything else to exit this script."
-		Write-Host "UAC will be disabled immediately once you start the script." -ForegroundColor Red
-	} else {
-		Write-Host "Answer anything else to exit this script."
+	switch ($startallowed) {
+		{$_ -eq $false} {
+			$stcolor = "DarkGray" 
+			Write-Host " "
+			Write-Host -ForegroundColor Red "DENIED: Starting the script is currently not allowed due to the following reasons:"
+			switch ($snarscode) {
+				{$_ -eq 1} {Write-Host -ForegroundColor Red "$snareason1"}
+				{$_ -eq 2} {Write-Host -ForegroundColor Red "$snareason2"}
+				{$_ -eq 3} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason2}"}
+			}
+		}
+		{$_ -eq $true} {
+			$stcolor = "White"
+		}
 	}
 	if (Get-RemoteSoftware) {
 		Write-Host " "
-		Write-Host "HINT: " -ForegroundColor Magenta -n; Write-Host "Running this remotely? " -ForegroundColor White -n; Write-Host 'Select 3 and enable "Increase wait time" to make your life easier!' -ForegroundColor Cyan
+		Write-Host "HINT: " -ForegroundColor Magenta -n; Write-Host "Running this remotely? " -ForegroundColor White -n; Write-Host 'Select 2 and enable "Increase wait time" to make your life easier!' -ForegroundColor Cyan
+	}
+	Write-Host " "
+	Write-Host -ForegroundColor Yellow "What do you want to do?"
+	Write-Host -ForegroundColor $stcolor "1. Start the script"
+	Write-Host -ForegroundColor White "2. Configure the script"
+	Write-Host -ForegroundColor White "3. Enter advanced script configuration"
+	Write-Host -ForegroundColor White "4. Show credits"
+	if ($confuone -eq 0) {
+		Write-Host "Answer anything else to exit this script safely without any changes made to your PC."
+		Write-Host "UAC will be disabled immediately once you start the script." -ForegroundColor Red
+	} else {
+		Write-Host "Answer anything else to exit this script."
 	}
 	Write-Host " "
 	Write-Host "Your selection: " -n ; $confules = Read-Host
@@ -224,69 +211,40 @@ else {
 
 switch ($confules) {
 	{$_ -like "1"} {
-		if ((Check-EnoughActions) -ne $false) {
-			Write-Host " "
-			$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
-			if ($removedownloads -and $dlhasfiles) {
-				Confirm-DeleteDownloads
-			} if ($pwsh -eq 5) {
-				Confirm-Wupdated
-			}
-			Write-Host " "
-			Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainAccepted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
-			Write-Host -ForegroundColor Green "You have accepted the current configuration. Alright, starting the script..."
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
-			Start-Sleep -Seconds 5
-			Start-InstallHikaru
-		} else {
-			Write-Host " "
-			Write-Host "You didn't select enough options to proceed. Try select one or few more options, and try again." -ForegroundColor Red -BackgroundColor DarkGray
-			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
-			Start-Sleep -Seconds 5
+		Write-Host " "
+		if ($startallowed -eq $false) {
+			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 			exit
 		}
+		& $workdir\core\kernel\confirmwupdated.ps1
+		$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
+		if ($removedownloads -and $dlhasfiles) {
+			Confirm-DeleteDownloads
+		}
+		Write-Host " "
+		Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainAccepted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+		Write-Host -ForegroundColor Green -BackgroundColor DarkGray "You have accepted the current configuration. Alright, starting the script..."
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
+		Start-Sleep -Seconds 5
+		Start-InstallHikaru
 	}
 	{$_ -like "2"} {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 2 -Type DWord -Force
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 2 -Type DWord -Force
-		Show-ModulesConfig
-		Write-Host -ForegroundColor Yellow "Then, select the following actions:"
-		Write-Host -ForegroundColor White "1. Open the script in Notepad to reconfigure the options,"
-		Write-Host -ForegroundColor White "   it will wait for you and refresh once you close Notepad"
-		Write-Host -ForegroundColor White "0. Accept the current configuration and return to main menu"
-		Write-Host " "
-		Write-Host "Your selection: " -n ; $confulee = Read-Host
-		switch ($confulee) {
-			{$_ -like "1"} {
-				Write-Host -ForegroundColor Cyan "Now opening $PSScriptRoot\config.ps1 in Notepad"
-				Write-Host -ForegroundColor Cyan "Once you close Notepad, this screen will refresh with your changes"
-				Start-Process notepad.exe -Wait -NoNewWindow -ArgumentList "$PSScriptRoot\config.ps1"
-				exit
-			}
-			{$_ -like "0"} {
-				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 0 -Type DWord -Force
-				exit
-			} default {
-				exit
-			}
-		}
-	}
-	{$_ -like "3"} {
 		$confuleb = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).ConfigEditingSub
 		if ($confuleb -eq 7) {& $workdir\modules\apps\appspicker.ps1; exit}
 		if ($confuleb -eq 5) {& $workdir\music\musicpicker.ps1; exit}
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 2 -Type DWord -Force
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 3 -Type DWord -Force
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 2 -Type DWord -Force
 		Show-Branding clear
 		Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
 		$setwallpaper = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SetWallpaper
 		$setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 		$increasewait = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRemotely
 		$essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EssentialApps
-		$windowsupdate = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmode
+		$windowsupdatesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmodeSwitch
+		if ($pwsh -eq 5) {$wucolor = "DarkGray"} else {$wucolor = "White"}
 		Write-Host " "
-		Write-Host -ForegroundColor Yellow "To customize your script running experience, tune the following options to your desire."
-		Write-Host -ForegroundColor White "1. Toggle Windows Update mode" -n; Show-Disenabled $windowsupdate
+		Write-Host -ForegroundColor Yellow "Configure the script by tuning the following options to your desire."
+		Write-Host -ForegroundColor $wucolor "1. Toggle Windows Update mode" -n; if ($pwsh -eq 7) {Show-Disenabled $windowsupdatesw} else {Write-Host " "}
 		Write-Host -ForegroundColor White "2. Set desktop wallpaper to the one from the script" -n; Show-Disenabled $setwallpaper
 		Write-Host -ForegroundColor White "3. Increase wait time (ideal for remote setups)" -n; Show-Disenabled $increasewait
 		Write-Host -ForegroundColor White "4. Toggle background music" -n; Show-Disenabled $setupmusic
@@ -297,7 +255,7 @@ switch ($confules) {
 		Write-Host " "
 		Write-Host "Your selection: " -n ; $confulee = Read-Host
 		switch ($confulee) {
-			{$_ -like "1"} {Select-Disenabled WUmode; exit}
+			{$_ -like "1"} {if ($pwsh -eq 7) {Select-Disenabled WUmodeSwitch}; exit}
 			{$_ -like "2"} {Select-Disenabled SetWallpaper; exit}
 			{$_ -like "3"} {Select-Disenabled RunningThisRemotely; exit}
 			{$_ -like "4"} {Select-Disenabled HikaruMusic; exit}
@@ -310,9 +268,33 @@ switch ($confules) {
 			}
 		}
 	}
+	{$_ -like "3"} {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 3 -Type DWord -Force
+		Show-ModulesConfig
+		Write-Host -ForegroundColor Yellow "Then, select the following actions:"
+		Write-Host -ForegroundColor White "1. Open the script in Notepad to reconfigure the options,"
+		Write-Host -ForegroundColor White "   it will wait for you and refresh once you close Notepad"
+		Write-Host -ForegroundColor White "0. Accept the current configuration and return to main menu" -n; Write-Host " (Default answer)"
+		Write-Host " "
+		Write-Host "Your selection: " -n ; $confulee = Read-Host
+		switch ($confulee) {
+			{$_ -like "1"} {
+				Write-Host -ForegroundColor Cyan "Now opening $PSScriptRoot\config.ps1 in Notepad"
+				Write-Host -ForegroundColor Cyan "Once you close Notepad, this screen will refresh with your changes"
+				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 2 -Type DWord -Force
+				Start-Process notepad.exe -Wait -NoNewWindow -ArgumentList "$PSScriptRoot\config.ps1"
+				exit
+			}
+			default {
+				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 0 -Type DWord -Force
+				exit
+			}
+		}
+	}
 	{$_ -like "4"} {
 		& $PSScriptRoot\credits.ps1
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 2 -Type DWord -Force
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 		exit
 	}
 	default {

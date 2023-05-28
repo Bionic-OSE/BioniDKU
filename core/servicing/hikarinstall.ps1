@@ -32,15 +32,11 @@ if ($desktopversion -and $ngawarn -ne 1 -and $editiok.Contains($edition)) {
 	$hkrdeskver = 
 @"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Uh oh..." /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "If you are seeing this message, the OS might have been improperly shut down during startup and as a result, your desktop's bottom right corner might reveal the build string. Please contact your challenge host to resolve this issue, and until then, do not sign in (or you will regret what you may see)." /f
 "@
 } else {
 	$hkrdeskver = 
 @"
 reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticecaption /t REG_SZ /d "Uh oh..." /f
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v legalnoticetext /t REG_SZ /d "If you are seeing this message, the OS might have been improperly shut down during startup. Your system may continue to load properly despite the issue, but it is recommended to contact your challenge host as soon as possible." /f
 "@
 	if ($desktopversion) {
 		Write-Host -ForegroundColor Black -BackgroundColor Red "Welp,"
@@ -56,8 +52,8 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v lega
 @echo off
 rem ####### Hikaru-chan by Bionic Butter #######
 
-$hkrdelwwa
 $hkrdeskver
+$hkrdelwwa
 $hkrdockico
 "@ | Out-File -FilePath "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikarun.bat" -Encoding ascii
 
@@ -65,11 +61,15 @@ $hkrdockico
 
 $WScriptObj = New-Object -ComObject ("WScript.Shell")
 $hkQML = "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe"
-$hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\Startup\BioniDKU Quick Menu Tray.lnk"
+$hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\BioniDKU Quick Menu Tray.lnk"
 $hkQMLSh = $WscriptObj.CreateShortcut($hkQMLS)
 $hkQMLSh.TargetPath = $hkQML
 $hkQMLSh.Save()
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "BioniDKU Quick Menu Tray" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe" -Type String -Force
 
+if ($build -eq 10586) {
+	mofcomp C:\Windows\System32\wbem\SchedProv.mof
+}
 $hkF5action = New-ScheduledTaskAction -Execute "$env:SYSTEMDRIVE\Bionic\Hikarefresh\Hikarefresh.exe"
 $hkF5trigger = @(
 	$(New-ScheduledTaskTrigger -AtLogon),
