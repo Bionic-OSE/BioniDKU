@@ -18,8 +18,8 @@ $coredir = Split-Path "$PSScriptRoot"
 
 # Script build number
 $releasetype = "Stable Release"
-$releaseid = "22107.300_update1"
-$releaseidex = "22107.300_update1.oseprod_mainrel.230528-1456"
+$releaseid = "22107.300_update2"
+$releaseidex = "22107.300_update2.oseprod_mainrel.230604-2239"
 
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped

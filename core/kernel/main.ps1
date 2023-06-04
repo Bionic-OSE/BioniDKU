@@ -74,7 +74,7 @@ if ($hkm -eq 1) {
 	if ($build -ge 18362 -and $build -le 19042) {
 		Start-Process powershell -ArgumentList "-Command $workdir\modules\removal\edgekiller.ps1"
 		Start-Sleep -Seconds 3
-	} elseif ($build -ge 18362) {
+	} if ($build -ge 18362) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling App Dark Mode, forcing Dark Taskbar"
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'AppsUseLightTheme' -Value 1 -Type DWord -Force
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'SystemUsesLightTheme' -Value 0 -Type DWord -Force

@@ -216,7 +216,7 @@ switch ($confules) {
 			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 			exit
 		}
-		& $workdir\core\kernel\confirmwupdated.ps1
+		if ($build -lt 14393) {& $workdir\core\kernel\confirmwupdated.ps1}
 		$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
 		if ($removedownloads -and $dlhasfiles) {
 			Confirm-DeleteDownloads
