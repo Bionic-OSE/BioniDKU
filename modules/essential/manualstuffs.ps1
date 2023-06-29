@@ -24,7 +24,9 @@ if ($build -ge 18363) {
     Write-Host -ForegroundColor White " - News and interests*"
 }
 Write-Host -ForegroundColor Yellow '3. While still in Settings, head over to Lock screen Settings and switch the background type to "Picture"'
-Write-Host -ForegroundColor Yellow "4. Finally, unpin Microsoft Edge and/or any other UWP apps present, and leave File Explorer pinned."
+Write-Host -ForegroundColor Yellow "4. Also in Settings, change the default browser to Firefox (and of course, ignore Windows' beg for Edge)."
+if ($keepedgechromium) {Write-Host "   (If you chose to keep Edge Chromium and want that instead, skip this step if it's already the default)"}
+Write-Host -ForegroundColor Yellow "5. Finally, unpin Microsoft Edge and/or any other UWP apps present, and leave File Explorer pinned."
 Write-Host -ForegroundColor Cyan "Press Enter once you have done with those."
 Read-Host
 

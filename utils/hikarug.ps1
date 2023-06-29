@@ -12,9 +12,9 @@ function Show-Branding {
 Show-Branding
 Import-Module BitsTransfer
 
-function Start-DownloadLoop($link,$destfile) {
+function Start-DownloadLoop($link,$destfile,$name,$descr) {
 	while ($true) {
-		Start-BitsTransfer -Source $link -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+		Start-BitsTransfer -DisplayName "$name" -Description "$descr" -Source $link -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
 		if (Test-Path -Path "$PSScriptRoot\$destfile" -PathType Leaf) {break} else {
 			Write-Host " "
 			Write-Host -ForegroundColor Black -BackgroundColor Red "Ehhhhhhh"
@@ -22,11 +22,11 @@ function Start-DownloadLoop($link,$destfile) {
 		}
 	}
 }
-Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikaru.7z" "Hikaru.7z"
-Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikare.7z" "Hikare.7z"
-Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikarinfo.ps1" "Hikarinfo.ps1"
-Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-utils/raw/utils/ambient.zip" "ambient.zip"
-Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-utils/raw/utils/background.png" "background.png"
+Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikaru.7z" "Hikaru.7z" "Getting Hikaru-chan" "Downloading soft (script) layer"
+Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikare.7z" "Hikare.7z" "Getting Hikaru-chan" "Downloading hard (executables) layer"
+Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikarinfo.ps1" "Hikarinfo.ps1" "Getting Hikaru-chan" "Downloading release information file"
+Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-utils/raw/utils/ambient.zip" "ambient.zip" "Getting ambient sounds package" " "
+Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-utils/raw/utils/background.png" "background.png" "Getting desktop background image" " "
 
 if ((Test-Path -Path "$env:SYSTEMDRIVE\Bionic") -eq $false) {New-Item -Path $env:SYSTEMDRIVE -Name Bionic -itemType Directory | Out-Null}
 Start-Process $PSScriptRoot\..\core\7za.exe -Wait -NoNewWindow -ArgumentList "x $PSScriptRoot\Hikaru.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"

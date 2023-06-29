@@ -158,13 +158,12 @@ Start-HikaruMusicAndShell
 
 Write-Host "Getting Windows ready" -ForegroundColor Cyan -BackgroundColor DarkGray
 if ($wupdated -ne 1) {& $workdir\modules\essential\cWUngus.ps1}
-Import-Module PSWindowsUpdate -Verbose
-Import-Module BitsTransfer -Verbose
+Import-Module PSWindowsUpdate #-Verbose
 
 Write-Host " "
 Write-Host -ForegroundColor Cyan "Updating the system until it reaches the desired UBR"
 Restart-Service -Name wuauserv
-Write-Host "Checking for updates"; Get-WUList
-Write-Host "Checking for updates again and installing all updates found"; Get-WUList -AcceptAll -Install -NotCategory 'Upgrade' -IgnoreReboot
+Write-Host -ForegroundColor White "Checking for updates"; Get-WUList
+Write-Host -ForegroundColor White "Checking for updates again and installing all updates found"; Get-WUList -AcceptAll -Install -NotCategory 'Upgrade' -IgnoreReboot | Out-Null
 
 Restart-UpdateMode

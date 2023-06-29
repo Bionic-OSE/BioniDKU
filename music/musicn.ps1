@@ -14,9 +14,9 @@ Import-Module BitsTransfer
 for ($c = 1; $c -le 5; $c++) {
 	$cv = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music").$c
 	if ($cv -eq 1) {
+		Write-Host "Downloading category $c..." -ForegroundColor White
 		for ($n = 1; $n -le 9; $n++) {
-			Write-Host "Transfering category $c..." -ForegroundColor White
-			Start-BitsTransfer -Source "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal$c.7z.00$n" -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+			Start-BitsTransfer -DisplayName "Downloading category $c" -Description "Attempt $n out of 9" -Source "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal$c.7z.00$n" -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
 		}
 		Start-Process $PSScriptRoot\..\core\7za.exe -Wait -NoNewWindow -ArgumentList "x $PSScriptRoot\normal$c.7z.001 -o$PSScriptRoot\normal"
 	}

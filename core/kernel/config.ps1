@@ -74,6 +74,6 @@
 <# Disable Login screen background #>                         $disablelogonbg =              $true
 <# Remove Network icon from login screen #>                   $removelckscrneticon =         $true
 <# Reduce the amount of svchost.exes #>                       $svchostslimming =             $true
-<# Enable ?????.???? desktop version #>                       $desktopversion =              $true
+<# Enable ?????.???? desktop version #>                       $desktopversion =              $false
 
 ## UwU

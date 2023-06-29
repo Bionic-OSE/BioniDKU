@@ -27,9 +27,6 @@ switch (1) {
 		$shortcut1.WindowStyle = 1
 		$shortcut1.Save()
 	}
-	$Firefox {
-		Start-Process $workdir\dls\firefoxesr.exe -Wait -NoNewWindow -ArgumentList "/S /PrivateBrowsingShortcut=false /PreventRebootRequired=true /TaskbarShortcut=false"
-	}
 	$NPP {
 		Start-Process $workdir\dls\npp.exe -Wait -NoNewWindow -ArgumentList "/S"
 	}

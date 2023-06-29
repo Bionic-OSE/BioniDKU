@@ -22,6 +22,8 @@ function Show-Branding($s1) {
 function Stop-Script {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 	Stop-Process -Name "FFPlay" -Force -ErrorAction SilentlyContinue
+	Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe -WindowStyle Hidden -ArgumentList "-i $env:SYSTEMDRIVE\Bionic\Hikaru\ShellSpinner.mp4 -fs -alwaysontop -noborder"
+	Start-Sleep -Seconds 1
 	exit
 }
 
@@ -121,6 +123,7 @@ Write-Host " "
 $dotnet35done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnet35
 $dotnet462done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnetrebooted
 $setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
+$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SkipNotGABWarn
 $essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).EssentialApps
 
 
@@ -133,12 +136,21 @@ if ($setupmusic -eq 1) {
 }
 
 & $workdir\modules\removal\unsealtheclasses.ps1
+$firefox = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").Firefox
 
 switch ($true) {
 	
 	{$dotnet35 -and $dotnet35done -ne 1} {
-		Write-Host "Enabling .NET 3.5" -ForegroundColor Cyan -BackgroundColor DarkGray
-		Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3"
+		if ($ngawarn -eq 1) {
+			Write-Host -ForegroundColor Black -BackgroundColor Red "Failed to enable .NET 3.5"
+			Write-Host -ForegroundColor Red "Due to the nature of non-General-Availability builds, this cannot be done automatically."
+			Write-Host -ForegroundColor White "To enable .NET 3.5, you need to mount the VANILLA installation media of this build, and run the following command (assuming D:\ is where it's mounted at):"
+			Write-Host -ForegroundColor Yellow "   DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /Source:D:\sources\sxs /LimitAccess"
+			Write-Host " "
+		} else {
+			Write-Host "Enabling .NET 3.5" -ForegroundColor Cyan -BackgroundColor DarkGray
+			Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3"
+		}
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "dotnet35" -Value 1 -Type DWord -Force
 	}
 	
@@ -156,6 +168,11 @@ switch ($true) {
 		Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "config HomeGroupProvider start= DISABLED"
 		Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "config HomeGroupListener start= DISABLED"
 		# And all it's left is to tell the user to right click and delete the key in Explorer, done!
+	}
+	
+	($firefox -eq 1) {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Mozilla Firefox ESR" -n; Write-Host -ForegroundColor White " (right now, as we will need it for the next part)"
+		Start-Process $workdir\dls\firefoxesr.exe -Wait -NoNewWindow -ArgumentList "/S /PrivateBrowsingShortcut=false /PreventRebootRequired=true /TaskbarShortcut=false"
 	}
 	
 }
@@ -256,5 +273,5 @@ Start-Process "$coredir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentL
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta
 Read-Host
-shutdown -r -t 5 -c "BioniDKU needs to restart your PC to complete the setup"
+shutdown -r -t 6 -c " "
 Stop-Script

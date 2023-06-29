@@ -29,20 +29,12 @@ if ($pwsh -eq 5) {
 }
 if ($desktopversion -and $ngawarn -ne 1 -and $editiok.Contains($edition)) {
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "PaintDesktopVersion" -Value 1 -Type DWord -Force
-	$hkrdeskver = 
-@"
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
-"@
 } else {
-	$hkrdeskver = 
-@"
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
-"@
 	if ($desktopversion) {
 		Write-Host -ForegroundColor Black -BackgroundColor Red "Welp,"
-		Write-Host -ForegroundColor Red "The script could not perform the DesktopVersion mod." -n; Write-Host " This is likely because:"
-		Write-Host "- Either you are not running on a General Availability build"
-		Write-Host "- Or you are not running Home, Pro or Enterprise editions of Windows 10"
+		Write-Host -ForegroundColor Red "The script could not perform the DesktopVersion mod." -n; Write-Host -ForegroundColor White " This is likely because:"
+		Write-Host -ForegroundColor White "- Either you are not running on a General Availability build"
+		Write-Host -ForegroundColor White "- Or you are not running Home, Pro or Enterprise editions of Windows 10"
 		Start-Sleep -Seconds 3
 	}
 }
@@ -52,7 +44,7 @@ reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t R
 @echo off
 rem ####### Hikaru-chan by Bionic Butter #######
 
-$hkrdeskver
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
 $hkrdelwwa
 $hkrdockico
 "@ | Out-File -FilePath "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikarun.bat" -Encoding ascii
@@ -91,3 +83,7 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\SessionData" -Name AllowLockScreen -Value 0 -Type DWord
 [System.Environment]::SetEnvironmentVariable('HikaruToken','3', 'Machine')
 reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikarestrict.reg"
+$cmd = Test-Path -Path "HKCU:\Software\Microsoft\Command Processor"
+if ($cmd -eq $false) {
+	New-Item -Path "HKCU:\Software\Microsoft" -Name "Command Processor"
+}

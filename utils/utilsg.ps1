@@ -16,7 +16,7 @@ $unum = 2
 
 for ($u = 1; $u -le $unum; $u++) {
 	while ($true) {
-		Start-BitsTransfer -Source "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/$utag/utils.7z.00$u" -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+		Start-BitsTransfer -DisplayName "Getting the Utilites package" -Description "Downloading file $u out of $unum" -Source "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/$utag/utils.7z.00$u" -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
 		if (Test-Path -Path "$PSScriptRoot\utils.7z.00$u" -PathType Leaf) {break} else {
 			Write-Host " "
 			Write-Host -ForegroundColor Black -BackgroundColor Red "Uhhhhhhh"

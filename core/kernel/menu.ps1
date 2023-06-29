@@ -97,6 +97,13 @@ function Confirm-DeleteDownloads {
 	}
 }
 
+function Check-Defender {
+	$notdctrled = Get-Process MsMpEng
+	if ($notdctrled) {
+		return $false
+	} else {return $true}
+}
+
 function Confirm-Wupdated {
 	switch ($build) {
 		{$_ -eq 10240} {$mrubr = 17394; if ($ubr -ge $mrubr) {return $true} else {return $false}}
@@ -165,10 +172,16 @@ if ($confulee -eq 2) {$confules = 2} elseif ($confulee -eq 3) {$confules = 3}
 else {
 	$snareason1 = " - For this version of Windows 10, you must be running at least build $build.$mrubr in order to execute this script.`r`n   Please update your device and try again."
 	$snareason2 = " - You did not select enough options in Advanced script configuration to proceed.`r`n   Try select a few more options, and try again."
+	$snareason3 = " - Windows Defender is currently active. Please disable it (using dControl) and try again."
 	switch ($false) {
+		# This part needs a better logic rework
 		{(Confirm-Wupdated) -eq $_} {$snarscode = 1; $startallowed = $false}
 		{(Check-EnoughActions) -eq $_} {$snarscode = 2; $startallowed = $false}
-		{(Confirm-Wupdated) -eq $_ -and (Check-EnoughActions) -eq $_} {$snarscode = 3; $startallowed = $false}
+		{(Check-Defender) -eq $_} {$snarscode = 3; $startallowed = $false}
+		{(Confirm-Wupdated) -eq $_ -and (Check-EnoughActions) -eq $_} {$snarscode = 4; $startallowed = $false}
+		{(Check-Defender) -eq $_ -and (Check-EnoughActions) -eq $_} {$snarscode = 5; $startallowed = $false}
+		{(Check-Defender) -eq $_ -and (Confirm-Wupdated) -eq $_} {$snarscode = 6; $startallowed = $false}
+		{(Confirm-Wupdated) -eq $_ -and (Check-EnoughActions) -eq $_ -and (Check-Defender) -eq $_} {$snarscode = 7; $startallowed = $false}
 		default {$startallowed = $true}
 	}
 	Show-Branding clear
@@ -178,11 +191,15 @@ else {
 		{$_ -eq $false} {
 			$stcolor = "DarkGray" 
 			Write-Host " "
-			Write-Host -ForegroundColor Red "DENIED: Starting the script is currently not allowed due to the following reasons:"
+			Write-Host "DENIED:" -ForegroundColor Black -BackgroundColor Red -n; Write-Host -ForegroundColor Red " Starting the script is currently not allowed due to the following reasons:"
 			switch ($snarscode) {
 				{$_ -eq 1} {Write-Host -ForegroundColor Red "$snareason1"}
 				{$_ -eq 2} {Write-Host -ForegroundColor Red "$snareason2"}
-				{$_ -eq 3} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason2}"}
+				{$_ -eq 3} {Write-Host -ForegroundColor Red "$snareason3"}
+				{$_ -eq 4} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason2}"}
+				{$_ -eq 5} {Write-Host -ForegroundColor Red "${snareason2}`r`n${snareason3}"}
+				{$_ -eq 6} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason3}"}
+				{$_ -eq 7} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason2}`r`n${snareason3}"}
 			}
 		}
 		{$_ -eq $true} {
