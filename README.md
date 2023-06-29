@@ -1,7 +1,8 @@
 # Project BioniDKU
 Orignially an attempt to resurrect the original [AutoIDKU](https://github.com/sunryze-git/AutoIDKU/tree/8f12315e667a36eb18f412eae669a86e6aeccc70) script, now evolved into a whole new project. 
 
-![BioniDKU version 300_update1 Desktop](https://github.com/Bionic-OSE/BioniDKU/assets/44027930/b32de980-511a-4539-a070-fa552c4e234c)
+![BioniDKU version 300_update3 Desktop](https://github.com/Bionic-OSE/BioniDKU/assets/44027930/6128a1fc-7372-4f01-8374-20b21c998d90)
+
 
 ## What has changed?
 
