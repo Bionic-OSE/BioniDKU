@@ -19,9 +19,9 @@ switch ($edition) {
 		<# 2004 #>          "19041.1415"
 		<# 20H2 #>          "19042.1706"
 		<# 21H1 #>          "19043.2364"
+  		<# 21H2 #>          "19044.3086"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "19044.2965"
-		<# 22H2 #>          "19045.2965"
+		<# 22H2 #>          "19045.3086"
 	)}
 	
 	# Commerical editions
@@ -38,24 +38,24 @@ switch ($edition) {
 		<# 20H2 #>          "19042.2965"
 		<# 21H1 #>          "19043.2364"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "19044.2965"
-		<# 22H2 #>          "19045.2965"
+		<# 21H2 #>          "19044.3086"
+		<# 22H2 #>          "19045.3086"
 	)}
 	
 	# Long-term servicing editions
 	{$_ -like "EnterpriseS"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# LTSB 2016 #>     "14393.5921"
-		<# LTSC 2019 #>     "14393.4377"
-		<# LTSC 2021 #>     "19044.2965"
+		<# LTSB 2016 #>     "14393.5989"
+		<# LTSC 2019 #>     "14393.4499"
+		<# LTSC 2021 #>     "19044.3086"
 	)}
 	
 	# Server editions (Why? Perhaps Nana can answer that question...)
 	{$_ -like "ServerStandard" -or $_ -like "ServerDatacenter" -or $_ -like "ServerStandardEval" -or $_ -like "ServerDatacenterEval"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# Server 2016 #>   "14393.5921"
-		<# Server 2019 #>   "14393.4377"
-		<# Server 2022 #>   "20348.1726"
+		<# Server 2016 #>   "14393.5989"
+		<# Server 2019 #>   "14393.4499"
+		<# Server 2022 #>   "20348.1787"
 	)}
 	
 }
