@@ -46,7 +46,7 @@ switch ($edition) {
 	{$_ -like "EnterpriseS"} {$latest = @(
 		<# ====== Alive builds ====== #>
 		<# LTSB 2016 #>     "14393.5989"
-		<# LTSC 2019 #>     "14393.4499"
+		<# LTSC 2019 #>     "17763.4499"
 		<# LTSC 2021 #>     "19044.3086"
 	)}
 	
@@ -54,7 +54,7 @@ switch ($edition) {
 	{$_ -like "ServerStandard" -or $_ -like "ServerDatacenter" -or $_ -like "ServerStandardEval" -or $_ -like "ServerDatacenterEval"} {$latest = @(
 		<# ====== Alive builds ====== #>
 		<# Server 2016 #>   "14393.5989"
-		<# Server 2019 #>   "14393.4499"
+		<# Server 2019 #>   "17763.4499"
 		<# Server 2022 #>   "20348.1787"
 	)}
 	
