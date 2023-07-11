@@ -23,12 +23,13 @@ Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing compone
 
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
-$buubr = "$build.$ubr"
 . $workdir\modules\lib\getedition.ps1
 Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 
 . $workdir\dls\PATCHME.ps1
-if ($latest.Contains($buubr)) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU"  -Name "Wupdated" -Value 1 -Type DWord -Force}
+$bubr = $latest | Select-String -Pattern $build
+$lubr = $bubr.Line.Substring($bubr.Line.LastIndexOf(".")+1)
+if ([int]$ubr -ge [int]$lubr) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU"  -Name "Wupdated" -Value 1 -Type DWord -Force}
 $wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
 $global:hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 

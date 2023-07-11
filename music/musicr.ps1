@@ -1,5 +1,4 @@
 # This redstone2 only activates when a certain condition is met... 
-# Wanna look for an answer? Check out modules/essential/cWUngus.ps1!
 
 $rexists = Test-Path -Path "$PSScriptRoot\redstone2"
 if ($rexists -eq $true) {exit}

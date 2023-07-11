@@ -5,6 +5,7 @@ $hkreg = Test-Path -Path 'HKCU:\SOFTWARE\Hikaru-chan'
 if ($hkreg -eq $false) {
 	New-Item -Path 'HKCU:\SOFTWARE' -Name Hikaru-chan
 }
+Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "ProductName" -Value "BioniDKU" -Type String -Force
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value 1 -Type DWord -Force
 
 # Hikarun on-demand customization section

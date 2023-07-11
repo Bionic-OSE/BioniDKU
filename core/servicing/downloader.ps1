@@ -33,7 +33,7 @@ function Write-AppsList($action) {
 		$NPP            {Write-Host -ForegroundColor Cyan "- Notepad++" -n; Write-Host " (8.5)"} #dl8
 		$ShareX         {Write-Host -ForegroundColor Cyan "- ShareX" -n; Write-Host " (13.1.0)"} #dl9
 		$PDN            {Write-Host -ForegroundColor Cyan "- Paint.NET" -n; Write-Host " (4.0.19)"} #dl10 but same as dl5
-		$PENM           {Write-Host -ForegroundColor Cyan "- PENetwork Manager"}
+		$PENM           {Write-Host -ForegroundColor Cyan "- PENetwork Manager"} #dl5
 		$ClassicTM      {Write-Host -ForegroundColor Cyan "- Classic Task Manager & Classic System Configuration"} #dl11 but same as dl5
 		$DesktopInfo    {Write-Host -ForegroundColor Cyan "- DesktopInfo" -n; Write-Host " (2.10.2, with custom configuration)"}
 		default {

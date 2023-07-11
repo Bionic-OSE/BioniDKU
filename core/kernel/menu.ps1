@@ -83,7 +83,7 @@ function Confirm-DeleteDownloads {
 	Write-Host -ForegroundColor Red 'You have selected to DELETE your Downloads folder during script exection. The script has deteced that you have files in this folder. Please back up anything necessary before proceeding any further.'
 	Write-Host 'In addition, if this script is also running from within Downloads, please CLOSE it and move the whole folder to somewhere safe (I would suggest C:\). The script is currently being placed inside:'
 	Write-Host -ForegroundColor Yellow "$workdir"
-	Write-Host 'If you do not want Downloads to get deleted, answer anything else except YES to go back, select 2 then 2 to reconfigure the script and set the' -n; Write-Host -ForegroundColor Cyan ' "Remove Downloads folder" ' -n; Write-Host 'switch to FALSE under the' -n; Write-Host -ForegroundColor Green ' "SCRIPT CONFIGURATION: Registry Switches" ' -n; Write-Host 'section.'
+	Write-Host 'If you do not want Downloads to get deleted, answer anything else except YES to go back, select 3 then 1 to reconfigure the script and set the' -n; Write-Host -ForegroundColor Cyan ' "Remove Downloads folder" ' -n; Write-Host 'switch to FALSE under the' -n; Write-Host -ForegroundColor Green ' "ADVANCED SCRIPT CONFIGURATION: Registry Switches" ' -n; Write-Host 'section.'
 	Write-Host " "
 	Write-Host -ForegroundColor Black -BackgroundColor Red "THIS IS YOUR LAST WARNING!!!" 
 	Write-Host -ForegroundColor Cyan "If you are sure and want to proceed, answer YES."

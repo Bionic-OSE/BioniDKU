@@ -16,7 +16,7 @@ Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Write-Host " "
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Hooking the script to the startup sequence"
 Copy-Item "$coredir\ambient\FFPlay.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru"
-Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
+Set-AutoIDKUValue d "HikaruMode" 1
 & $coredir\kernel\hikaru.ps1
 
 switch ($true) {
