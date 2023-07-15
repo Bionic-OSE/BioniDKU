@@ -54,7 +54,7 @@ Yes. There are things that must be done first to how "dangerous" this script is 
 
 ### BEFORE YOU EXECUTE THE SCRIPT
 **1. Microsoft/Windows Defender MUST be disabled before you hit the Yes button on the confirmation prompt** (it will also notice you about this once again). **I have included a tool do to that:**
-- Go to [this link](https://cutt.ly/BioniDKU-extras) and download the **BioniDKU_AddtFile_dControl.zip** file.
+- Go to [this link](https://zgc6v-my.sharepoint.com/:f:/g/personal/ymica_ose_nepsnetwork_xyz/EmNJMTmNbrlEpsDCO6HqBv0BtIUaJ9n7IOSx9IhZVLvBTg?e=QSFxiV) and download the **dControl.zip** file.
 - On your target system, in Defender settings turn off Real time protection (and Tamper protection too if it's there).
 - Now open the zip file and run **dControl.exe** inside it (no other programs or extraction needed, just double clicking and click "Run" when it asks if you want to better extract it). Password is: `sordum`
 - Click **Disable Defender** and restart the PC. You can now proceed.
@@ -63,8 +63,9 @@ Yes. There are things that must be done first to how "dangerous" this script is 
 
 **3. The ability to read English.**
 
-## About the definition of "IDKU" and the backstory
-[Click here to read them](https://github.com/Bionic-OSE/BioniDKU/blob/main/YEETME.md)
+## Extras
+- About the definition of "IDKU" and the backstory of this script: [Click here to read them](https://github.com/Bionic-OSE/BioniDKU/blob/main/YEETME.md)
+- If you still want to try the older, *GitHub original* [PowerShell 5/7 Hybrid release](https://github.com/Bionic-OSE/BioniDKU/releases/tag/200_u3) from **version 200 series**, it is still available and has been updated to work with recent repository-side changes.
 
 ## Credits
 - [Sunryze](https://github.com/sunryze-git), the original author of AutoIDKU.
