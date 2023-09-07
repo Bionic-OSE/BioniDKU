@@ -1,8 +1,15 @@
-# BioniDKU Windows Update mode - Update Build Revision numbers
+# BioniDKU Download mode & Windows Update mode - Software versions information file
 
-# The purpose of this file is so I can update the UBRs every month without having to update the whole script package. This change takes effect starting with version 300_update1
+# The purpose of this file is so I can update the version number of apps and the UBRs every month without having to update the whole script package. The UBRs section takes effect starting with version 300_update1, and the software version section starting with version 300_update5.
 # Windows Update mode supports Windows 10, version 1607 and later, which includes PowerShell 5.1. Version 1507 and 1511 are not supported due to 5.0 not having required functions for PSWindowsUpdate to work.
 
+
+# SECTION 1: Software version numbers:
+	<#    VLC    #> $global:VLCver = "3.0.18"
+	<# OpenShell #> $global:OShellDispver = "4.4.191"; $global:OShellExecver = "4_4_191"
+	<# Notepad++ #> $global:NPPver = "8.5.6"
+
+# SECTION 2: Windows Update UBRs
 . $workdir\modules\lib\GetEdition.ps1
 switch ($edition) {
 	
