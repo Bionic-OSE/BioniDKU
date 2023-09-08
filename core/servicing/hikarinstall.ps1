@@ -1,12 +1,16 @@
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Configuring Hikaru-chan"
 
+$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
+if ($ds -eq 1) {$var = 3} else {$var = 1}
 reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\ShellHikaru.reg"
 $hkreg = Test-Path -Path 'HKCU:\SOFTWARE\Hikaru-chan'
 if ($hkreg -eq $false) {
 	New-Item -Path 'HKCU:\SOFTWARE' -Name Hikaru-chan
 }
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "ProductName" -Value "BioniDKU" -Type String -Force
-Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value 1 -Type DWord -Force
+Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value $var -Type DWord -Force
+Start-Process $env:SYSTEMDRIVE\Bionic\Hikarefresh\wget.exe -Wait -NoNewWindow -ArgumentList "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikarefreshinfo.ps1 -O HikarefreshinFOLD.ps1" -WorkingDirectory "$env:SYSTEMDRIVE\Bionic\Hikarefresh"
+Show-WindowTitle noclose
 
 # Hikarun on-demand customization section
 if ($hidetaskbaricons -and $build -ge 18362) {
@@ -27,6 +31,8 @@ if ($pwsh -eq 5) {
 	$hkrbuildkey = "CurrentBuildNumber"
 } else {
 	$hkrbuildkey = "BuildLab"
+	$hkrbuildog = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").BuildLab
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "BuildLabOg" -Value $hkrbuildog -Type String -Force
 }
 if ($desktopversion -and $ngawarn -ne 1 -and $editiok.Contains($edition)) {
 	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "PaintDesktopVersion" -Value 1 -Type DWord -Force

@@ -1,6 +1,7 @@
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Essential Apps"
 . $coredir\servicing\downloader.ps1
 if ($essentialnone) {exit}
+$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 
 switch (1) {
 	$WinaeroTweaker {
@@ -12,7 +13,7 @@ switch (1) {
 		Start-Process $workdir\dls\openshellinstaller.exe -Wait -NoNewWindow -ArgumentList "/qn ADDLOCAL=StartMenu"
 		if ($openshellconfig) {
 			Expand-Archive -Path $workdir\utils\Fluent.zip -DestinationPath "$env:PROGRAMFILES\Open-Shell\Skins"
-			Start-Process "$env:PROGRAMFILES\Open-Shell\StartMenu.exe" -NoNewWindow -ArgumentList "-xml $workdir\utils\menu.xml"
+			Start-Process "$env:PROGRAMFILES\Open-Shell\StartMenu.exe" -NoNewWindow -ArgumentList "-xml $workdir\utils\menu${ds}.xml"
 		}
 	}
 	$TClock {
@@ -29,6 +30,9 @@ switch (1) {
 	}
 	$NPP {
 		Start-Process $workdir\dls\npp.exe -Wait -NoNewWindow -ArgumentList "/S"
+	}
+	$VLC {
+		Start-Process $workdir\dls\vlc.exe -Wait -NoNewWindow -ArgumentList "/S"
 	}
 	$PENM {
 		Expand-Archive -Path $workdir\utils\penm.zip -DestinationPath "$env:SYSTEMDRIVE\Windows\PENetwork"

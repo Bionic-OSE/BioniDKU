@@ -10,23 +10,25 @@ function Show-Branding {
 Show-Branding
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Custom system sounds"
-
 function Remove-SystemFile($item) {
 	takeown /f $item /r
 	icacls $item /grant Administrators:F /t
 	Remove-Item -Path $item -Force -Recurse -ErrorAction SilentlyContinue
 }
 
-Write-Host -ForegroundColor Cyan "Removing old system sounds with 5 passes, starting in 3 seconds"
-Start-Sleep -Seconds 3
-for ($count = 1; $count -le 5; $count++) {
-	Remove-SystemFile $env:SYSTEMDRIVE\Windows\Media
-	if ($count -lt 5) {Write-Host -ForegroundColor Cyan "Pass $count/5 complete, next in 3 seconds" -n; Write-Host -ForegroundColor White " (you may see errors and that's normal)"} else {Write-Host -ForegroundColor Cyan "Pass 5/5 complete, now placing new sounds in 3 seconds"}
+Write-Host -ForegroundColor Cyan "Removing old system sounds until all files are gone, starting in 3 seconds"
+while ($true) {
 	Start-Sleep -Seconds 3
+	$testmedia = (Test-Path -Path "$env:SYSTEMDRIVE\Windows\Media\*")
+	if ($testmedia) {Remove-SystemFile $env:SYSTEMDRIVE\Windows\Media} else {break}
 }
 
-$newmedia = (Test-Path -Path "$env:SYSTEMDRIVE\Windows\Media")
-if ($newmedia -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "Media" -ItemType directory}
-Expand-Archive -Path $workdir\utils\Media8.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media
+Write-Host -ForegroundColor Cyan "Old sounds have been removed, now placing new sounds in 3 seconds"
+Start-Sleep -Seconds 3
+$media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
+if ($media10074 -eq 1) {$var = "1k74"} else {$var = "9600"}
+New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "Media" -ItemType directory -ErrorAction SilentlyContinue
+Expand-Archive -Path $workdir\utils\Media${var}.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media
+Copy-Item -Path $workdir\utils\* -Include Media*.zip -Destination $env:SYSTEMDRIVE\Windows
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Custom system sounds have been installed"
 Start-Sleep -Seconds 3

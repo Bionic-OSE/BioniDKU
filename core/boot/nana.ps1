@@ -18,8 +18,8 @@ $coredir = Split-Path "$PSScriptRoot"
 
 # Script build number
 $releasetype = "Stable Release"
-$releaseid = "22107.300_update4"
-$releaseidex = "22107.300_update4.oseprod_mainrel.230711-1130"
+$releaseid = "22107.300_update5"
+$releaseidex = "22107.300_update5.oseprod_mainrel.230908-1101"
 
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped
@@ -63,7 +63,7 @@ $gablds = 10240,10586,14393,15063,16299,17134,17763,18362,18363,19041,19042,1904
 . $workdir\modules\lib\getedition.ps1
 switch ($build) {
 	{$_ -ge 10240 -and $_ -le 21390} {
-		if ($gablds.Contains($_) -eq $true) {
+		if ($gablds.Contains($_)) {
 			Write-Host "Supported stable build of Windows $editiontype detected" -ForegroundColor Green -BackgroundColor DarkGray
 			Show-Edition
 		} else {
@@ -108,7 +108,7 @@ switch ($editon) {
 		Start-Sleep -Seconds 3
 		Write-Host " "
 	}
-	{$_ -like "EnterpriseG"} {
+	{$_ -eq "EnterpriseG"} {
 		Write-Host " "
 		Write-Host "China Government edition detected" -ForegroundColor Black -BackgroundColor Yellow
 		Write-Host "Windows Update mode will be automatically disabled on this edition, as CMGE's custom update policies can cause issues with this mode." -ForegroundColor Yellow -BackgroundColor DarkGray
@@ -128,6 +128,18 @@ function Set-AutoIDKUValue($type,$value,$data) {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps" -Name $value -Value $data -Type DWord -Force
 	}
 }
+function Get-RemoteSoftware {
+	# AnyDesk, RustDesk and DWService are currently supported
+	$anydesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files (x86)\AnyDesk\AnyDesk.exe"
+	$rustdesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files\RustDesk\RustDesk.exe"
+	$dwservice = Test-Path -Path "$env:SYSTEMDRIVE\Program Files\DWAgent\native\dwagsvc.exe"
+	$anydeskon = Get-Process AnyDesk -ErrorAction SilentlyContinue
+	$rustdeskon = Get-Process RustDesk -ErrorAction SilentlyContinue
+	$dwserviceon = Get-Process dwagsvc -ErrorAction SilentlyContinue
+	if ($anydesk -or $rustdesk -or $anydeskon -or $rustdeskon) {
+		return $true
+	} else {return $false}
+}
 Set-AutoIDKUValue str "ReleaseType" $releasetype
 Set-AutoIDKUValue str "ReleaseID" $releaseid
 Set-AutoIDKUValue str "ReleaseIDEx" $releaseidex
@@ -146,6 +158,34 @@ Set-AutoIDKUValue app PDN 1
 Set-AutoIDKUValue app PENM 1
 Set-AutoIDKUValue app ClassicTM 1
 Set-AutoIDKUValue app DesktopInfo 1
+Set-AutoIDKUValue app VLC 1
+
+Set-AutoIDKUValue d "ConfigSet" 0
+Set-AutoIDKUValue d "ConfigEditing" 0 
+Set-AutoIDKUValue d "ConfigEditingSub" 0 
+Set-AutoIDKUValue d "ChangesMade" 0
+Set-AutoIDKUValue d "Denied" 0
+Set-AutoIDKUValue d "HikaruMode" 0
+Set-AutoIDKUValue d "SetWallpaper" 1
+Set-AutoIDKUValue d "HikaruMusic" 1
+Set-AutoIDKUValue d "EssentialApps" 1
+Set-AutoIDKUValue d "EdgeKilled"  0
+Set-AutoIDKUValue d "PendingRebootCount" 0
+Set-AutoIDKUValue d "Media10074" 0
+Set-AutoIDKUValue d "DarkSakura" 0
+if (Get-RemoteSoftware) {Set-AutoIDKUValue d "RunningThisRSwitch" 1} else {Set-AutoIDKUValue d "RunningThisRSwitch" 0}
+Set-AutoIDKUValue d "ClearBootMessage" 0
+
+if ($build -le 10586) {
+	Write-Host " "
+	Set-AutoIDKUValue d "Pwsh" 5
+	Set-AutoIDKUValue d "WUmodeSwitch" 0
+}
+if ($build -ge 14393) {
+	Write-Host " "
+	Set-AutoIDKUValue d "Pwsh" 7
+	Set-AutoIDKUValue d "WUmodeSwitch" 1
+}
 
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_SysWOW64_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue
@@ -163,29 +203,7 @@ switch ($false) {
 		New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'System'
 	}
 }
-if ($build -le 10586) {
-	Write-Host " "
-	Set-AutoIDKUValue d "Pwsh" 5
-	Set-AutoIDKUValue d "WUmodeSwitch" 0
-}
-if ($build -ge 14393) {
-	Write-Host " "
-	Set-AutoIDKUValue d "Pwsh" 7
-	Set-AutoIDKUValue d "WUmodeSwitch" 1
-}
-Set-AutoIDKUValue d "ConfigSet" 0
-Set-AutoIDKUValue d "ConfigEditing" 0 
-Set-AutoIDKUValue d "ConfigEditingSub" 0 
-Set-AutoIDKUValue d "ChangesMade" 0
-Set-AutoIDKUValue d "Denied" 0
-Set-AutoIDKUValue d "HikaruMode" 0
-Set-AutoIDKUValue d "SetWallpaper" 1
-Set-AutoIDKUValue d "HikaruMusic" 1
-Set-AutoIDKUValue d "EssentialApps" 1
-Set-AutoIDKUValue d "EdgeKilled"  0
-Set-AutoIDKUValue d "PendingRebootCount" 0
-Set-AutoIDKUValue d "RunningThisRemotely" 0
-Set-AutoIDKUValue d "ClearBootMessage" 0
+
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 

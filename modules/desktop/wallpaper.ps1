@@ -20,7 +20,9 @@ public class Params
     $ret = [Params]::SystemParametersInfo($SPI_SETDESKWALLPAPER, 0, $Image, $fWinIni)
 }
 
+$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
+if ($ds -eq 1) {$wallink = "https://www.hoyolab.com/article/13736966"} else {$wallink = "https://www.reddit.com/r/Genshin_Impact/comments/sk74fe/chinju_forest_inazuma_viewpoint_art/"}
 Write-Host "Setting Wallpaper" -ForegroundColor Cyan -BackgroundColor DarkGray
-Write-Host "Wallpaper source: " -ForegroundColor Cyan -n; Write-Host "https://www.reddit.com/r/Genshin_Impact/comments/sk74fe/chinju_forest_inazuma_viewpoint_art/"
+Write-Host "Wallpaper source: " -ForegroundColor Cyan -n; Write-Host $wallink
 Set-WallPaper -Image "$env:SYSTEMDRIVE\Bionic\Wallpapers\BioniDKU.png"
 Start-Sleep -Seconds 2

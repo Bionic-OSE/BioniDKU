@@ -129,17 +129,6 @@ function Select-Disenabled($regvalue) {
 	}
 }
 
-function Get-RemoteSoftware {
-	# Right now, only AnyDesk and Parsec are supported
-	$anydesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files (x86)\AnyDesk\AnyDesk.exe"
-	$rustdesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files\RustDesk\RustDesk.exe"
-	$anydeskon = Get-Process AnyDesk -ErrorAction SilentlyContinue
-	$rustdeskon = Get-Process RustDesk -ErrorAction SilentlyContinue
-	if ($anydesk -or $rustdesk -or $anydeskon -or $rustdeskon) {
-		return $true
-	} else {return $false}
-}
-
 function Check-EnoughActions {
 	switch ($true) {
 		$hidetaskbaricons {}
@@ -165,9 +154,15 @@ function Check-EnoughActions {
 		}
 	}
 }
+function Show-WelcomeText {
+	Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
+	Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
+}
 
 $confulee = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigEditing
 $confuone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ChangesMade
+$remotesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRSwitch
+$ds       = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 if ($confulee -eq 2) {$confules = 2} elseif ($confulee -eq 3) {$confules = 3}
 else {
 	$snareason1 = " - For this version of Windows 10, you must be running at least build $build.$mrubr in order to execute this script.`r`n   Please update your device and try again."
@@ -185,8 +180,7 @@ else {
 		default {$startallowed = $true}
 	}
 	Show-Branding clear
-	Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
-	Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
+	Show-WelcomeText
 	switch ($startallowed) {
 		{$_ -eq $false} {
 			$stcolor = "DarkGray" 
@@ -206,15 +200,15 @@ else {
 			$stcolor = "White"
 		}
 	}
-	if (Get-RemoteSoftware) {
+	if ($remotesw -eq 1) {
 		Write-Host " "
-		Write-Host "HINT: " -ForegroundColor Magenta -n; Write-Host "Running this remotely? " -ForegroundColor White -n; Write-Host 'Select 2 and enable "Increase wait time" to make your life easier!' -ForegroundColor Cyan
+		Write-Host "NOTE: " -ForegroundColor Black -BackgroundColor Yellow; Write-Host ' - Increase wait time is enabled. The script will wait 30 seconds on every system restart before continuing or until you press CTRL+C. You can toggle this option by selecting action 2.' -ForegroundColor White
 	}
 	Write-Host " "
 	Write-Host -ForegroundColor Yellow "What do you want to do?"
 	Write-Host -ForegroundColor $stcolor "1. Start the script"
 	Write-Host -ForegroundColor White "2. Configure the script"
-	Write-Host -ForegroundColor White "3. Enter advanced script configuration"
+	Write-Host -ForegroundColor White "3. Further adjust the script (advanced)"
 	Write-Host -ForegroundColor White "4. Show credits"
 	if ($confuone -eq 0) {
 		Write-Host "Answer anything else to exit this script safely without any changes made to your PC."
@@ -239,7 +233,7 @@ switch ($confules) {
 			Confirm-DeleteDownloads
 		}
 		Write-Host " "
-		Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainAccepted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+		Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainAccepted${ds}.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 		Write-Host -ForegroundColor Green -BackgroundColor DarkGray "You have accepted the current configuration. Alright, starting the script..."
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
 		Start-Sleep -Seconds 5
@@ -252,33 +246,36 @@ switch ($confules) {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 2 -Type DWord -Force
 		Show-Branding clear
-		Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
+		Show-WelcomeText
 		$setwallpaper = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SetWallpaper
 		$setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 		$increasewait = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRemotely
 		$essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EssentialApps
 		$windowsupdatesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmodeSwitch
+		$media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
 		if ($pwsh -eq 5) {$wucolor = "DarkGray"} else {$wucolor = "White"}
 		Write-Host " "
 		Write-Host -ForegroundColor Yellow "Configure the script by tuning the following options to your desire."
 		Write-Host -ForegroundColor $wucolor "1. Toggle Windows Update mode" -n; if ($pwsh -eq 7) {Show-Disenabled $windowsupdatesw} else {Write-Host " "}
 		Write-Host -ForegroundColor White "2. Set desktop wallpaper to the one from the script" -n; Show-Disenabled $setwallpaper
-		Write-Host -ForegroundColor White "3. Increase wait time (ideal for remote setups)" -n; Show-Disenabled $increasewait
-		Write-Host -ForegroundColor White "4. Toggle background music" -n; Show-Disenabled $setupmusic
-		if ($setupmusic -eq 1) {Write-Host -ForegroundColor White "5. Customize your music selection"}
-		Write-Host -ForegroundColor White "6. Toggle the installation of Essential Apps" -n; Show-Disenabled $essentialapps
-		if ($essentialapps -eq 1) {Write-Host -ForegroundColor White "7. Customize which Apps to install"}
+		Write-Host -ForegroundColor White "3. Use sounds from Windows 10 build 10074 instead of Windows 8" -n; Show-Disenabled $media10074
+		Write-Host -ForegroundColor White "4. Increase wait time (ideal for remote setups)" -n; Show-Disenabled $increasewait
+		Write-Host -ForegroundColor White "5. Toggle background music" -n; Show-Disenabled $setupmusic
+		if ($setupmusic -eq 1) {Write-Host -ForegroundColor White "6. Customize your music selection"}
+		Write-Host -ForegroundColor White "7. Toggle the installation of Essential Apps" -n; Show-Disenabled $essentialapps
+		if ($essentialapps -eq 1) {Write-Host -ForegroundColor White "8. Customize which Apps to install"}
 		Write-Host -ForegroundColor White "0. Accept the current configuration and return to main menu"
 		Write-Host " "
 		Write-Host "Your selection: " -n ; $confulee = Read-Host
 		switch ($confulee) {
 			{$_ -like "1"} {if ($pwsh -eq 7) {Select-Disenabled WUmodeSwitch}; exit}
 			{$_ -like "2"} {Select-Disenabled SetWallpaper; exit}
-			{$_ -like "3"} {Select-Disenabled RunningThisRemotely; exit}
-			{$_ -like "4"} {Select-Disenabled HikaruMusic; exit}
-			{$_ -like "5"} {if ($setupmusic -eq 1) {& $workdir\music\musicpicker.ps1}; exit}
-			{$_ -like "6"} {Select-Disenabled EssentialApps; exit}
-			{$_ -like "7"} {if ($essentialapps -eq 1) {& $workdir\modules\apps\appspicker.ps1}; exit}
+			{$_ -like "3"} {Select-Disenabled Media10074; exit}
+			{$_ -like "4"} {Select-Disenabled RunningThisRemotely; exit}
+			{$_ -like "5"} {Select-Disenabled HikaruMusic; exit}
+			{$_ -like "6"} {if ($setupmusic -eq 1) {& $workdir\music\musicpicker.ps1}; exit}
+			{$_ -like "7"} {Select-Disenabled EssentialApps; exit}
+			{$_ -like "8"} {if ($essentialapps -eq 1) {& $workdir\modules\apps\appspicker.ps1}; exit}
 			{$_ -like "0"} {
 				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 0 -Type DWord -Force
 				exit

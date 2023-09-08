@@ -22,8 +22,6 @@ for ($c = 1; $c -le 5; $c++) {
 	}
 }
 
-
-
 Write-Host " "
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Extraction complete!" -n; Write-Host " (If you see warnings, ignore them. The files should be fine)"
 Write-Host -ForegroundColor Yellow "Some of the songs featured in this (nearly infinite) collection might be copyrighted. If you are planning to record and upload this run to public platforms, please beware of that. You can view this collection in $PSScriptRoot\normal"

@@ -1,5 +1,6 @@
 # Music picker module, part of the main menu - Still in the works
 
+& $workdir\music\musicheck.ps1
 Show-Branding clear
 
 Write-Host -ForegroundColor Yellow "This feature is currently in development. Stay tuned for future updates!"

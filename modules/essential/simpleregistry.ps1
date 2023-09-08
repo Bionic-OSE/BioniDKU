@@ -133,7 +133,7 @@ switch ($true) {
 	$registeredowner {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting Registered owner"
 		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOwner' -Value 'Project BioniDKU - (c) Bionic Butter' -Type String -Force
-		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOrganization' -Value "$butter" -Type String -Force
+		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'RegisteredOrganization' -Value "Build $butter" -Type String -Force
 	}
 	
 	$disableedgeprelaunch {
@@ -174,6 +174,8 @@ switch ($true) {
 	$disablelockscrn {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling LogonUI's Clock screen (aka the Lock Screen)"
 		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\SessionData' -Name 'AllowLockScreen' -Value 0 -Type DWord -Force
+		$cloudexists = Test-Path -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent'
+		if (-not $cloudexists) {New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows' -Name 'CloudContent'}
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent' -Name DisableWindowsSpotlightFeatures -Value 1 -Type DWord -Force
 	}
 	

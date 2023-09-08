@@ -64,6 +64,8 @@ function Start-HikaruMusicAndShell {
 	$hkws = Test-Path -Path "$env:SYSTEMDRIVE\Bionic\WinXShell"
 	if ($hkws -eq $false) {
 		Expand-Archive -Path $workdir\utils\WinXShell.zip -DestinationPath $env:SYSTEMDRIVE\Bionic\WinXShell
+		$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
+		if ($ds -eq 1) {Move-Item "$env:SYSTEMDRIVE\Bionic\WinXShell\sakuraground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -Force}
 	}
 	Start-Process "$env:SYSTEMDRIVE\Bionic\WinXShell\WinXShell.exe"
 	Start-Sleep -Seconds 5

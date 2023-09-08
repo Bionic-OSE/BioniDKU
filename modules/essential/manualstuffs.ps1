@@ -45,14 +45,14 @@ if ($build -ge 10586) {
 	}
 	Write-Host -ForegroundColor Yellow '- Then, in the last tab: "BETA - Scheduled Tasks". Click "Disable All Tasks" and wait for it to complete.'
 	Write-Host -ForegroundColor White 'For the first and last tabs, if it appears to freeze for too long, close or kill the program, reopen it, and disable the items one by one.'
-	#Write-Host -ForegroundColor Black -BackgroundColor Yellow "If you don't see any program coming up or an error pops up, go to $workdir\utils\Wu10Man and try to open Wu10Man.exe manually. Wait for a while, and if it still doesn't launch, report back to me and kill it in Task manager, then find a different way to delete Windows Update online." -BackgroundColor Black
 	Write-Host " "
 	
 	Write-Host "That will be the last step of the manually-done series."
 }
 else {
 	Write-Host -ForegroundColor Yellow "Nevermind, Wu10Man does not work on this build. Disabling it the classic way..."
-	Set-Service -Name wuauserv -StartupType Disabled
+	Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
+	Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "delete wuauserv"
 	Get-ScheduledTask -TaskPath '\Microsoft\Windows\WindowsUpdate\' -TaskName '*' | Unregister-ScheduledTask -Confirm:$false
 	Write-Host "Alright, that's gonna be all for the manually-done series."
 }

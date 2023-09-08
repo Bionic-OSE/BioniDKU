@@ -19,6 +19,7 @@ Copy-Item "$coredir\ambient\FFPlay.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hi
 Set-AutoIDKUValue d "HikaruMode" 1
 & $coredir\kernel\hikaru.ps1
 
+$remotesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).RunningThisRSwitch
 switch ($true) {
 	{$keepedgechromium} {Set-AutoIDKUValue d "EdgeNoMercy" 1}
 	{$keepsearch} {Set-AutoIDKUValue d "SearchNoMercy" 1}
@@ -29,6 +30,10 @@ switch ($true) {
 	{$build -le 14393} {
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 1 -Type DWord -Force
 	}
+	{$remotesw -eq 1} {Set-AutoIDKUValue d "RunningThisRemotely" 1} 
+	{$remotesw -ne 1} {Set-AutoIDKUValue d "RunningThisRemotely" 0}
+	{$ds -eq 1} {$back = "sakura"}
+	{$ds -ne 1} {$back = "back"}
 }
 
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
@@ -76,7 +81,7 @@ Start-Sleep -Seconds 1
 $setwallpaper = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SetWallpaper
 if ($setwallpaper -eq 1) {
 	if ((Test-Path -Path "$env:SYSTEMDRIVE\Bionic\Wallpapers") -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Bionic" -Name "Wallpapers" -ItemType directory}
-	Copy-Item $workdir\utils\background.png -Destination "$env:SYSTEMDRIVE\Bionic\Wallpapers\BioniDKU.png"
+	Copy-Item "$workdir\utils\${back}ground.png" -Destination "$env:SYSTEMDRIVE\Bionic\Wallpapers\BioniDKU.png"
 	& $workdir\modules\desktop\wallpaper.ps1
 }
 
