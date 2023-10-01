@@ -1,4 +1,5 @@
-$workdir = "$PSScriptRoot\..\.."
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:datadir = "$workdir\data"
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Custom sound installer module"
 function Show-Branding {
@@ -28,7 +29,7 @@ Start-Sleep -Seconds 3
 $media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
 if ($media10074 -eq 1) {$var = "1k74"} else {$var = "9200"}
 New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "Media" -ItemType directory -ErrorAction SilentlyContinue
-Expand-Archive -Path $workdir\utils\Media${var}.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media
-Copy-Item -Path $workdir\utils\* -Include Media*.zip -Destination $env:SYSTEMDRIVE\Windows
+Expand-Archive -Path $datadir\utils\Media${var}.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media
+Copy-Item -Path $datadir\utils\* -Include Media*.zip -Destination $env:SYSTEMDRIVE\Windows
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Custom system sounds have been installed"
 Start-Sleep -Seconds 3

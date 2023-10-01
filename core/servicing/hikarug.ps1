@@ -1,8 +1,13 @@
 # This module gets the core components required for the script to start properly, part of Nana the bootloader
 
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:coredir = Split-Path "$PSScriptRoot"
+$global:datadir = "$workdir\data"
+
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Getting critical components... - DO NOT CLOSE THIS WINDOW"
-$hexists = Test-Path -Path "$PSScriptRoot\Hikare.7z" -PathType Leaf
+$hexists = Test-Path -Path "$datadir\dls\Hikare.7z" -PathType Leaf
 if ($hexists) {exit}
+
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
@@ -14,8 +19,8 @@ Import-Module BitsTransfer
 
 function Start-DownloadLoop($link,$destfile,$name,$descr) {
 	while ($true) {
-		Start-BitsTransfer -DisplayName "$name" -Description "$descr" -Source $link -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
-		if (Test-Path -Path "$PSScriptRoot\$destfile" -PathType Leaf) {break} else {
+		Start-BitsTransfer -DisplayName "$name" -Description "$descr" -Source $link -Destination $datadir\dls -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+		if (Test-Path -Path "$datadir\dls\$destfile" -PathType Leaf) {break} else {
 			Write-Host " "
 			Write-Host -ForegroundColor Black -BackgroundColor Red "Ehhhhhhh"
 			Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
@@ -34,10 +39,10 @@ Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-utils/raw/utils/activ
 Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-utils/raw/utils/active/sakuraground.png" "sakuraground.png" "Getting desktop background image" " "
 
 if ((Test-Path -Path "$env:SYSTEMDRIVE\Bionic") -eq $false) {New-Item -Path $env:SYSTEMDRIVE -Name Bionic -itemType Directory | Out-Null}
-Start-Process $PSScriptRoot\..\core\7za.exe -Wait -NoNewWindow -ArgumentList "x $PSScriptRoot\Hikaru.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
-Start-Process $PSScriptRoot\..\core\7za.exe -Wait -NoNewWindow -ArgumentList "x $PSScriptRoot\Hikare.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
-Start-Process $PSScriptRoot\..\core\7za.exe -Wait -NoNewWindow -ArgumentList "x $PSScriptRoot\Hikarup.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
-. $PSScriptRoot\Hikarinfo.ps1
+Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\Hikaru.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
+Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\Hikare.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
+Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\Hikarup.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
+. $datadir\dls\Hikarinfo.ps1
 New-Item -Path 'HKCU:\SOFTWARE' -Name Hikaru-chan
-Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "Version" -Value "22108.$version" -Force
-Move-Item -Path "$PSScriptRoot\Hikarinfo.ps1" -Destination "$env:SYSTEMDRIVE\Bionic\Hikarefresh\HikarinFOLD.ps1"
+Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "Version" -Value "22110.$version" -Force
+Move-Item -Path "$datadir\dls\Hikarinfo.ps1" -Destination "$env:SYSTEMDRIVE\Bionic\Hikarefresh\HikarinFOLD.ps1"

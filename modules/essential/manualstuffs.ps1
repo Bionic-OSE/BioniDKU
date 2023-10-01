@@ -34,8 +34,8 @@ Write-Host " "
 # This part needs some redesigning
 Write-Host -ForegroundColor Cyan "Secondly, disabling Windows Update."
 if ($build -ge 10586) {
-	Expand-Archive -Path $workdir\utils\Wu10Man.zip -DestinationPath $workdir\utils\Wu10Man
-	Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\AdvancedRun.exe -ArgumentList "/run /exefilename `"$workdir\utils\Wu10Man\Wu10Man.exe`" /runas 4"
+	Expand-Archive -Path $datadir\utils\Wu10Man.zip -DestinationPath $datadir\utils\Wu10Man
+	Start-Process $datadir\utils\Wu10Man\Wu10Man.exe -WorkingDirectory $datadir\utils\Wu10Man
 	Write-Host 'In order to completely disable Windows Update, a program called "Wu10Man" will soon appear on your screen.'
 	Write-Host -ForegroundColor Black -BackgroundColor Cyan "FOLLOW THESE STEPS CLOSELY once it's opened:"
 	Write-Host -ForegroundColor Yellow '- You are now in the first tab: "Windows Services". Click "Disable All Services" and wait for it to complete.'

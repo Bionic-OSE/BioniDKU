@@ -27,17 +27,18 @@ function Stop-Script {
 	exit
 }
 function Get-ScriptProgress($value) {
-	$proc = Get-Content -Path $PSScriptRoot\progress.txt
+	$proc = Get-Content -Path $datadir\values\progress.txt
 	return [int32]$proc -le [int32]$value
 }
 Set-Alias -Name SPV -Value Get-ScriptProgress # SPV = Script Progress Value
-function Set-ScriptProgress($value) {[int32]$value | Out-File -FilePath $PSScriptRoot\progress.txt}
+function Set-ScriptProgress($value) {[int32]$value | Out-File -FilePath $datadir\values\progress.txt}
 Set-Alias -Name UPV -Value Set-ScriptProgress # UPV = Update Progress Value
 # UPV always = SPV + 1!!!
 
-# Set Working directory and Core folder's directory
-$workdir = Split-Path(Split-Path "$PSScriptRoot")
-$coredir = Split-Path "$PSScriptRoot"
+# Set Working directory, Core folder's directory and Data folder's directory
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:coredir = Split-Path "$PSScriptRoot"
+$global:datadir = "$workdir\data"
 
 # Load variables from the configuration file
 . $coredir\kernel\config.ps1
@@ -73,9 +74,12 @@ Show-WindowTitle noclose
 Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 
 # Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
+. $coredir\kernel\hikaru.ps1
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
 if ($hkm -eq 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Switching to normal mode"
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'explorer.exe' -Type String
+	Set-HikaruChan
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing startup obstacles"
 	& $workdir\modules\removal\letsNOTfinish.ps1
 	if ($build -ge 18362 -and $build -le 19042) {
@@ -88,7 +92,6 @@ if ($hkm -eq 1) {
 	}
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
 }
-. $coredir\kernel\hikaru.ps1
 $isexplorerup = Get-Process -Name explorer -ErrorAction SilentlyContinue
 if (-not $isexplorerup) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer"
@@ -121,8 +124,6 @@ if ($pendingreboot -eq $true) {
 		exit
 	}
 }
-# $dotnet35done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnet35
-# $dotnet462done = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").dotnetrebooted
 $setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SkipNotGABWarn
 $essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).EssentialApps
@@ -132,10 +133,11 @@ $essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction 
 
 if ($setupmusic -eq 1 -and $wasexplorerup -eq $false) {
 	Write-Host "Starting Music player in the background" -BackgroundColor DarkGray -ForegroundColor Cyan
-	Start-Process powershell -WindowStyle Hidden -ArgumentList "-Command $workdir\music\musicplayer.ps1"
+	Start-Process powershell -WindowStyle Hidden -ArgumentList "-Command $coredir\music\musicplayer.ps1"
 }
 
 if (SPV 0) {$startmsg = "begins"} else {$startmsg = "continues"}
+Show-WindowTitle
 Write-Host -ForegroundColor Black -BackgroundColor Cyan "`r`nThe IDKUlize process ${startmsg}"
 
 # Action 1 (I will just say "A1, A2..." from now)
@@ -146,22 +148,32 @@ switch ($true) {
 
 	# A2
 	{$dotnet35 -and (SPV 2)} {
-		if ($ngawarn -eq 1) {
-			Write-Host -ForegroundColor Black -BackgroundColor Red "Failed to enable .NET 3.5"
-			Write-Host -ForegroundColor Red "Due to the nature of non-General-Availability builds, this cannot be done automatically."
-			Write-Host -ForegroundColor White "To enable .NET 3.5, you need to mount the VANILLA installation media of this build, and run the following command (assuming D:\ is where it's mounted at):"
-			Write-Host -ForegroundColor Yellow "   DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /Source:D:\sources\sxs /LimitAccess"
-			Write-Host " "
-		} else {
-			Write-Host "Enabling .NET 3.5" -ForegroundColor Cyan -BackgroundColor DarkGray
-			Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3" -All -NoRestart
+		switch ($true) {
+			{$ngawarn -eq 1} {
+				Write-Host -ForegroundColor Black -BackgroundColor Red "Failed to enable .NET 3.5"
+				Write-Host -ForegroundColor Red "Due to the nature of non-General-Availability builds, this cannot be done automatically."
+				Write-Host -ForegroundColor White "To enable .NET 3.5, you need to mount the VANILLA installation media of this build, and run the following command (assuming D:\ is where it's mounted at):"
+				Write-Host -ForegroundColor Yellow "   DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /Source:D:\sources\sxs /LimitAccess"
+				Write-Host " "
+			}
+			{$edition -like "EnterpriseG"} {
+				Write-Host -ForegroundColor Black -BackgroundColor Red "Failed to enable .NET 3.5"
+				Write-Host -ForegroundColor Red "Due to the limitations of CMGE editions, this cannot be done automatically."
+				Write-Host -ForegroundColor White "To enable .NET 3.5, you need to mount the VANILLA installation media of a different edition of the same build, and run the following command (assuming D:\ is where it's mounted at):"
+				Write-Host -ForegroundColor Yellow "   DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /Source:D:\sources\sxs /LimitAccess"
+				Write-Host " "
+			}
+			default {
+				Write-Host "Enabling .NET 3.5" -ForegroundColor Cyan -BackgroundColor DarkGray
+				Enable-WindowsOptionalFeature -Online -FeatureName "NetFx3" -All -NoRestart
+			}
 		}
 		UPV 3
 	}
 
 	# A3
 	{$dotnet462 -and (SPV 3)} {
-		& $workdir\modules\apps\dotnet462install.ps1; UPV 4
+		UPV 4; & $workdir\modules\apps\dotnet462install.ps1
 	}
 
 	# A4
@@ -181,7 +193,7 @@ switch ($true) {
 	# A5
 	{$firefox -eq 1 -and (SPV 5)} {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Mozilla Firefox ESR" -n; Write-Host -ForegroundColor White " (right now, as we will need it for the next part)"
-		Start-Process $workdir\dls\firefoxesr.exe -Wait -NoNewWindow -ArgumentList "/S /PrivateBrowsingShortcut=false /PreventRebootRequired=true /TaskbarShortcut=false"
+		Start-Process $datadir\dls\firefoxesr.exe -Wait -NoNewWindow -ArgumentList "/S /PrivateBrowsingShortcut=false /PreventRebootRequired=true /TaskbarShortcut=false"
 		UPV 6
 	}
 	
@@ -281,9 +293,15 @@ switch ($true) {
 
 	# A22
 	{$removesystemapps -and (SPV 22)} {
+		# On certain builds, there is a freeze issue where the script will just hang here forever, we have to use another method...
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling system apps" 
-		Start-Process powershell -Wait -ArgumentList "$workdir\modules\removal\removesystemapps.ps1"
-		UPV 23
+		Start-Process powershell -ArgumentList "$workdir\modules\removal\removesystemapps.ps1"
+		while ($true) {
+			$sappdone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SystemAppsRemoved
+			if ($sappdone -eq 1) {break}
+			Write-Host "." -n; Start-Sleep -Seconds 1
+		}
+		Write-Host " "; UPV 23
 	}
 
 	# A23
@@ -294,6 +312,7 @@ switch ($true) {
 }
 
 # This the last action, and must not be interrupted.
+Show-WindowTitle noclose
 & $coredir\servicing\hikarinstall.ps1 
 
 # Finalize things, and the job ends!
@@ -305,7 +324,7 @@ Write-Host " "
 Show-WindowTitle
 Write-Host "This was the final step of the script. In order to complete the setup, please press Enter to restart" -ForegroundColor Black -BackgroundColor Green
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
-Start-Process "$coredir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+Start-Process "$datadir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta
 Read-Host

@@ -15,18 +15,18 @@ function Show-Branding {
 	Write-Host "Windows Update mode" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
-$workdir = Split-Path(Split-Path "$PSScriptRoot")
-$coredir = Split-Path "$PSScriptRoot"
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:coredir = Split-Path "$PSScriptRoot"
+$global:datadir = "$workdir\data"
 
 Show-Branding
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components"
-
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 . $workdir\modules\lib\getedition.ps1
 Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 
-. $workdir\dls\PATCHME.ps1
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components"
+. $datadir\dls\PATCHME.ps1
 $bubr = $latest | Select-String -Pattern $build
 $lubr = $bubr.Line.Substring($bubr.Line.LastIndexOf(".")+1)
 if ([int]$ubr -ge [int]$lubr) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU"  -Name "Wupdated" -Value 1 -Type DWord -Force}
@@ -44,22 +44,19 @@ function Stop-UpdateMode {
 }
 function Stop-UpdateModeSuccess {
 	Show-WindowTitle noclose
-	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "The latest updates have been installed." -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 }
 function Stop-UpdateModeAborted {
 	Show-WindowTitle noclose
-	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "You have aborted updates." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 }
 function Start-HikaruMusicAndShell {
-	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainChallengeStart.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
-	if ($hkau -eq 1) {
-		$workdir = Split-Path(Split-Path "$PSScriptRoot")
-		Start-Process powershell -ArgumentList "-Command $workdir\music\musicplayer.ps1"
-	}
+	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainChallengeStart.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	if ($hkau -eq 1) {Start-Process powershell -ArgumentList "-Command $coredir\music\musicplayer.ps1"}
 	Write-Host "Starting WinXShell" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ", a lightweight desktop environment used in Windows Preinstalled Environments (Windows PE)"
 	$hkws = Test-Path -Path "$env:SYSTEMDRIVE\Bionic\WinXShell"
 	if ($hkws -eq $false) {
@@ -74,12 +71,11 @@ function Start-Wumgr {
 	Write-Host " "
 	Write-Host "Starting Windows Update mode with Wumgr" -ForegroundColor Cyan -BackgroundColor DarkGray
 	Start-HikaruMusicAndShell
-	$workdir = Split-Path(Split-Path "$PSScriptRoot")
-	$hkwumgr = Test-Path -Path "$env:SYSTEMDRIVE\Bionic\Wumgr"
+	$hkwumgr = Test-Path -Path "$datadir\utils\Wumgr"
 	if ($hkwumgr -eq $false) {
-		Expand-Archive -Path $workdir\utils\Wumgr.zip -DestinationPath $env:SYSTEMDRIVE\Bionic\Wumgr
+		Expand-Archive -Path $workdir\utils\Wumgr.zip -DestinationPath $datadir\utils\Wumgr
 	}
-	Start-Process "$env:SYSTEMDRIVE\Bionic\Wumgr\wumgr.exe" -Wait
+	Start-Process "$datadir\utils\Wumgr\wumgr.exe" -Wait
 	Restart-UpdateMode
 }
 function Restart-UpdateMode {
@@ -94,6 +90,7 @@ function Restart-UpdateMode {
 		exit
 	} else {
 		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'null' -Type String
+		Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'null' -Type String
 		& $workdir\modules\lib\interuptmessage.ps1
 		Stop-UpdateModeSuccess
 	}

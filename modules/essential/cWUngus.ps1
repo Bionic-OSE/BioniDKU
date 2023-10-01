@@ -33,14 +33,14 @@ switch ($build) {
 	}
 }
 
-$cwuf = (Get-ChildItem -Path $workdir\dls -Filter windows*.msu)
-$chonkexists = Test-Path -Path "$workdir\dls\$cwuf" -PathType Leaf
+$cwuf = (Get-ChildItem -Path $datadir\dls -Filter windows*.msu)
+$chonkexists = Test-Path -Path "$datadir\dls\$cwuf" -PathType Leaf
 Start-Process powershell -ArgumentList "-Command $workdir\modules\removal\wukiller.ps1"
 if ($chonkexists -eq $false) {
 	while ($true) {
-		Start-Process $env:SYSTEMDRIVE\Bionic\Hikarefresh\wget.exe -Wait -NoNewWindow -ArgumentList "--tries 7 --show-progress -c $chonkdate" -WorkingDirectory $workdir\dls
-		$cwuf = (Get-ChildItem -Path $workdir\dls -Filter windows*.msu)
-		if (Test-Path -Path "$workdir\dls\$cwuf" -PathType Leaf) {break} else {
+		Start-Process $env:SYSTEMDRIVE\Bionic\Hikarefresh\wget.exe -Wait -NoNewWindow -ArgumentList "--tries 7 --show-progress -c $chonkdate" -WorkingDirectory $datadir\dls
+		$cwuf = (Get-ChildItem -Path $datadir\dls -Filter windows*.msu)
+		if (Test-Path -Path "$datadir\dls\$cwuf" -PathType Leaf) {break} else {
 			Write-Host " "
 			Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
 		}
@@ -54,9 +54,9 @@ Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "WuKillerStop" -Value 1 -
 
 Start-Sleep -Seconds 5
 Start-Service -Name wuauserv
-Start-Process wusa.exe -NoNewWindow -ArgumentList "$workdir\dls\$cwuf"
+Start-Process wusa.exe -NoNewWindow -ArgumentList "$datadir\dls\$cwuf"
 Write-Host " "; Write-Host -ForegroundColor Yellow "Wait for a while, then when it prompts you to install, click Yes and let it install the update. When it's done, you can restart using the button on the prompt, or by coming back here and pressing Enter TWICE."
-Write-Host "If wusa.exe fails to open, you can manually open the update at $workdir\dls\$cwuf"
+Write-Host "If wusa.exe fails to open, you can manually open the update at $datadir\dls\$cwuf"
 Write-Host "Good luck updating!" -ForegroundColor White
 
 & $workdir\modules\essential\cWUngun.ps1

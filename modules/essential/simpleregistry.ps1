@@ -99,7 +99,7 @@ switch ($true) {
 	
 	{$remove3Dobjects -and $build -ge 16299} {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing 3D Objects from This PC"
-		Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}' -Force
+		Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}' -Force -ErrorAction SilentlyContinue
 	}
 	
 	$defaultcolor {
@@ -205,7 +205,7 @@ switch ($true) {
 	$nopowerthrottling {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling Power Throttling"
 		$powexists = Test-Path -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling'
-		if (-not $powexists) {New-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'CloudContent'}
+		if (-not $powexists) {New-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'PowerThrottling'}
 		Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling' -Name "PowerThrottlingOff" -Value 1 -Type DWord -Force
 	}
 	

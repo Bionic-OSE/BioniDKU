@@ -12,7 +12,7 @@ function Set-HikaruChan {
 
 function Start-HikaruShell {
 	Start-Process $env:SYSTEMDRIVE\Windows\explorer.exe 
-	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\DomainAmbient.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainAmbient.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Start-Sleep -Seconds 5
 }
 

@@ -30,11 +30,12 @@ Write-Hhhh " - Mozilla Firefox ESR" ": https://www.mozilla.org/en-US/firefox/ent
 Write-Hhhh " - ShareX" ": https://getsharex.com"
 Write-Hhhh " - Notepad++" ": https://notepad-plus-plus.org"
 Write-Hhhh " - DesktopInfo" ": https://www.glenn.delahoy.com/desktopinfo/"
+Write-Hhhh " - VLC" ": https://www.videolan.org/"
 Write-Host " Cosmetic elements:" -ForegroundColor Blue
 Write-Hhhh " - Desktop background" " (Normal mode): 
    https://www.reddit.com/r/Genshin_Impact/comments/sk74fe/chinju_forest_inazuma_viewpoint_art"
-Write-Hhhh " - Desktop background" " (Windows Update mode):
-   https://msdesign.blob.core.windows.net/wallpapers/microsoft_brand_heritage_04.jpg"
+Write-Hhhh " - Desktop background" " (Dark Sakura mode):
+   https://www.hoyolab.com/article/13736966"
 Write-Hhhh " - Ambient sound package" " (Script sound effects and Hikaru startup sounds): 
    Extracted from Genshin Impact in-game sounds effects. (c) COGNOSPHERE PTE. LTD."
 Write-Hhhh " - FFPlay" " (Hand-crafted music player):
@@ -44,8 +45,8 @@ Write-Host "####### SECTION 3: BioniDKU Contributors ########" -ForegroundColor 
 Write-Host " "
 Write-Host " I would also like to thank the following people for making this script possible:" -ForegroundColor Blue
 Write-Host " (All usernames listed below are Discord usernames)"
-Write-Host " - AutoIDKU author" -ForegroundColor Green -n; Write-Host ": @sunryze#5817"
-Write-Hhhh " - Volunteered testers" ": @Julia#6033, @Zippykool#3826"
+Write-Host " - AutoIDKU author" -ForegroundColor Green -n; Write-Host ": @sunryze"
+Write-Hhhh " - Volunteered testers" ": @juliastechspot, @zippykool"
 Write-Host " "
 Write-Host " "
 Write-Host "Press Enter to return to main menu." -ForegroundColor Yellow

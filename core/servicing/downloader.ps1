@@ -3,8 +3,8 @@
 
 function Start-DownloadLoop($link,$destfile,$name) {
 	while ($true) {
-		Start-BitsTransfer -DisplayName "Downloading $name" -Description " " -Source $link -Destination $workdir\dls\$destfile -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
-		if (Test-Path -Path "$workdir\dls\$destfile" -PathType Leaf) {break} else {
+		Start-BitsTransfer -DisplayName "Downloading $name" -Description " " -Source $link -Destination $datadir\dls\$destfile -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+		if (Test-Path -Path "$datadir\dls\$destfile" -PathType Leaf) {break} else {
 			Write-Host " "
 			Write-Host -ForegroundColor Black -BackgroundColor Red "Ehhhhhhh"
 			Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
@@ -48,7 +48,7 @@ function Write-AppsList($action) {
 }
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).HikaruMode
 if ($hkm -eq 0) {
-	. $workdir\dls\PATCHME.ps1
+	. $datadir\dls\PATCHME.ps1
 	Write-Host "Installing essential programs" -ForegroundColor Cyan -BackgroundColor DarkGray
 	Write-AppsList "installed:"
 	exit
@@ -69,37 +69,33 @@ function Show-Branding {
 	Write-Host " "
 }
 Show-Branding
-$workdir = Split-Path(Split-Path "$PSScriptRoot")
-$coredir = Split-Path "$PSScriptRoot"
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:coredir = Split-Path "$PSScriptRoot"
+$global:datadir = "$workdir\data"
 
-# Create downloads folder
-$dlfe = Test-Path -Path "$workdir\dls"
-if ($dlfe -eq $false) {
-	New-Item -Path $workdir -Name dls -itemType Directory | Out-Null
-}
 $hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 if ($ds -eq 1) {$min = 4; $max = 6; $avg = "s"} else {$min = 1; $max = 4; $avg = "n"}
 if ($hkau -eq 1) {
 	$n = Get-Random -Minimum $min -Maximum $max
-	Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
+	Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
 	Start-Process "$env:SYSTEMDRIVE\Windows\SysWOW64\SndVol.exe"
-	Write-Host -ForegroundColor White "For more information on the currently playing music, refer to $coredir\ambient\ChillWaitInfo.txt"
+	Write-Host -ForegroundColor White "For more information on the currently playing music, refer to $datadir\ambient\ChillWaitInfo.txt"
 	Write-Host -ForegroundColor Yellow "DO NOT adjust the volume of FFPlay! It will affect your music experience later on!"
 }
 Start-Sleep -Seconds 3
 
 Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU/raw/main/PATCHME.ps1" "PATCHME.ps1" "Software versions information file"
-. $workdir\dls\PATCHME.ps1
+. $datadir\dls\PATCHME.ps1
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting Utilities package"
-Start-Process powershell -Wait -ArgumentList "-Command $workdir\utils\utilsg.ps1" -WorkingDirectory $workdir\utils
+Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\utilsg.ps1"
 if ((Test-Path -Path "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer") -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "ContextMenuNormalizer" -ItemType directory}
-Copy-Item "$workdir\utils\ContextMenuNormalizer.exe" -Destination "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer"
+Copy-Item "$datadir\utils\ContextMenuNormalizer.exe" -Destination "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer"
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer\ContextMenuNormalizer.exe" -Type String -Force
 
 if ($hkau -eq 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting music packages"
-	Start-Process powershell -Wait -ArgumentList "-Command $workdir\music\music${avg}.ps1" -WorkingDirectory $workdir\music
+	Start-Process powershell -Wait -ArgumentList "-Command $coredir\music\music${avg}.ps1"
 }
 
 $esapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).EssentialApps
@@ -125,7 +121,7 @@ if ($esapps -eq 1) {
 			$Firefox {Start-DownloadLoop $dl6 firefoxesr.exe "Firefox ESR"}
 			$NPP {Start-DownloadLoop $dl8 npp.exe "Notepad++"}
 			$ShareX {Start-DownloadLoop $dl9 sharex462.exe "ShareX"}
-			$VLC {Start-DownloadLoop $dlX vlc.exe "VLC"}
+			$VLC {Start-DownloadLoop $dlX "vlc-${VLCver}-win64.exe" "VLC"}
 		}
 	}
 }
@@ -138,7 +134,7 @@ if ($pwsh -eq 5 -and $dotnet462d -eq 1) {
 	Write-Host "If it fails to download, please manually download via this link:"  -BackgroundColor Cyan -ForegroundColor Black 
 	Write-Host "https://go.microsoft.com/fwlink/?LinkId=780600" -ForegroundColor Cyan
 	$462dl = "https://download.visualstudio.microsoft.com/download/pr/8e396c75-4d0d-41d3-aea8-848babc2736a/80b431456d8866ebe053eb8b81a168b3/ndp462-kb3151800-x86-x64-allos-enu.exe"
-	Start-BitsTransfer -DisplayName "Downloading .NET 4.6.2" -Description " " -Source $462dl -Destination $workdir\dls\dotnet462.exe
+	Start-BitsTransfer -DisplayName "Downloading .NET 4.6.2" -Description " " -Source $462dl -Destination $datadir\dls\dotnet462.exe
 	Stop-DownloadMode 1
 } elseif ($pwsh -eq 5) {Stop-DownloadMode 1}
 

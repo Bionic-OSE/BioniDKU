@@ -1,8 +1,6 @@
 # BioniDKU music player - Powered by FFPlay - (c) Bionic Butter
 
-[console]::CursorVisible = $false
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 0 -Type DWord -Force
-$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 & $PSScriptRoot\chichi.ps1
 function Show-NotifyBalloon($title,$message1,$message2) {
 	[system.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null
@@ -17,6 +15,7 @@ $message2
 	$Balloon.ShowBalloonTip(1000)
 }
 function Show-Branding {
+	[console]::CursorVisible = $false
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
 	Write-Host "Music player module" -ForegroundColor Blue -BackgroundColor Gray
@@ -25,10 +24,12 @@ function Show-Branding {
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Music player module"
 Show-Branding
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:datadir = "$workdir\data"
 
 Write-Host "Shuffling..." -ForegroundColor White
 
-$playlist = @(Get-ChildItem "$PSScriptRoot\normal" -Recurse -Include *.mp3 | %{$_.fullname})
+$playlist = @(Get-ChildItem "$datadir\music" -Recurse -Include *.mp3 | %{$_.fullname})
 $playqueue = $playlist | Sort-Object {Get-Random}
 
 foreach ($song in $playqueue) {
@@ -43,7 +44,6 @@ foreach ($song in $playqueue) {
 	Write-Host "Album:" -ForegroundColor Cyan -n; Write-Host " $songalbm" -ForegroundColor White
 	Write-Host "Title:" -ForegroundColor Cyan -n; Write-Host " $songname" -ForegroundColor White; Write-Host ' '
 	Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -Wait -NoNewWindow -ArgumentList "-i `"$song`" -nodisp -loglevel quiet -stats -hide_banner -autoexit"
-	#$Balloon.Dispose()
 	$Balloon.Visible = $false
 	$playstop = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusicStop
 	if ($playstop -eq 1) {exit}

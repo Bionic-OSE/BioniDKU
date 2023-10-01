@@ -111,5 +111,7 @@ switch ($true) {
 Start-Sleep -Seconds 2
 Start-Process explorer.exe
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "The Apps should be disabled now"
-Start-Sleep -Seconds 3
+Start-Sleep -Seconds 2
+Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "SystemAppsRemoved" -Value 1 -Type DWord -Force
+Start-Sleep -Seconds 1
 exit

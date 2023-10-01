@@ -11,8 +11,8 @@ function Copy-Images($imgsrc,$imgxxx) {
 
 Remove-SystemFile $env:SYSTEMDRIVE\Windows\Web\Screen
 $newwall = (Test-Path -Path "$env:SYSTEMDRIVE\Windows\Web\Screen")
-if ($newwall -eq $false) {New-Item -Path "C:\Windows\Web" -Name "Screen" -ItemType directory}
-Expand-Archive -Path $workdir\utils\Screen.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Web\Screen
+if ($newwall -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Windows\Web" -Name "Screen" -ItemType directory}
+Expand-Archive -Path $datadir\utils\Screen.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Web\Screen
 Copy-Images img100.jpg img102.jpg
 Copy-Images img100.jpg img104.jpg
 Copy-Images img100.jpg img105.jpg

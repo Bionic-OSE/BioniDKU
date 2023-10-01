@@ -1,3 +1,9 @@
+# BioniDKU Music fetcher module - (c) Bionic Butter
+
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:coredir = Split-Path "$PSScriptRoot"
+$global:datadir = "$workdir\data"
+
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Music fetcher module"
 function Show-Branding {
 	Clear-Host
@@ -5,20 +11,21 @@ function Show-Branding {
 	Write-Host "Music fetcher module" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
-$mexists = Test-Path -Path "$PSScriptRoot\normal"
+$mexists = Test-Path -Path "$datadir\music"
 if ($mexists -eq $true) {exit}
 
 Show-Branding
 Import-Module BitsTransfer
 
+if (-not (Test-Path -Path "$datadir\music")) {New-Item -Path $datadir -Name "music" -itemType Directory | Out-Null}
 for ($c = 1; $c -le 5; $c++) {
 	$cv = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music").$c
 	if ($cv -eq 1) {
 		Write-Host "Downloading category $c..." -ForegroundColor White
 		for ($n = 1; $n -le 9; $n++) {
-			Start-BitsTransfer -DisplayName "Downloading category $c" -Description "Attempt $n out of 9" -Source "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal$c.7z.00$n" -Destination $PSScriptRoot -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+			Start-BitsTransfer -DisplayName "Downloading category $c" -Description "Attempt $n out of 9" -Source "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal$c.7z.00$n" -Destination $datadir\dls -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
 		}
-		Start-Process $PSScriptRoot\..\core\7za.exe -Wait -NoNewWindow -ArgumentList "x $PSScriptRoot\normal$c.7z.001 -o$PSScriptRoot\normal"
+		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\normal$c.7z.001 -o$datadir\music"
 	}
 }
 

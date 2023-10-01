@@ -11,9 +11,11 @@ Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "This process will sp
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "In addition, if you are sensitive to flashes, please minimize or do not look at this window."
 Write-Host " " 
 
+[array]$no = "Microsoft.DesktopAppInstaller","Microsoft.SecHealthUI"
 Start-Sleep -Seconds 5
-Get-AppxPackage | Remove-AppxPackage
-Get-AppxPackage -AllUsers | Remove-AppxPackage
-Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+Get-AppxPackage -AllUsers | Where-Object {$no -notcontains [string]$_.name} | Remove-AppxPackage
+Get-AppxPackage -AllUsers | Where-Object {$no -notcontains [string]$_.name} | Remove-AppxPackage
+Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue | Where-Object {$no -notcontains [string]$_.displayname} | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue | Where-Object {$no -notcontains [string]$_.displayname} | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Removal complete"
 Start-Sleep -Seconds 10

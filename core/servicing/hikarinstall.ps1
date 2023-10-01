@@ -85,8 +85,8 @@ Register-ScheduledTask 'BioniDKU Quick Menu Update Checker' -InputObject $hkF5
 Disable-ScheduledTask 'BioniDKU Quick Menu Update Checker'
 
 Copy-Item -Path $env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ApplicationFrameHost.exe"
-Copy-Item -Path $coredir\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
-Copy-Item -Path $coredir\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
+Copy-Item -Path $coredir\7z\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
+Copy-Item -Path $coredir\7z\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
 taskkill /f /im ApplicationFrameHost.exe
 takeown /f "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe"
 icacls "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe" /grant Administrators:F

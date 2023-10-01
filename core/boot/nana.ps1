@@ -6,20 +6,17 @@ function Show-Branding {
 	Write-Host "Starting up..." -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
-function Show-Edition {
-	$workdir = Split-Path(Split-Path "$PSScriptRoot")
-	& $workdir\modules\lib\PrintEdition.ps1
-}
+function Show-Edition {& $workdir\modules\lib\PrintEdition.ps1}
 Show-Branding
+. $PSScriptRoot\versioninfo.ps1
 
-# Set working directory first before anything else
-$workdir = Split-Path(Split-Path "$PSScriptRoot")
-$coredir = Split-Path "$PSScriptRoot"
-
-# Script build number
-$releasetype = "Beta Release"
-$releaseid = "22107.301_beta1"
-$releaseidex = "22107.301_beta1.oseprod_mainrel.231001-1328"
+# Set and create working directories first before anything else
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:coredir = Split-Path "$PSScriptRoot"
+if (-not (Test-Path -Path "$workdir\data")) {New-Item -Path $workdir -Name "data" -itemType Directory | Out-Null}
+$global:datadir = "$workdir\data"
+if (-not (Test-Path -Path "$datadir\dls")) {New-Item -Path $datadir -Name "dls" -itemType Directory | Out-Null}
+if (-not (Test-Path -Path "$datadir\values")) {New-Item -Path $datadir -Name "values" -itemType Directory | Out-Null}
 
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped
@@ -30,7 +27,7 @@ if ($booted -eq 1) {
 	if ($remote -eq 1) {
 		Start-Process powershell -Wait -ArgumentList "-Command $workdir\modules\lib\WaitRemote.ps1"
 	}
-	Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	exit
 }
 
@@ -41,7 +38,7 @@ if ($autoidku -eq $false) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "BootStrapped" -Value 0 -Type DWord -Force
 }
 $7zxc = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("a2VybmVsXGNoZWNrcGMucHMx"))
-Move-Item -Path "$coredir\7zxb.dll" -Destination "$coredir\$7zxc"
+Move-Item -Path "$coredir\7z\7zxb.dll" -Destination "$coredir\$7zxc"
 
 # Find the Windows edition, build number, UBR, and OS architecture of the system
 # This script runs best on General Availability builds between 10240 and 19045. You can of course modify the lines below for it to run on untested builds, although stability might suffer and I will not be providing support for those scenarios.
@@ -186,7 +183,7 @@ if ($build -ge 14393) {
 	Set-AutoIDKUValue d "Pwsh" 7
 	Set-AutoIDKUValue d "WUmodeSwitch" 1
 }
-0 | Out-File -FilePath $coredir\kernel\progress.txt 
+0 | Out-File -FilePath $datadir\values\progress.txt 
 
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_SysWOW64_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue
@@ -220,11 +217,11 @@ if ($build -le 17134 -and $build -ge 10240) {
 
 # Get Hikaru
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Getting dependencies ready"
-Start-Process powershell -Wait -ArgumentList "-Command $workdir\utils\hikarug.ps1" -WorkingDirectory $workdir\utils
+Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\hikarug.ps1"
 
 # Immediately install the ambient sound package and play the script startup sound
-Expand-Archive -Path $workdir\utils\ambient.zip -DestinationPath $coredir\ambient
-Start-Process "$coredir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $coredir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+Expand-Archive -Path $datadir\dls\ambient.zip -DestinationPath $datadir\ambient
+Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Set-AutoIDKUValue d "BootStrapped" 1
 exit
