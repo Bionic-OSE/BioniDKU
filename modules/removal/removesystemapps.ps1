@@ -86,7 +86,7 @@ $lockxaml = Test-Path "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy"
 $srchxaml = Test-Path "$sappfldr\Microsoft.Windows.Search_cw5n1h2txyewy"
 $startapp = Test-Path "$sappfldr\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy"
 taskkill /f /im ApplicationFrameHost.exe
-Stop-Process -Name explorer
+taskkill /f /im explorer.exe
 Start-Sleep -Seconds 2
 switch ($true) {
 	$edgexaml {
@@ -108,6 +108,8 @@ switch ($true) {
 	}
 }
 
+Start-Sleep -Seconds 2
 Start-Process explorer.exe
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "The Apps should be disabled now"
 Start-Sleep -Seconds 3
+exit

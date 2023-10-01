@@ -66,6 +66,7 @@ function Show-ModulesConfig {
 	Write-Host "Hide Bluetooth icon                           " -n; Write-Host -ForegroundColor White "$hidebluetoothicon   "
 	Write-Host "Disable Login screen background               " -n; Write-Host -ForegroundColor White "$disablelogonbg      "
 	Write-Host "Remove Network icon from login screen         " -n; Write-Host -ForegroundColor White "$removelckscrneticon "
+	Write-Host "Disable Power Throttling                      " -n; Write-Host -ForegroundColor White "$nopowerthrottling   "
 	Write-Host "Reduce the amount of svchost.exes             " -n; Write-Host -ForegroundColor White "$svchostslimming     "
 	Write-Host "Enable ?????.???? desktop version             " -n; Write-Host -ForegroundColor White "$desktopversion      "
 	Write-Host " "
@@ -103,7 +104,6 @@ function Check-Defender {
 		return $false
 	} else {return $true}
 }
-
 function Confirm-Wupdated {
 	switch ($build) {
 		{$_ -eq 10240} {$mrubr = 17394; if ($ubr -ge $mrubr) {return $true} else {return $false}}
@@ -111,24 +111,6 @@ function Confirm-Wupdated {
 		default {return $true}
 	}
 }
-
-function Show-Disenabled($regvalue) {
-	if ($regvalue -eq 1) {
-		Write-Host -ForegroundColor Green " (ENABLED)"
-	} else {
-		Write-Host -ForegroundColor Red " (DISABLED)"
-	}
-}
-
-function Select-Disenabled($regvalue) {
-	$regreturns = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").$regvalue
-	if ($regreturns -eq 1) {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 0 -Type DWord -Force
-	} else {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 1 -Type DWord -Force
-	}
-}
-
 function Check-EnoughActions {
 	switch ($true) {
 		$hidetaskbaricons {}
@@ -154,6 +136,22 @@ function Check-EnoughActions {
 		}
 	}
 }
+
+function Show-Disenabled($regvalue) {
+	if ($regvalue -eq 1) {
+		Write-Host -ForegroundColor Green " (ENABLED)"
+	} else {
+		Write-Host -ForegroundColor Red " (DISABLED)"
+	}
+}
+function Select-Disenabled($regvalue) {
+	$regreturns = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").$regvalue
+	if ($regreturns -eq 1) {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 0 -Type DWord -Force
+	} else {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 1 -Type DWord -Force
+	}
+}
 function Show-WelcomeText {
 	Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 	Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
@@ -165,7 +163,7 @@ $remotesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRSwitc
 $ds       = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 if ($confulee -eq 2) {$confules = 2} elseif ($confulee -eq 3) {$confules = 3}
 else {
-	$snareason1 = " - For this version of Windows 10, you must be running at least build $build.$mrubr in order to execute this script.`r`n   Please update your device and try again."
+	$snareason1 = " - For this version of Windows 10, you must be running at least build ${build}.${mrubr} in order to execute this script.`r`n   Please update your device and try again."
 	$snareason2 = " - You did not select enough options in Advanced script configuration to proceed.`r`n   Try select a few more options, and try again."
 	$snareason3 = " - Windows Defender is currently active. Please disable it (using dControl) and try again."
 	switch ($false) {

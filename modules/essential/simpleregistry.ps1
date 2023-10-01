@@ -202,6 +202,13 @@ switch ($true) {
 		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name "DontDisplayNetworkSelectionUI" -Value 1 -Type DWord -Force
 	}
 	
+	$nopowerthrottling {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling Power Throttling"
+		$powexists = Test-Path -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling'
+		if (-not $powexists) {New-Item -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'CloudContent'}
+		Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerThrottling' -Name "PowerThrottlingOff" -Value 1 -Type DWord -Force
+	}
+	
 	$svchostslimming {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting svchost.exe to max RAM"
 		$svchostvalue = (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum /1kb

@@ -11,7 +11,7 @@ Show-Branding
 Import-Module BitsTransfer
 
 # IMPORTANT SECTION
-$utag = "300_u5"
+$utag = "301_b1"
 $unum = 2
 
 for ($u = 1; $u -le $unum; $u++) {

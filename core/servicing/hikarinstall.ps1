@@ -9,7 +9,7 @@ if ($hkreg -eq $false) {
 }
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "ProductName" -Value "BioniDKU" -Type String -Force
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value $var -Type DWord -Force
-Start-Process $env:SYSTEMDRIVE\Bionic\Hikarefresh\wget.exe -Wait -NoNewWindow -ArgumentList "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikarefreshinfo.ps1 -O HikarefreshinFOLD.ps1" -WorkingDirectory "$env:SYSTEMDRIVE\Bionic\Hikarefresh"
+Start-Process $env:SYSTEMDRIVE\Bionic\Hikarefresh\wget.exe -Wait -NoNewWindow -ArgumentList "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikarefreshinfo.ps1 -O HikarefreshinFOLD.ps1" -WorkingDirectory "$env:SYSTEMDRIVE\Bionic\Hikarefresh" 
 Show-WindowTitle noclose
 
 # Hikarun on-demand customization section
@@ -46,6 +46,9 @@ if ($desktopversion -and $ngawarn -ne 1 -and $editiok.Contains($edition)) {
 	}
 }
 
+# Also from here, reenable UAC if it's a GA build
+if ($keepuac -and $ngawarn -ne 1) {Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name EnableLUA -Value 1 -Force}
+
 # Write the customized values to the on-demand batch file
 @"
 @echo off
@@ -64,7 +67,7 @@ $hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\BioniDKU Quick Men
 $hkQMLSh = $WscriptObj.CreateShortcut($hkQMLS)
 $hkQMLSh.TargetPath = $hkQML
 $hkQMLSh.Save()
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "BioniDKU Quick Menu Tray" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe" -Type String -Force
+Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "BioniDKU Quick Menu Tray" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe" -Type String -Force
 
 if ($build -eq 10586) {
 	mofcomp C:\Windows\System32\wbem\SchedProv.mof
@@ -77,6 +80,9 @@ $hkF5trigger = @(
 $hkF5settings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
 $hkF5 = New-ScheduledTask -Action $hkF5action -Trigger $hkF5trigger -Settings $hkF5settings
 Register-ScheduledTask 'BioniDKU Quick Menu Update Checker' -InputObject $hkF5
+
+# This line is here for Hikaru beta. Remove it on final please.
+Disable-ScheduledTask 'BioniDKU Quick Menu Update Checker'
 
 Copy-Item -Path $env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ApplicationFrameHost.exe"
 Copy-Item -Path $coredir\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"

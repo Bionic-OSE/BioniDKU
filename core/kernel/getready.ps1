@@ -16,8 +16,8 @@ Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Write-Host " "
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Hooking the script to the startup sequence"
 Copy-Item "$coredir\ambient\FFPlay.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru"
-Set-AutoIDKUValue d "HikaruMode" 1
-& $coredir\kernel\hikaru.ps1
+. $coredir\kernel\hikaru.ps1
+Set-HikaruChan
 
 $remotesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).RunningThisRSwitch
 switch ($true) {
@@ -40,7 +40,7 @@ $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction Silent
 $windowsupdate = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmodeSwitch
 if ($windowsupdate -eq 1 -and $ngawarn -ne 1 -and $edition -notlike "EnterpriseG" -and $build -ge 14393) {
 	# Take control over Windows Update so it doesn't do stupid, unless if it's Home or Server edition.
-	if ($edition -notlike "Core" -or $edition -notlike "ServerStandard" -or $edition -notlike "ServerDatacenter") {
+	if ($edition -notlike "Core*" -or $edition -notlike "Server*") {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Taking control over Windows Update" -n; Write-Host " (so it doesn't do stupid)" -ForegroundColor White
 		switch ($build) {
 			{$_ -ge 10240 -and $_ -le 19041} {$version = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').ReleaseId}
@@ -67,6 +67,7 @@ if ($windowsupdate -eq 1 -and $ngawarn -ne 1 -and $edition -notlike "EnterpriseG
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling UAC and applying some tweaks to the system"
 Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name ConsentPromptBehaviorAdmin -Value 0 -Force
 Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name EnableLUA -Value 0 -Force
+Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name PromptOnSecureDesktop -Value 0 -Force
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'HideFileExt' -Value 0 -Type DWord -Force
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'SeparateProcess' -Value 1 -Type DWord -Force
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'DontUsePowerShellOnWinX' -Value 1 -Type DWord -Force

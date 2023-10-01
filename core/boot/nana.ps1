@@ -17,9 +17,9 @@ $workdir = Split-Path(Split-Path "$PSScriptRoot")
 $coredir = Split-Path "$PSScriptRoot"
 
 # Script build number
-$releasetype = "Stable Release"
-$releaseid = "22107.300_update5"
-$releaseidex = "22107.300_update5.oseprod_mainrel.230908-1101"
+$releasetype = "Beta Release"
+$releaseid = "22107.301_beta1"
+$releaseidex = "22107.301_beta1.oseprod_mainrel.231001-1328"
 
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped
@@ -100,7 +100,7 @@ if ($editiontype -like "Server") {
 	Start-Sleep -Seconds 3
 	Write-Host " "
 }
-switch ($editon) {
+switch ($edition) {
 	{$_ -like "Core"} {
 		Write-Host " "
 		Write-Host "Home edition detected" -ForegroundColor Black -BackgroundColor Yellow
@@ -108,7 +108,7 @@ switch ($editon) {
 		Start-Sleep -Seconds 3
 		Write-Host " "
 	}
-	{$_ -eq "EnterpriseG"} {
+	{$_ -like "EnterpriseG"} {
 		Write-Host " "
 		Write-Host "China Government edition detected" -ForegroundColor Black -BackgroundColor Yellow
 		Write-Host "Windows Update mode will be automatically disabled on this edition, as CMGE's custom update policies can cause issues with this mode." -ForegroundColor Yellow -BackgroundColor DarkGray
@@ -186,6 +186,7 @@ if ($build -ge 14393) {
 	Set-AutoIDKUValue d "Pwsh" 7
 	Set-AutoIDKUValue d "WUmodeSwitch" 1
 }
+0 | Out-File -FilePath $coredir\kernel\progress.txt 
 
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_SysWOW64_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue

@@ -34,6 +34,8 @@
 <# Replace SlideToShutDown.exe background #>                  $sltoshutdownwall =            $true
 <# Don't touch Edge Chromium** #>                             $keepedgechromium =            $false
 <# Keep Windows Search** #>                                   $keepsearch =                  $true
+<# Keep UAC (Stable only) #>                                  $keepuac =                     $true
+<# Hide the shut down/restart screen (non-Home/Servers #>     $embeddedlogon =               $true
 
 <#  *Essential Apps required #>
 <# **Affects $removeedgeshortcut and $removesystemapps #>
@@ -73,6 +75,7 @@
 <# Hide Bluetooth icon #>                                     $hidebluetoothicon =           $true
 <# Disable Login screen background #>                         $disablelogonbg =              $true
 <# Remove Network icon from login screen #>                   $removelckscrneticon =         $true
+<# Disable Power Throttling #>                                $nopowerthrottling =           $false
 <# Reduce the amount of svchost.exes #>                       $svchostslimming =             $true
 <# Enable ?????.???? desktop version #>                       $desktopversion =              $false
 
