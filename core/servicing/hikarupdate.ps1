@@ -60,7 +60,7 @@ function Start-HikaruMusicAndShell {
 	Write-Host "Starting WinXShell" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ", a lightweight desktop environment used in Windows Preinstalled Environments (Windows PE)"
 	$hkws = Test-Path -Path "$env:SYSTEMDRIVE\Bionic\WinXShell"
 	if ($hkws -eq $false) {
-		Expand-Archive -Path $workdir\utils\WinXShell.zip -DestinationPath $env:SYSTEMDRIVE\Bionic\WinXShell
+		Expand-Archive -Path $datadir\utils\WinXShell.zip -DestinationPath $env:SYSTEMDRIVE\Bionic\WinXShell
 		$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 		if ($ds -eq 1) {Move-Item "$env:SYSTEMDRIVE\Bionic\WinXShell\sakuraground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -Force}
 	}
@@ -97,14 +97,16 @@ function Restart-UpdateMode {
 }
 function Show-StuckHelp {
 	$targetcheck = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -ErrorAction SilentlyContinue).TargetReleaseVersion
-	if ($targetcheck -eq 1 -and $edition -notlike "Core") {
+	if ($targetcheck -eq 1 -and $edition -notmatch "Core") {
 		Write-Host " "
 		Write-Host "HINT: " -ForegroundColor Magenta -n; Write-Host "If you got stuck at a Feature Update, try the following fix" -ForegroundColor Cyan
 		Write-Host "- Start Windows Update mode with Wumgr (option 2)"
 		Write-Host "- Open Registry Editor via the Run dialog like usual and nagivate to"
 		Write-Host "  HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -ForegroundColor White
-		Write-Host "- Change value" -n; Write-Host ' "TargetReleaseVersionInfo" ' -ForegroundColor White -n; Write-Host "to an older version"
-		Write-Host "  (say if it's 2004, change it to 1909)"
+		if ($build -gt 10240) {
+			Write-Host "- Change value" -n; Write-Host ' "TargetReleaseVersionInfo" ' -ForegroundColor White -n; Write-Host "to an older version"
+			Write-Host "  (say if it's 2004, change it to 1909)"
+		}
 		Write-Host "- Then, switch value" -n; Write-Host ' "TargetReleaseVersion" ' -ForegroundColor White -n; Write-Host "to 0"
 		Write-Host '- After that, via Run, open a Command Prompt and type ' -n; Write-Host '"powershell Restart-Service -Name wuauserv"' -ForegroundColor White
 		Write-Host "- Switch value" -n; Write-Host ' "TargetReleaseVersion" ' -ForegroundColor White -n; Write-Host "back to 1"
@@ -158,7 +160,7 @@ Start-HikaruMusicAndShell
 
 Write-Host "Getting Windows ready" -ForegroundColor Cyan -BackgroundColor DarkGray
 if ($wupdated -ne 1) {& $workdir\modules\essential\cWUngus.ps1}
-Import-Module PSWindowsUpdate #-Verbose
+Import-Module PSWindowsUpdate
 
 Write-Host " "
 Write-Host -ForegroundColor Cyan "Updating the system until it reaches the desired UBR"

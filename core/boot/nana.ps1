@@ -173,16 +173,9 @@ Set-AutoIDKUValue d "DarkSakura" 0
 if (Get-RemoteSoftware) {Set-AutoIDKUValue d "RunningThisRSwitch" 1} else {Set-AutoIDKUValue d "RunningThisRSwitch" 0}
 Set-AutoIDKUValue d "ClearBootMessage" 0
 
-if ($build -le 10586) {
-	Write-Host " "
-	Set-AutoIDKUValue d "Pwsh" 5
-	Set-AutoIDKUValue d "WUmodeSwitch" 0
-}
-if ($build -ge 14393) {
-	Write-Host " "
-	Set-AutoIDKUValue d "Pwsh" 7
-	Set-AutoIDKUValue d "WUmodeSwitch" 1
-}
+if ($build -le 10586) {Set-AutoIDKUValue d "Pwsh" 5}
+elseif ($build -ge 14393) {Set-AutoIDKUValue d "Pwsh" 7}
+Set-AutoIDKUValue d "WUmodeSwitch" 1
 0 | Out-File -FilePath $datadir\values\progress.txt 
 
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue

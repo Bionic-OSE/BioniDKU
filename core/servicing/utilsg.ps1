@@ -19,17 +19,15 @@ Show-Branding
 Import-Module BitsTransfer
 
 # IMPORTANT SECTION
-$utag = "301_b1"
-$unum = 2
+$utag = "400_b2"
 
-for ($u = 1; $u -le $unum; $u++) {
-	while ($true) {
-		Start-BitsTransfer -DisplayName "Getting the Utilites package" -Description "Downloading file $u out of $unum" -Source "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/$utag/utils.7z.00$u" -Destination $datadir\utils -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
-		if (Test-Path -Path "$datadir\utils\utils.7z.00$u" -PathType Leaf) {break} else {
-			Write-Host " "
-			Write-Host -ForegroundColor Black -BackgroundColor Red "Uhhhhhhh"
-			Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
-		}
+while ($true) {
+	Start-BitsTransfer -DisplayName "Getting the Utilites package" -Description " " -Source "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/$utag/utils.7z" -Destination $datadir\utils -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+	if (Test-Path -Path "$datadir\utils\utils.7z" -PathType Leaf) {break} else {
+		Write-Host " "
+		Write-Host -ForegroundColor Black -BackgroundColor Red "Uhhhhhhh"
+		Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
 	}
 }
-Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "e $datadir\utils\utils.7z.001 -o$datadir\utils -y"
+
+Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "e $datadir\utils\utils.7z -o$datadir\utils -y"

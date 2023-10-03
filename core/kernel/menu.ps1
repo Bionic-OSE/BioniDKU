@@ -104,13 +104,6 @@ function Check-Defender {
 		return $false
 	} else {return $true}
 }
-function Confirm-Wupdated {
-	switch ($build) {
-		{$_ -eq 10240} {$mrubr = 17394; if ($ubr -ge $mrubr) {return $true} else {return $false}}
-		{$_ -eq 10586} {$mrubr =  1176; if ($ubr -ge $mrubr) {return $true} else {return $false}}
-		default {return $true}
-	}
-}
 function Check-EnoughActions {
 	switch ($true) {
 		$hidetaskbaricons {}
@@ -163,18 +156,13 @@ $remotesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRSwitc
 $ds       = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 if ($confulee -eq 2) {$confules = 2} elseif ($confulee -eq 3) {$confules = 3}
 else {
-	$snareason1 = " - For this version of Windows 10, you must be running at least build ${build}.${mrubr} in order to execute this script.`r`n   Please update your device and try again."
-	$snareason2 = " - You did not select enough options in Advanced script configuration to proceed.`r`n   Try select a few more options, and try again."
-	$snareason3 = " - Windows Defender is currently active. Please disable it (using dControl) and try again."
+	$snareason1 = " - You did not select enough options in Advanced script configuration to proceed.`r`n   Try select a few more options, and try again."
+	$snareason2 = " - Windows Defender is currently active. Please disable it (using dControl) and try again."
 	switch ($false) {
 		# This part needs a better logic rework
-		{(Confirm-Wupdated) -eq $_} {$snarscode = 1; $startallowed = $false}
-		{(Check-EnoughActions) -eq $_} {$snarscode = 2; $startallowed = $false}
-		{(Check-Defender) -eq $_} {$snarscode = 3; $startallowed = $false}
-		{(Confirm-Wupdated) -eq $_ -and (Check-EnoughActions) -eq $_} {$snarscode = 4; $startallowed = $false}
-		{(Check-Defender) -eq $_ -and (Check-EnoughActions) -eq $_} {$snarscode = 5; $startallowed = $false}
-		{(Check-Defender) -eq $_ -and (Confirm-Wupdated) -eq $_} {$snarscode = 6; $startallowed = $false}
-		{(Confirm-Wupdated) -eq $_ -and (Check-EnoughActions) -eq $_ -and (Check-Defender) -eq $_} {$snarscode = 7; $startallowed = $false}
+		{(Check-EnoughActions) -eq $_} {$snarscode = 1; $startallowed = $false}
+		{(Check-Defender) -eq $_} {$snarscode = 2; $startallowed = $false}
+		{(Check-Defender) -eq $_ -and (Check-EnoughActions) -eq $_} {$snarscode = 3; $startallowed = $false}
 		default {$startallowed = $true}
 	}
 	Show-Branding clear
@@ -187,11 +175,7 @@ else {
 			switch ($snarscode) {
 				{$_ -eq 1} {Write-Host -ForegroundColor Red "$snareason1"}
 				{$_ -eq 2} {Write-Host -ForegroundColor Red "$snareason2"}
-				{$_ -eq 3} {Write-Host -ForegroundColor Red "$snareason3"}
-				{$_ -eq 4} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason2}"}
-				{$_ -eq 5} {Write-Host -ForegroundColor Red "${snareason2}`r`n${snareason3}"}
-				{$_ -eq 6} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason3}"}
-				{$_ -eq 7} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason2}`r`n${snareason3}"}
+				{$_ -eq 3} {Write-Host -ForegroundColor Red "${snareason1}`r`n${snareason2}"}
 			}
 		}
 		{$_ -eq $true} {
@@ -251,10 +235,10 @@ switch ($confules) {
 		$essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EssentialApps
 		$windowsupdatesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmodeSwitch
 		$media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
-		if ($pwsh -eq 5) {$wucolor = "DarkGray"} else {$wucolor = "White"}
+		if ($build -eq 10240) {$wucolor = "DarkGray"} else {$wucolor = "White"}
 		Write-Host " "
 		Write-Host -ForegroundColor Yellow "Configure the script by tuning the following options to your desire."
-		Write-Host -ForegroundColor $wucolor "1. Toggle Windows Update mode" -n; if ($pwsh -eq 7) {Show-Disenabled $windowsupdatesw} else {Write-Host " "}
+		Write-Host -ForegroundColor $wucolor "1. Toggle Windows Update mode" -n; if ($build -gt 10240) {Show-Disenabled $windowsupdatesw} else {Write-Host " (FORCEFULLY ENABLED)" -ForegroundColor DarkGray}
 		Write-Host -ForegroundColor White "2. Set desktop wallpaper to the one from the script" -n; Show-Disenabled $setwallpaper
 		Write-Host -ForegroundColor White "3. Use sounds from Windows 10 build 10074 instead of Windows 8" -n; Show-Disenabled $media10074
 		Write-Host -ForegroundColor White "4. Increase wait time (ideal for remote setups)" -n; Show-Disenabled $increasewait
@@ -266,12 +250,12 @@ switch ($confules) {
 		Write-Host " "
 		Write-Host "Your selection: " -n ; $confulee = Read-Host
 		switch ($confulee) {
-			{$_ -like "1"} {if ($pwsh -eq 7) {Select-Disenabled WUmodeSwitch}; exit}
+			{$_ -like "1"} {if ($build -gt 10240) {Select-Disenabled WUmodeSwitch}; exit}
 			{$_ -like "2"} {Select-Disenabled SetWallpaper; exit}
 			{$_ -like "3"} {Select-Disenabled Media10074; exit}
 			{$_ -like "4"} {Select-Disenabled RunningThisRemotely; exit}
 			{$_ -like "5"} {Select-Disenabled HikaruMusic; exit}
-			{$_ -like "6"} {if ($setupmusic -eq 1) {& $workdir\music\musicpicker.ps1}; exit}
+			{$_ -like "6"} {if ($setupmusic -eq 1) {& $coredir\music\musicpicker.ps1}; exit}
 			{$_ -like "7"} {Select-Disenabled EssentialApps; exit}
 			{$_ -like "8"} {if ($essentialapps -eq 1) {& $workdir\modules\apps\appspicker.ps1}; exit}
 			{$_ -like "0"} {

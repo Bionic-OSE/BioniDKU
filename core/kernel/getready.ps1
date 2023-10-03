@@ -38,13 +38,13 @@ switch ($true) {
 
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
 $windowsupdate = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmodeSwitch
-if ($windowsupdate -eq 1 -and $ngawarn -ne 1 -and $edition -notlike "EnterpriseG" -and $build -ge 14393) {
+if ($windowsupdate -eq 1 -and $ngawarn -ne 1 -and $edition -notlike "EnterpriseG") {
 	# Take control over Windows Update so it doesn't do stupid, unless if it's Home or Server edition.
-	if ($edition -notlike "Core*" -or $edition -notlike "Server*") {
+	if ($edition -notmatch "Core" -or $editiontype -like "Server") {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Taking control over Windows Update" -n; Write-Host " (so it doesn't do stupid)" -ForegroundColor White
 		switch ($build) {
 			{$_ -ge 10240 -and $_ -le 19041} {$version = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').ReleaseId}
-			{$_ -ge 19042 -and $_ -le 19044} {$version = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').DisplayVersion}
+			{$_ -ge 19042 -and $_ -le 19045} {$version = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').DisplayVersion}
 		}
 		$wudir = (Test-Path -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate)
 		if ($wudir -eq $false) {New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name 'WindowsUpdate'}

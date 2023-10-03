@@ -135,19 +135,31 @@ if ($pwsh -eq 5 -and $dotnet462d -eq 1) {
 	Write-Host "https://go.microsoft.com/fwlink/?LinkId=780600" -ForegroundColor Cyan
 	$462dl = "https://download.visualstudio.microsoft.com/download/pr/8e396c75-4d0d-41d3-aea8-848babc2736a/80b431456d8866ebe053eb8b81a168b3/ndp462-kb3151800-x86-x64-allos-enu.exe"
 	Start-BitsTransfer -DisplayName "Downloading .NET 4.6.2" -Description " " -Source $462dl -Destination $datadir\dls\dotnet462.exe
-	Stop-DownloadMode 1
-} elseif ($pwsh -eq 5) {Stop-DownloadMode 1}
+}
 
 $wu = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).WUmode
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
 if ($wu -eq 1 -and $ngawarn -ne 1) {
-	Write-Host " "
-	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Downloading and installing PSWindowsUpdate"
+	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "`r`nDownloading and installing PSWindowsUpdate"
+	$thpm = "$env:SYSTEMDRIVE\Program Files\WindowsPowerShell\Modules\PackageManagement"
+	if ($build -lt 14393 -and (Test-Path -Path "$thpm\1.0.0.1") -eq $false) {Expand-Archive -Path $datadir\utils\THPM.zip -DestinationPath "$thpm\1.0.0.1"; Write-Warning "You may get errors related to NuGet, and that's normal."}
 	Install-PackageProvider -Name "NuGet" -Verbose -Force
 	Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 	Add-Type -AssemblyName presentationCore
-	Install-Module PSWindowsUpdate -Verbose
-	Stop-DownloadMode 2
+	$pswucheck = 1
+	while ($pswucheck -le 5) {
+		if ($build -ge 14393) {Install-Module PSWindowsUpdate -Verbose} else {Start-Process powershell -Wait -ArgumentList "Install-Module PSWindowsUpdate -Verbose -RequiredVersion 2.2.0.2"}
+		if (Get-Module -ListAvailable -Name PSWindowsUpdate) {
+			Write-Host -ForegroundColor Green "PSWindowsUpdate has been installed"
+			Stop-DownloadMode 2
+		} 
+		else {
+			Write-Host -ForegroundColor Red "Did PSWindowsUpdate fail to install? Retrying... (${pswucheck}/5)"
+			$pswucheck++
+			Start-Sleep -Seconds 2
+		}
+	}
+	Write-Host -ForegroundColor Black -BackgroundColor Red "Failed to install PSWindowsUpdate. Windows Update mode has been disabled."
 }
 
 Stop-DownloadMode 1

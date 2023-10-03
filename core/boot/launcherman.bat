@@ -47,7 +47,7 @@ goto PSRestartS
 
 :DownloadMode
 timeout 1 /nobreak > nul
-powershell ..\servicing\downloader.ps1
+powershell -NonInteractive ..\servicing\downloader.ps1
 goto PSRestartS
 
 :BioniDKU

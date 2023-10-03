@@ -13,7 +13,7 @@ $edition = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentV
 # OS type detection
 switch ($edition) {
 	default {$editiontype = "10"}
-	{$_ -like "Server*"} {$editiontype = "Server"}
+	{$_ -match "Server"} {$editiontype = "Server"}
 }
 
 # N edition detection
@@ -32,8 +32,9 @@ switch ($editionn) {
 	"ProfessionalWorkstation" {$editionf = "Pro for Workstations"}
 	"IoTEnterprise" {$editionf = "IoT Enterprise"}
 	"EnterpriseEval" {$editionf = "Enterprise Evaluation"}
-	"*EnterpriseS*" {
+	{$_ -match "EnterpriseS"} {
 		switch ([int32]$build) {
+			10240 {$ltsrel = "B 2015"}
 			14393 {$ltsrel = "B 2016"}
 			17763 {$ltsrel = "C 2019"}
 			19044 {$ltsrel = "C 2021"}
@@ -51,7 +52,7 @@ switch ($editionn) {
 			default {$editionf = "Enterprise for China Goverment"}
 		}
 	}
-	"Server*" {
+	{$_ -match "Server"} {
 		switch ([int32]$build) {
 			14393 {$srvrel = "2016"}
 			17763 {$srvrel = "2019"}
