@@ -148,7 +148,7 @@ if ($wu -eq 1 -and $ngawarn -ne 1) {
 	Add-Type -AssemblyName presentationCore
 	$pswucheck = 1
 	while ($pswucheck -le 5) {
-		if ($build -ge 14393) {Install-Module PSWindowsUpdate -Verbose} else {Start-Process powershell -Wait -ArgumentList "Install-Module PSWindowsUpdate -Verbose -RequiredVersion 2.2.0.2"}
+		if ($build -ge 14393) {Install-Module PSWindowsUpdate -Verbose} else {Start-Process powershell -Wait -ArgumentList "-NonInteractive -Command `"Install-Module PSWindowsUpdate -Verbose -RequiredVersion 2.2.0.2`""}
 		if (Get-Module -ListAvailable -Name PSWindowsUpdate) {
 			Write-Host -ForegroundColor Green "PSWindowsUpdate has been installed"
 			Stop-DownloadMode 2
