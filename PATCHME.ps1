@@ -33,7 +33,7 @@ switch ($edition) {
 	)}
 	
 	# Commerical editions
-	{$_ -like "Enterprise*" -or $_ -like "Education"} {$latest = @(
+	{$_ -match "Enterprise[^S]" -or $_ -like "Education"} {$latest = @(
 		<# ======= EOL builds ======= #>
 		<# 1511 #>          "10586.17446"
 		<# 1511 #>          "10586.1540"
@@ -53,7 +53,7 @@ switch ($edition) {
 	)}
 	
 	# Long-term servicing editions
-	{$_ -like "EnterpriseS"} {$latest = @(
+	{$_ -match "EnterpriseS"} {$latest = @(
 		<# ====== Alive builds ====== #>
 		<# LTSB 2015 #>     "10240.20162"
 		<# LTSB 2016 #>     "14393.6252"
@@ -62,7 +62,7 @@ switch ($edition) {
 	)}
 	
 	# Server editions (Why? Perhaps Nana can answer that question...)
-	{$_ -like "Server*"} {$latest = @(
+	{$_ -match "Server"} {$latest = @(
 		<# ====== Alive builds ====== #>
 		<# Server 2016 #>   "14393.6252"
 		<# Server 2019 #>   "17763.4851"
