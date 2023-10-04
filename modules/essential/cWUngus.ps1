@@ -37,7 +37,7 @@ switch ($build) {
 	16299 {$stackdate = "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/secu/2020/07/windows10.0-kb4565553-x64_37666386a4858aed971874a72cb8c07155c26a87.msu"}
 }
 
-$chonkfirm2 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").cWUfirm; if ($chonkfirm2 -ne 2) {
+$chonkfirm2 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").cWUfirm; if ($chonkfirm2 -ne 2 -and $build -gt 10240) {
 	Write-Host -ForegroundColor Cyan "Updating your Servicing Stack first..."
 	Import-Module BitsTransfer
 	$stacktries = 1
@@ -48,6 +48,7 @@ $chonkfirm2 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").cWUfirm; if ($c
 			Write-Host -ForegroundColor Black -BackgroundColor Red "Ehhhhhhh"
 			Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
 			$stacktries++
+			Start-Sleep -Seconds 2
 		}
 	}
 	if ($stacktries -le 5) {

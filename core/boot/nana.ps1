@@ -142,7 +142,8 @@ Set-AutoIDKUValue str "ReleaseID" $releaseid
 Set-AutoIDKUValue str "ReleaseIDEx" $releaseidex
 New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Music
 for ($m = 1; $m -le 5; $m++) {
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music" -Name $m -Value 1 -Type DWord -Force
+	if ($m -notin 3, 4) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music" -Name $m -Value 1 -Type DWord -Force}
+	else {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music" -Name $m -Value 0 -Type DWord -Force}
 }
 New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Apps
 Set-AutoIDKUValue app WinaeroTweaker 1
@@ -170,12 +171,11 @@ Set-AutoIDKUValue d "EdgeKilled"  0
 Set-AutoIDKUValue d "PendingRebootCount" 0
 Set-AutoIDKUValue d "Media10074" 0
 Set-AutoIDKUValue d "DarkSakura" 0
+Set-AutoIDKUValue d "WUmodeSwitch" 1
 if (Get-RemoteSoftware) {Set-AutoIDKUValue d "RunningThisRSwitch" 1} else {Set-AutoIDKUValue d "RunningThisRSwitch" 0}
-Set-AutoIDKUValue d "ClearBootMessage" 0
-
 if ($build -le 10586) {Set-AutoIDKUValue d "Pwsh" 5}
 elseif ($build -ge 14393) {Set-AutoIDKUValue d "Pwsh" 7}
-Set-AutoIDKUValue d "WUmodeSwitch" 1
+
 0 | Out-File -FilePath $datadir\values\progress.txt 
 
 Remove-Item -Path "HKCU:\Console\%SystemRoot%_System32_WindowsPowerShell_v1.0_powershell.exe" -ErrorAction SilentlyContinue

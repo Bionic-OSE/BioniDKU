@@ -224,7 +224,7 @@ switch ($confules) {
 	{$_ -like "2"} {
 		$confuleb = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).ConfigEditingSub
 		if ($confuleb -eq 7) {& $workdir\modules\apps\appspicker.ps1; exit}
-		if ($confuleb -eq 5) {& $workdir\music\musicpicker.ps1; exit}
+		if ($confuleb -eq 5) {& $coredir\music\musicpicker.ps1; exit}
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 2 -Type DWord -Force
 		Show-Branding clear

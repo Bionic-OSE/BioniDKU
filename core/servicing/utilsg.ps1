@@ -18,8 +18,7 @@ function Show-Branding {
 Show-Branding
 Import-Module BitsTransfer
 
-# IMPORTANT SECTION
-$utag = "400_b2"
+. $coredir\boot\versioninfo.ps1
 
 while ($true) {
 	Start-BitsTransfer -DisplayName "Getting the Utilites package" -Description " " -Source "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/$utag/utils.7z" -Destination $datadir\utils -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue

@@ -38,7 +38,7 @@ Write-Host -ForegroundColor White "9. DesktopInfo (2.10.2, with custom configura
 Write-Host -ForegroundColor White "X. VLC" -n;                                                 Show-Disenabled $VLC           
 Write-Host -ForegroundColor White "Select 0 to return to the previous menu."
 Write-Host " "
-Write-Host "Your selection: " -n ; $appsel = Read-Host
+Write-Host "> " -n ; $appsel = Read-Host
 
 switch ($appsel) {
 	{$_ -like "1"} {Select-DisenabledApp WinaeroTweaker; exit}

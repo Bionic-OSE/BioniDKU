@@ -35,7 +35,7 @@
 <# Don't touch Edge Chromium** #>                             $keepedgechromium =            $false
 <# Keep Windows Search** #>                                   $keepsearch =                  $true
 <# Keep UAC (Stable only) #>                                  $keepuac =                     $true
-<# Hide the shut down/restart screen (non-Home/Servers #>     $embeddedlogon =               $true
+<# Hide the shut down/restart screen (non-Home/Servers) #>    $embeddedlogon =               $true
 
 <#  *Essential Apps required #>
 <# **Affects $removeedgeshortcut and $removesystemapps #>

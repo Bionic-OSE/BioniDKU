@@ -74,7 +74,7 @@ $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
 
 $hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
-if ($ds -eq 1) {$min = 4; $max = 6; $avg = "s"} else {$min = 1; $max = 4; $avg = "n"}
+if ($ds -eq 1) {$min = 4; $max = 7; $avg = "s"} else {$min = 1; $max = 5; $avg = "n"}
 if ($hkau -eq 1) {
 	$n = Get-Random -Minimum $min -Maximum $max
 	Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
@@ -90,10 +90,13 @@ Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU/raw/main/PATCHME.ps1"
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting Utilities package"
 Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\utilsg.ps1"
 if ((Test-Path -Path "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer") -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "ContextMenuNormalizer" -ItemType directory}
-Copy-Item "$datadir\utils\ContextMenuNormalizer.exe" -Destination "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer"
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer\ContextMenuNormalizer.exe" -Type String -Force
+if ($build -ge 18362) {
+	Copy-Item "$datadir\utils\ContextMenuNormalizer.exe" -Destination "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer"
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer\ContextMenuNormalizer.exe" -Type String -Force
+}
 
 if ($hkau -eq 1) {
+	Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal.ps1" "normal.ps1" "Music packages information file"
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting music packages"
 	Start-Process powershell -Wait -ArgumentList "-Command $coredir\music\music${avg}.ps1"
 }
@@ -143,12 +146,16 @@ if ($wu -eq 1 -and $ngawarn -ne 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "`r`nDownloading and installing PSWindowsUpdate"
 	$thpm = "$env:SYSTEMDRIVE\Program Files\WindowsPowerShell\Modules\PackageManagement"
 	if ($build -lt 14393 -and (Test-Path -Path "$thpm\1.0.0.1") -eq $false) {Expand-Archive -Path $datadir\utils\THPM.zip -DestinationPath "$thpm\1.0.0.1"; Write-Warning "You may get errors related to NuGet, and that's normal."}
-	Install-PackageProvider -Name "NuGet" -Verbose -Force
-	Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
-	Add-Type -AssemblyName presentationCore
 	$pswucheck = 1
 	while ($pswucheck -le 5) {
-		if ($build -ge 14393) {Install-Module PSWindowsUpdate -Verbose} else {Start-Process powershell -Wait -ArgumentList "-NonInteractive -Command `"Install-Module PSWindowsUpdate -Verbose -RequiredVersion 2.2.0.2`""}
+		if ($build -ge 14393) {
+			Install-PackageProvider -Name 'NuGet' -Verbose -Force
+			Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
+			Add-Type -AssemblyName presentationCore
+			Install-Module PSWindowsUpdate -Verbose
+		} else {
+			Start-Process powershell -Wait -ArgumentList "-NonInteractive -Command `"Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue; Write-Host 'Installing PSWindowsUpdate' -ForegroundColor Blue -BackgroundColor Gray; Write-Host ' '; Install-PackageProvider -Name NuGet -Verbose -Force; Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted; Add-Type -AssemblyName presentationCore; Install-Module PSWindowsUpdate -Verbose -RequiredVersion 2.2.0.2`""
+		}
 		if (Get-Module -ListAvailable -Name PSWindowsUpdate) {
 			Write-Host -ForegroundColor Green "PSWindowsUpdate has been installed"
 			Stop-DownloadMode 2
