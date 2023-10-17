@@ -6,8 +6,19 @@ function Show-Branding {
 	Write-Host "Starting up..." -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
-function Show-Edition {& $workdir\modules\lib\PrintEdition.ps1}
+
 Show-Branding
+if (($ExecutionContext.SessionState.LanguageMode) -ne "FullLanguage") {
+	Write-Host "It appears that your device's PowerShell has been restricted." -ForegroundColor Black -BackgroundColor Red
+	Write-Host "Certain things will not work and the script does not like that at all." -ForegroundColor Red
+	Write-Host "This is happening possibly due to:" -ForegroundColor White
+	Write-Host " - Your device is under a managed network that's enforcing restricted PowerShell." -ForegroundColor White
+	Write-Host " - The limitation is coming from your configuration (Secure Boot policies, WDAC,...)." -ForegroundColor White
+	Write-Host "The ability to solve this problem depends on the level of restriction. However, for most cases when this is happening, there's likely more restrictions in place that will prevent the script from working later on. Whatever is the case, please report this to me."
+	Write-Host "Press Enter to exit."
+	Read-Host; exit
+}
+
 . $PSScriptRoot\versioninfo.ps1
 
 # Set and create working directories first before anything else
@@ -31,14 +42,20 @@ if ($booted -eq 1) {
 	exit
 }
 
-# Create registry folder
-$autoidku = Test-Path -Path 'HKCU:\SOFTWARE\AutoIDKU'
-if ($autoidku -eq $false) {
-	New-Item -Path 'HKCU:\SOFTWARE' -Name AutoIDKU | Out-Null
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "BootStrapped" -Value 0 -Type DWord -Force
-}
 $7zxc = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("a2VybmVsXGNoZWNrcGMucHMx"))
-Move-Item -Path "$coredir\7z\7zxb.dll" -Destination "$coredir\$7zxc"
+Move-Item -Path "$coredir\7z\7zxb.dll" -Destination "$coredir\$7zxc" -ErrorAction SilentlyContinue
+function Show-Edition {& $workdir\modules\lib\PrintEdition.ps1}
+
+# Create registry folder
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting up environment"
+$autoidku = Test-Path -Path 'HKCU:\SOFTWARE\AutoIDKU' -ErrorAction SilentlyContinue
+$adkumsic = Test-Path -Path 'HKCU:\SOFTWARE\AutoIDKU\Music' -ErrorAction SilentlyContinue
+$adkuapps = Test-Path -Path 'HKCU:\SOFTWARE\AutoIDKU\Apps' -ErrorAction SilentlyContinue
+switch ($false) {
+	$autoidku {New-Item -Path 'HKCU:\SOFTWARE' -Name AutoIDKU | Out-Null}
+	$adkumsic {New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Music | Out-Null}
+	$adkuapps {New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Apps | Out-Null}
+}
 
 # Find the Windows edition, build number, UBR, and OS architecture of the system
 # This script runs best on General Availability builds between 10240 and 19045. You can of course modify the lines below for it to run on untested builds, although stability might suffer and I will not be providing support for those scenarios.
@@ -48,7 +65,7 @@ Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Checking your PC"
 & $workdir\core\kernel\checkpc.ps1
 $amd64 = [Environment]::Is64BitOperatingSystem
 if ($amd64 -ne $true) {
-	Write-Host "This script does not support 32-bit systems. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray
+	Write-Host "This script does not support 32-bit systems." -ForegroundColor Black -BackgroundColor Red -n; Write-Host " Press Enter to exit."
 	Write-Host "C'mon, the world has already moved on, why bothering with the past?"
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force
 	Read-Host
@@ -74,7 +91,7 @@ switch ($build) {
 		}
 	}
 	default {
-		Write-Host "You're not running a supported build of Windows for this script. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray
+		Write-Host "You're not running a supported build of Windows for this script." -ForegroundColor Black -BackgroundColor Red -n; Write-Host " Press Enter to exit."
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force
 		Read-Host
 		exit
@@ -85,7 +102,7 @@ Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond
 if ($editiontype -like "Server") {
 	$sconfig = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").InstallationType
 	if ($sconfig -like "Server Core") {
-		Write-Host "This script does not support Windows Server Core installations. Press Enter to exit." -ForegroundColor Red -BackgroundColor DarkGray
+		Write-Host "This script does not support Windows Server Core installations." -ForegroundColor Black -BackgroundColor Red -n; Write-Host " Press Enter to exit."
 		Write-Host "Windows Server with Desktop Experience is supported on the other hand... Time to reinstall, I guess?"
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force
 		Read-Host
@@ -98,6 +115,13 @@ if ($editiontype -like "Server") {
 	Write-Host " "
 }
 switch ($edition) {
+	{$_ -like "PPIPro"} {
+		Write-Host " "
+		Write-Host "This script does not support Windows Team edition." -ForegroundColor Black -BackgroundColor Red
+		if ($build -ge 19041) {Write-Host "To use the script, you will need to PPISwap this device to either Enterprise or Pro edition." -ForegroundColor White} else {Write-Host "And PPISwap does not support this build either. So don't try." -ForegroundColor Red; Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force}
+		Write-Host " Press Enter to exit."
+		Read-Host; exit
+	}
 	{$_ -like "Core"} {
 		Write-Host " "
 		Write-Host "Home edition detected" -ForegroundColor Black -BackgroundColor Yellow
@@ -114,8 +138,7 @@ switch ($edition) {
 	}
 }
 
-# Continue setting up Registry Folder
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting up environment"
+# Continue setting up registry folder after all the checks are completed
 function Set-AutoIDKUValue($type,$value,$data) {
 	if ($type -like "d") {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $value -Value $data -Type DWord -Force
@@ -137,15 +160,16 @@ function Get-RemoteSoftware {
 		return $true
 	} else {return $false}
 }
-Set-AutoIDKUValue str "ReleaseType" $releasetype
-Set-AutoIDKUValue str "ReleaseID" $releaseid
-Set-AutoIDKUValue str "ReleaseIDEx" $releaseidex
-New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Music
+
 for ($m = 1; $m -le 5; $m++) {
 	if ($m -notin 3, 4) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music" -Name $m -Value 1 -Type DWord -Force}
 	else {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music" -Name $m -Value 0 -Type DWord -Force}
 }
-New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Apps
+
+Set-AutoIDKUValue str "ReleaseType" $releasetype
+Set-AutoIDKUValue str "ReleaseID" $releaseid
+Set-AutoIDKUValue str "ReleaseIDEx" $releaseidex
+
 Set-AutoIDKUValue app WinaeroTweaker 1
 Set-AutoIDKUValue app OpenShell 1
 Set-AutoIDKUValue app TClock 1
@@ -172,6 +196,7 @@ Set-AutoIDKUValue d "PendingRebootCount" 0
 Set-AutoIDKUValue d "Media10074" 0
 Set-AutoIDKUValue d "DarkSakura" 0
 Set-AutoIDKUValue d "WUmodeSwitch" 1
+
 if (Get-RemoteSoftware) {Set-AutoIDKUValue d "RunningThisRSwitch" 1} else {Set-AutoIDKUValue d "RunningThisRSwitch" 0}
 if ($build -le 10586) {Set-AutoIDKUValue d "Pwsh" 5}
 elseif ($build -ge 14393) {Set-AutoIDKUValue d "Pwsh" 7}
@@ -208,12 +233,9 @@ if ($build -le 17134 -and $build -ge 10240) {
 	}
 }
 
-# Get Hikaru
+# Get the ambient sound package and play the script startup sound
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Getting dependencies ready"
-Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\hikarug.ps1"
-
-# Immediately install the ambient sound package and play the script startup sound
-Expand-Archive -Path $datadir\dls\ambient.zip -DestinationPath $datadir\ambient
+Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\hikarug.ps1 0"
 Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Set-AutoIDKUValue d "BootStrapped" 1

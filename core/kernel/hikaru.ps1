@@ -1,12 +1,12 @@
 # MiniHikaru functions hive - Used during BioniDKU script execution - (c) Bionic Butter
 
 function Set-HikaruChan {
-	$manmode = Test-Path -Path "$coredir\boot\launcherman.bat" -PathType Leaf
+	$manmode = Test-Path -Path "$coredir\7boot\launcherman.bat" -PathType Leaf
 	if ($manmode -eq $true) {
-		Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\AdvancedRun.exe /run /waitprocess 0 /exefilename $env:SYSTEMDRIVE\Windows\System32\cmd.exe /commandline `"/c $coredir\boot\launcherman.bat`"" -Type String
+		Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\AdvancedRun.exe /run /waitprocess 0 /exefilename $env:SYSTEMDRIVE\Windows\System32\cmd.exe /commandline `"/c $coredir\7boot\launcherman.bat`"" -Type String
 	}
 	else {
-		Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\AdvancedRun.exe /run /waitprocess 0 /exefilename `"$coredir\boot\launcher.exe`"" -Type String
+		Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\AdvancedRun.exe /run /waitprocess 0 /exefilename `"$coredir\7boot\launcher.exe`"" -Type String
 	}
 }
 

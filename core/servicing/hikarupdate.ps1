@@ -1,14 +1,6 @@
 # BioniDKU Windows Update mode - A decicated mode with a lightweight shell just to run Windows Update
 # The purpose is so that the system can focus on the task at hand, without too much resources being used by the regular Explorer shell
 
-function Show-WindowTitle($s1) {
-	if ($s1 -like "noclose") {
-		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode - DO NOT CLOSE THIS WINDOW"
-	} else {
-		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode"
-	}
-}
-Show-WindowTitle
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
@@ -19,10 +11,12 @@ $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
 
-Show-Branding
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 . $workdir\modules\lib\getedition.ps1
+. $workdir\modules\lib\DynamicTitlebar.ps1
+Show-WindowTitle 2.2 "Windows Update mode"
+Show-Branding
 Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components"
@@ -43,13 +37,11 @@ function Stop-UpdateMode {
 	exit
 }
 function Stop-UpdateModeSuccess {
-	Show-WindowTitle noclose
 	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "The latest updates have been installed." -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 }
 function Stop-UpdateModeAborted {
-	Show-WindowTitle noclose
 	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Write-Host "You have aborted updates." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode

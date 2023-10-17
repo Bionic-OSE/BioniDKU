@@ -5,7 +5,7 @@ $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
 if (-not (Test-Path -Path "$datadir\utils")) {New-Item -Path $datadir -Name "utils" -itemType Directory | Out-Null}
 
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Utilites fetcher module - DO NOT CLOSE THIS WINDOW"
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Utilites fetcher module | DO NOT CLOSE THIS WINDOW OR DISCONNECT INTERNET"
 $uexists = Test-Path -Path "$datadir\utils\WinXShell.zip" -PathType Leaf
 if ($uexists) {exit}
 
@@ -18,7 +18,7 @@ function Show-Branding {
 Show-Branding
 Import-Module BitsTransfer
 
-. $coredir\boot\versioninfo.ps1
+. $coredir\7boot\versioninfo.ps1
 
 while ($true) {
 	Start-BitsTransfer -DisplayName "Getting the Utilites package" -Description " " -Source "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/$utag/utils.7z" -Destination $datadir\utils -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
@@ -26,6 +26,7 @@ while ($true) {
 		Write-Host " "
 		Write-Host -ForegroundColor Black -BackgroundColor Red "Uhhhhhhh"
 		Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
+		Start-Sleep -Seconds 1
 	}
 }
 

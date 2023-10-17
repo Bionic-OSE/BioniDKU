@@ -1,7 +1,6 @@
 # Windows Update mode interrupt prompt
 
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode"
-$butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Butter
+$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | WU mode interrupter"
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
@@ -10,7 +9,7 @@ function Show-Branding {
 }
 function Show-WaitTime($wti) {
 	for ($wt = $wti; $wt -ge 1; $wt--) {
-		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Windows Update mode - $wt seconds remaining..."
+		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | WU mode interrupter | $wt seconds remaining..."
 		Start-Sleep -Seconds 1
 	}
 }

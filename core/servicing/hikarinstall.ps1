@@ -9,7 +9,6 @@ if ($hkreg -eq $false) {
 }
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "ProductName" -Value "BioniDKU" -Type String -Force
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value $var -Type DWord -Force
-Start-Process $env:SYSTEMDRIVE\Bionic\Hikarefresh\wget.exe -Wait -NoNewWindow -ArgumentList "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikarefreshinfo.ps1 -O HikarefreshinFOLD.ps1" -WorkingDirectory "$env:SYSTEMDRIVE\Bionic\Hikarefresh" 
 Show-WindowTitle noclose
 
 # Hikarun on-demand customization section
@@ -21,9 +20,6 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v IsFeedsAvailab
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v ShellFeedsTaskbarViewMode /t REG_DWORD /d 2 /f
 "@
 } else {$hkrdockico = ""}
-if ($pwsh -eq 7) {
-	$hkrdelwwa = "del $env:SYSTEMDRIVE\Windows\System32\WWAHost.exe"
-} else {$hkrdelwwa = ""}
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SkipNotGABWarn
 $edition = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").EditionID
 $editiok = "Professional","Core","Enterprise"
@@ -54,13 +50,17 @@ if ($keepuac -and $ngawarn -ne 1) {Set-ItemProperty -Path 'HKLM:\Software\Micros
 @echo off
 rem ####### Hikaru-chan by Bionic Butter #######
 
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
-$hkrdelwwa
 $hkrdockico
 "@ | Out-File -FilePath "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikarun.bat" -Encoding ascii
 
-# Install HikaruQM and pre-apply system restrictions (set restrictions but at disabled state)
+@"
+@echo off
+rem ####### Hikaru-chan by Bionic Butter #######
 
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
+"@ | Out-File -FilePath "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikaran.bat" -Encoding ascii
+
+# Install HikaruQM and pre-apply system restrictions (set restrictions but at disabled state)
 $WScriptObj = New-Object -ComObject ("WScript.Shell")
 $hkQML = "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe"
 $hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\BioniDKU Quick Menu Tray.lnk"
@@ -69,9 +69,14 @@ $hkQMLSh.TargetPath = $hkQML
 $hkQMLSh.Save()
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "BioniDKU Quick Menu Tray" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe" -Type String -Force
 
-if ($build -eq 10586) {
-	mofcomp C:\Windows\System32\wbem\SchedProv.mof
-}
+Copy-Item -Path $env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ApplicationFrameHost.QUARANTINE"
+Copy-Item -Path $coredir\7z\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
+Copy-Item -Path $coredir\7z\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
+taskkill /f /im ApplicationFrameHost.exe
+takeown /f "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe"
+icacls "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe" /grant Administrators:F
+
+if ($build -eq 10586) {mofcomp C:\Windows\System32\wbem\SchedProv.mof}
 $hkF5action = New-ScheduledTaskAction -Execute "$env:SYSTEMDRIVE\Bionic\Hikarefresh\Hikarefresh.exe"
 $hkF5trigger = @(
 	$(New-ScheduledTaskTrigger -AtLogon),
@@ -84,17 +89,41 @@ Register-ScheduledTask 'BioniDKU Quick Menu Update Checker' -InputObject $hkF5
 # This line is here for Hikaru beta. Remove it on final please.
 Disable-ScheduledTask 'BioniDKU Quick Menu Update Checker'
 
-Copy-Item -Path $env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ApplicationFrameHost.exe"
-Copy-Item -Path $coredir\7z\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
-Copy-Item -Path $coredir\7z\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
-taskkill /f /im ApplicationFrameHost.exe
-takeown /f "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe"
-icacls "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe" /grant Administrators:F
+# With the new UAC-enabled system, permission issues became a problem. The chunk of code below is to address all of that.
+$hkbpstname = 'BioniDKU Windows Build String Modifier'
+$hkbpaction = New-ScheduledTaskAction -Execute "%SystemRoot%\System32\cmd.exe" -Argument "/c %SystemDrive%\Bionic\Hikaru\Hikaran.bat"
+$hkbprincipal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$hkbpsettings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+$hkbp = New-ScheduledTask -Action $hkbpaction -Principal $hkbprincipal -Settings $hkbpsettings
+Register-ScheduledTask $hkbpstname -InputObject $hkbp
+$hklcstname = 'BioniDKU UWP Lockdown Controller'
+$hklcaction = New-ScheduledTaskAction -Execute "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument "-Command `"& %SystemDrive%\Bionic\Hikaru\ApplicationControlHost.ps1`""
+$hklcrincipal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$hklcsettings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+$hklc = New-ScheduledTask -Action $hklcaction -Principal $hklcrincipal -Settings $hklcsettings
+Register-ScheduledTask $hklcstname -InputObject $hklc
+
+$Scheduler = New-Object -ComObject "Schedule.Service"; $Scheduler.Connect() # From: https://www.osdeploy.com/blog/2021/scheduled-tasks/task-permissions
+$hket = @()
+$hket += $hkbpstname; $hket += $hklcstname
+foreach ($hketname in $hket) {
+	$GetTask = $Scheduler.GetFolder('\').GetTask($hketname)
+	$GetSecurityDescriptor = $GetTask.GetSecurityDescriptor(0xF)
+	if ($GetSecurityDescriptor -notmatch 'A;;0x1200a9;;;AU') {
+		$GetSecurityDescriptor = $GetSecurityDescriptor + '(A;;GRGX;;;AU)'
+		$GetTask.SetSecurityDescriptor($GetSecurityDescriptor, 0)
+	}
+}
+$pacl = Get-Acl "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+$pule = New-Object System.Security.AccessControl.RegistryAccessRule ("$env:USERNAME","FullControl",@("ObjectInherit","ContainerInherit"),"None","Allow")
+$pacl.SetAccessRule($pule)
+$pacl | Set-Acl -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+
+# Now we actually preapply the restrictions.
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name DisallowRun -Value 0 -Type DWord
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name NoControlPanel -Value 0 -Type DWord
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name NoTrayContextMenu -Value 0 -Type DWord
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\SessionData" -Name AllowLockScreen -Value 0 -Type DWord
-[System.Environment]::SetEnvironmentVariable('HikaruToken','3', 'Machine')
 reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikarestrict.reg"
 $cmd = Test-Path -Path "HKCU:\Software\Microsoft\Command Processor"
 if ($cmd -eq $false) {

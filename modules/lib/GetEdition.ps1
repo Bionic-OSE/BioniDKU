@@ -32,6 +32,7 @@ switch ($editionn) {
 	"ProfessionalWorkstation" {$editionf = "Pro for Workstations"}
 	"IoTEnterprise" {$editionf = "IoT Enterprise"}
 	"EnterpriseEval" {$editionf = "Enterprise Evaluation"}
+	"PPIPro" {$editionf = "Team"}
 	{$_ -match "EnterpriseS"} {
 		switch ([int32]$build) {
 			10240 {$ltsrel = "B 2015"}

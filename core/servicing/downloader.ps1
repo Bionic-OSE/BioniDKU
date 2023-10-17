@@ -54,7 +54,6 @@ if ($hkm -eq 0) {
 	exit
 }
 
-$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Download mode - DO NOT CLOSE THIS WINDOW OR DISCONNECT INTERNET"
 function Stop-DownloadMode($nhkm) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value $nhkm -Type DWord -Force
@@ -68,13 +67,17 @@ function Show-Branding {
 	Write-Host "Download mode" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
-Show-Branding
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
+$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
+. $workdir\modules\lib\kuery.ps1
+. $workdir\modules\lib\DynamicTitlebar.ps1
+Show-WindowTitle 2.1 "Download mode" noclose
+Show-Branding
 
 $hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
-if ($ds -eq 1) {$min = 4; $max = 7; $avg = "s"} else {$min = 1; $max = 5; $avg = "n"}
+if ($ds -eq 1) {$min = 4; $max = 7; $avg = "s"} elseif ($kn) {$min = 7; $max = 8; $avg = "n"} else {$min = 1; $max = 5; $avg = "n"}
 if ($hkau -eq 1) {
 	$n = Get-Random -Minimum $min -Maximum $max
 	Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"

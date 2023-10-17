@@ -10,8 +10,12 @@ function Set-AutoIDKUValue($type,$value,$data) {
 	}
 }
 
-Show-WindowTitle noclose
+Show-WindowTitle 1 "Getting ready" noclose
+Show-Branding clear
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting ready"
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
+
+& $coredir\servicing\hikarug.ps1 1
 
 Write-Host " "
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Hooking the script to the startup sequence"

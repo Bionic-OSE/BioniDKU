@@ -5,9 +5,9 @@ Write-Host " "
 Write-Host -ForegroundColor Cyan "First, Explorer stuffs."
 Write-Host -ForegroundColor Yellow "1. Open File Explorer, it should take you straight to This PC. There:"
 Write-Host -ForegroundColor Yellow " - Set the view to details, close Explorer and reopen it several times to make sure the setting is saved."; Write-Host "   (Explorer has Alzheimer's and will reset the view if you only open it once)."
-if ($build -lt 17134) {
-	Write-Host -ForegroundColor Yellow ' - After that, on the navigation (left) pane, right click on "HomeGroup (32-bit)" and select "Delete".'
-}
+#if ($build -lt 17134) {
+#	Write-Host -ForegroundColor Yellow ' - After that, on the navigation (left) pane, right click on "HomeGroup (32-bit)" and select "Delete".'
+#}
 Write-Host -ForegroundColor Yellow "2. Then, disable the following items on the taskbar if they (*exist and) are enabled:"
 Write-Host "   (Please also check in Taskbar Settings since some icons might not be shown at this moment, make sure Windows is"; Write-Host "   activated tho)."
 Write-Host -ForegroundColor White " - Input indicator"
@@ -26,7 +26,7 @@ if ($build -ge 18363) {
 Write-Host -ForegroundColor Yellow '3. While still in Settings, head over to Lock screen Settings and switch the background type to "Picture"'
 Write-Host -ForegroundColor Yellow "4. Also in Settings, change the default browser to Firefox (and of course, ignore Windows' beg for Edge)."
 if ($keepedgechromium) {Write-Host "   (If you chose to keep Edge Chromium and want that instead, skip this step if it's already the default)"}
-Write-Host -ForegroundColor Yellow "5. Finally, unpin Microsoft Edge and/or any other UWP apps present, and leave File Explorer pinned."
+Write-Host -ForegroundColor Yellow "5. Finally, unpin everything else except File Explorer (this means DO NOT unpin Explorer!)."
 Write-Host -ForegroundColor Cyan "Press Enter once you have done with those."
 Read-Host
 

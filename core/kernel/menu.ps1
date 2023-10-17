@@ -87,14 +87,37 @@ function Confirm-DeleteDownloads {
 	Write-Host 'If you do not want Downloads to get deleted, answer anything else except YES to go back, select 3 then 1 to reconfigure the script and set the' -n; Write-Host -ForegroundColor Cyan ' "Remove Downloads folder" ' -n; Write-Host 'switch to FALSE under the' -n; Write-Host -ForegroundColor Green ' "ADVANCED SCRIPT CONFIGURATION: Registry Switches" ' -n; Write-Host 'section.'
 	Write-Host " "
 	Write-Host -ForegroundColor Black -BackgroundColor Red "THIS IS YOUR LAST WARNING!!!" 
-	Write-Host -ForegroundColor Cyan "If you are sure and want to proceed, answer YES."
-	Write-Host "Your answer: " -n ; $deload = Read-Host
+	Write-Host -ForegroundColor Cyan "If you are sure and want to proceed, answer `"DELETE`"."
+	Write-Host "> " -n ; $deload = Read-Host
 	switch ($deload) {
-		{$deload -like "yes"} {}
+		{$deload -like "delete"} {}
 		default {
 			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 			exit
 		}
+	}
+}
+function Confirm-Starting {
+	Write-Host -ForegroundColor Black -BackgroundColor Yellow "Are sure you want to start?"
+	Write-Host -ForegroundColor Yellow "This action is IRREVERSIBLE! If you are ready, answer `"1`" once again."
+	Write-Host -ForegroundColor Red "UAC will be disabled immediately once you start the script."
+	
+	Write-Host "> " -n ; $startfirm = Read-Host
+	switch ($startfirm) {
+		{$startfirm -like "1"} {}
+		default {
+			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
+			exit
+		}
+	}
+}
+function Reset-Script {
+	Write-Host -ForegroundColor Yellow "`r`nDo you want to clean up what the script created (basically resetting it)? (Yes)"
+
+	Write-Host "> " -n ; $resetfirm = Read-Host
+	switch ($resetfirm) {
+		{$resetfirm -like "yes"} {Remove-Item $datadir -Force -Recurse; Remove-Item HKCU:\Software\AutoIDKU -Recurse; exit}
+		default {exit}
 	}
 }
 
@@ -192,14 +215,9 @@ else {
 	Write-Host -ForegroundColor White "2. Configure the script"
 	Write-Host -ForegroundColor White "3. Further adjust the script (advanced)"
 	Write-Host -ForegroundColor White "4. Show credits"
-	if ($confuone -eq 0) {
-		Write-Host "Answer anything else to exit this script safely without any changes made to your PC."
-		Write-Host "UAC will be disabled immediately once you start the script." -ForegroundColor Red
-	} else {
-		Write-Host "Answer anything else to exit this script."
-	}
+	Write-Host "Answer anything else to exit."
 	Write-Host " "
-	Write-Host "Your selection: " -n ; $confules = Read-Host
+	Write-Host "> " -n ; $confules = Read-Host
 }
 
 switch ($confules) {
@@ -213,10 +231,12 @@ switch ($confules) {
 		$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
 		if ($removedownloads -and $dlhasfiles) {
 			Confirm-DeleteDownloads
+			Write-Host " "
 		}
+		Confirm-Starting
 		Write-Host " "
 		Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainAccepted${ds}.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
-		Write-Host -ForegroundColor Green -BackgroundColor DarkGray "You have accepted the current configuration. Alright, starting the script..."
+		Write-Host -ForegroundColor Black -BackgroundColor Green "Alright, starting the script..."
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
 		Start-Sleep -Seconds 5
 		Start-InstallHikaru
@@ -295,6 +315,6 @@ switch ($confules) {
 	}
 	default {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 0 -Type DWord -Force
-		exit
+		Reset-Script
 	}
 }

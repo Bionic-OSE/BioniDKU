@@ -2,14 +2,6 @@
 
 ##############################################################
 # Import basic functions and grab some neccessary variables
-function Show-WindowTitle($s1) {
-	if ($s1 -like "noclose") {
-		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter - DO NOT CLOSE THIS WINDOW"
-	} else {
-		$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter"
-	}
-}
-Show-WindowTitle
 $releasetype = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseType
 $butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseIDEx
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
@@ -28,7 +20,11 @@ function Stop-Script {
 }
 function Get-ScriptProgress($value) {
 	$proc = Get-Content -Path $datadir\values\progress.txt
-	return [int32]$proc -le [int32]$value
+	$valnt = [int32]$value
+	$pg = [Math]::Round(($valnt / 24) * 100) 
+	# Currently we have a maximum of 23 actions, taking that +1 so action 23 won't become 100%
+	Show-WindowTitle 3 $pg
+	return [int32]$proc -le $valnt
 }
 Set-Alias -Name SPV -Value Get-ScriptProgress # SPV = Script Progress Value
 function Set-ScriptProgress($value) {[int32]$value | Out-File -FilePath $datadir\values\progress.txt}
@@ -40,13 +36,15 @@ $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
 
-# Load variables from the configuration file
+# Load modules, variables and configurations from file
 . $coredir\kernel\config.ps1
 . $workdir\modules\lib\getedition.ps1
+. $workdir\modules\lib\DynamicTitlebar.ps1
 $build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 $ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
 
 # Main menu section
+Show-WindowTitle 0
 $confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
 if ($confuled -eq 0 -or $confuled -eq 2) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force}
 while ($true) {
@@ -70,7 +68,7 @@ elseif ($confuled -eq 0) {
 
 # Show branding
 Show-Branding clear
-Show-WindowTitle noclose
+Show-WindowTitle 3 0 noclose
 Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 
 # Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
@@ -141,7 +139,7 @@ Show-WindowTitle
 Write-Host -ForegroundColor Black -BackgroundColor Cyan "`r`nThe IDKUlize process ${startmsg}"
 
 # Action 1 (I will just say "A1, A2..." from now)
-if (SPV 1) {& $workdir\modules\removal\unsealtheclasses.ps1; UPV 2}
+if ($build -lt 17134 -and (SPV 1)) {& $workdir\modules\removal\unsealtheclasses.ps1; UPV 2}
 $firefox = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").Firefox
 
 switch ($true) {
@@ -179,8 +177,8 @@ switch ($true) {
 	# A4
 	{$removehomegroup -and $build -lt 17134 -and (SPV 4)} {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Partially removing HomeGroup"
-		# First, with the permission seal removed earlier, DESTROY the key
-		Remove-Item "HKLM:\SOFTWARE\Classes\CLSID\{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}" -Recurse
+		# First, with the permission seal removed earlier, DESTROY the key (well technically not)
+		#Rename-Item "HKLM:\SOFTWARE\Classes\CLSID\{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}" -NewName "{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}.$build" Okay for whatever reason this is creating an undeletable HomeGroup (32-bit)
 		# Then, we need to disable the service.
 		Stop-Service -Name HomeGroupProvider
 		Stop-Service -Name HomeGroupListener
@@ -312,7 +310,7 @@ switch ($true) {
 }
 
 # This the last action, and must not be interrupted.
-Show-WindowTitle noclose
+Show-WindowTitle 3 99 noclose
 & $coredir\servicing\hikarinstall.ps1 
 
 # Finalize things, and the job ends!
@@ -321,7 +319,7 @@ if ($build -le 14393 -and $balloonnotifs -eq $false) {
 }
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 Write-Host " "
-Show-WindowTitle
+Show-WindowTitle 3 100
 Write-Host "This was the final step of the script. In order to complete the setup, please press Enter to restart" -ForegroundColor Black -BackgroundColor Green
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 Start-Process "$datadir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
