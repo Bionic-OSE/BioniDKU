@@ -13,6 +13,7 @@ function Set-AutoIDKUValue($type,$value,$data) {
 Show-WindowTitle 1 "Getting ready" noclose
 Show-Branding clear
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting ready"
+Write-Host -ForegroundColor Yellow "You device will restart shortly after this, be prepared."
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 
 & $coredir\servicing\hikarug.ps1 1
@@ -23,9 +24,7 @@ Copy-Item "$datadir\ambient\FFPlay.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hi
 . $coredir\kernel\hikaru.ps1
 Set-HikaruChan
 
-$remotesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).RunningThisRSwitch
 switch ($true) {
-	{$keepedgechromium} {Set-AutoIDKUValue d "EdgeNoMercy" 1}
 	{$keepsearch} {Set-AutoIDKUValue d "SearchNoMercy" 1}
 	{$explorerstartfldr} {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting Explorer to open on This PC" -n; Write-Host " (will take effect next time Explorer starts)"
@@ -34,8 +33,6 @@ switch ($true) {
 	{$build -le 14393} {
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 1 -Type DWord -Force
 	}
-	{$remotesw -eq 1} {Set-AutoIDKUValue d "RunningThisRemotely" 1} 
-	{$remotesw -ne 1} {Set-AutoIDKUValue d "RunningThisRemotely" 0}
 	{$ds -eq 1} {$back = "sakura"}
 	{$ds -ne 1} {$back = "back"}
 }
@@ -79,7 +76,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authenti
 Set-AutoIDKUValue d "HikaruMode" 4
 Set-AutoIDKUValue d "ChangesMade" 1
 
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device in 5 seconds... The script will start doing its job after the restart."
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device"
 Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe -WindowStyle Hidden -ArgumentList "-i $env:SYSTEMDRIVE\Bionic\Hikaru\ShellSpinner.mp4 -fs -alwaysontop -noborder"
 Start-Sleep -Seconds 1
 

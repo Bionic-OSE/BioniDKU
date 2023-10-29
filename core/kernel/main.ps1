@@ -277,8 +277,19 @@ switch ($true) {
 
 	# A20
 	{$removeUWPapps -and (SPV 20)} {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing all UWP apps possible" 
-		Start-Process powershell -Wait -ArgumentList "$workdir\modules\removal\removeuwpapps.ps1"
+		# On certain builds, there is a freeze issue where the script will just hang here forever, we have to use another method...
+		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\utils\SuwakoDebloaterLite-Bionic.7z -o$datadir\utils\SuwakoDebloaterLite-Bionic -aoa"
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing all UWP apps possible"
+		Write-Host -ForegroundColor Cyan "This process will spit out of errors, and that is normal."
+		Write-Host -ForegroundColor Cyan "In addition, it will also create a repeatedly flashing console HUD. If you are sensitive to flashes, please minimize or do not look at that window."
+		if (-not $keepedgechromium) {$keepedgeparam = '$true $true'} else {$keepedgeparam = '$false $false'}
+		$suwakoparam = "& $datadir\utils\SuwakoDebloaterLite-Bionic\Scripts\Remove-Runner.ps1" + ' $true $true $true $true ' + $keepedgeparam + '; Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name UWPAppsRemoved" -Value 1 -Type DWord -Force'
+		Start-Process powershell -ArgumentList $suwakoparam
+		while ($true) {
+			$suwakodone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").UWPAppsRemoved
+			if ($suwakodone -eq 1) {break}
+			Write-Host "." -n; Start-Sleep -Seconds 1
+		}
 		UPV 21
 	}
 
@@ -291,7 +302,7 @@ switch ($true) {
 
 	# A22
 	{$removesystemapps -and (SPV 22)} {
-		# On certain builds, there is a freeze issue where the script will just hang here forever, we have to use another method...
+		# Same as A20
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling system apps" 
 		Start-Process powershell -ArgumentList "$workdir\modules\removal\removesystemapps.ps1"
 		while ($true) {

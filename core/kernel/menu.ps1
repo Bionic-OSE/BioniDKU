@@ -1,83 +1,24 @@
 # BioniDKU main menu - The thing that appears on first run of the script
 
-function Show-ModulesConfig {
-	Show-Branding clear
-	Write-Host "------ ADVANCED SCRIPT CONFIGURATION: Module Switches ------" -ForegroundColor Black -BackgroundColor Green
-	Write-Host 'BioniDKU is a script bundle consisting multiple script files, called "(BioniDKU) Modules".' -ForegroundColor Green
-	Write-Host 'Below are most of the function modules you can adjust, each should be self-explainatory:' -ForegroundColor Green
-	Write-Host " "; if ($pwsh -eq 5) {
-	Write-Host "Install .NET 4.6.2 (10586-)                   " -n; Write-Host -ForegroundColor White "$dotnet462           "}
-	Write-Host "Enable .NET 3.5                               " -n; Write-Host -ForegroundColor White "$dotnet35            "
-	Write-Host "Hide system icons from the taskbar            " -n; Write-Host -ForegroundColor White "$hidetaskbaricons    "
-	Write-Host "Remove Microsoft Edge Shortcuts**             " -n; Write-Host -ForegroundColor White "$removeedgeshortcut  "
-	Write-Host "Create desktop shortcuts                      " -n; Write-Host -ForegroundColor White "$desktopshortcuts    "
-	Write-Host "Disable Wake timers                           " -n; Write-Host -ForegroundColor White "$removewaketimers    "
-	Write-Host "Remove all UWP apps possible                  " -n; Write-Host -ForegroundColor White "$removeUWPapps       "
-	Write-Host "Use script's Open-Shell config*               " -n; Write-Host -ForegroundColor White "$openshellconfig     "
-	Write-Host "Replace Explorer taskbar icon (17763-)        " -n; Write-Host -ForegroundColor White "$explorericon        "
-	Write-Host "Remove taskbar pins                           " -n; Write-Host -ForegroundColor White "$taskbarpins         "
-	Write-Host "Replace seguiemj.ttf with Windows 11's        " -n; Write-Host -ForegroundColor White "$replaceemojifont    "
-	Write-Host "Set default apps                              " -n; Write-Host -ForegroundColor White "$defaultapps         "
-	Write-Host "Remove Explorer address bar                   " -n; Write-Host -ForegroundColor White "$disableaddressbar   "
-	Write-Host "Remove Microsoft OneDrive                     " -n; Write-Host -ForegroundColor White "$removeonedrive      "
-	Write-Host "Remove HomeGroup (16299-)                     " -n; Write-Host -ForegroundColor White "$removehomegroup     "
-	Write-Host "Defaults Explorer to This PC                  " -n; Write-Host -ForegroundColor White "$explorerstartfldr   "
-	Write-Host "Use classic battery flyout                    " -n; Write-Host -ForegroundColor White "$oldbatteryflyout    "
-	Write-Host "Install custom system sound                   " -n; Write-Host -ForegroundColor White "$customsounds        "
-	Write-Host "Disable some system apps**                    " -n; Write-Host -ForegroundColor White "$removesystemapps    "
-	Write-Host "Replace SlideToShutDown.exe background        " -n; Write-Host -ForegroundColor White "$sltoshutdownwall    "
-	Write-Host "Don't touch Edge Chromium**                   " -n; Write-Host -ForegroundColor White "$keepedgechromium    "
-	Write-Host "Keep Windows Search**                         " -n; Write-Host -ForegroundColor White "$keepsearch          "
-	Write-Host " "
-	Write-Host " * You MUST enable the installation of Essential Apps or this option will disable itself" -ForegroundColor Cyan
-	Write-Host "** If you enable these option, other options with ** will be affected" -ForegroundColor Cyan
-	Write-Host " "
-	Write-Host "------ ADVANCED SCRIPT CONFIGURATION: Registry Switches ------" -ForegroundColor Black -BackgroundColor Green
-	Write-Host " "
-	Write-Host "Enable registry tweaks                        " -n; Write-Host -ForegroundColor White "$registrytweaks      "
-	Write-Host " "
-	Write-Host "Disable Defender startup entry                " -n; Write-Host -ForegroundColor White "$disabledefenderstart"
-	Write-Host "Disable Toast notifications                   " -n; Write-Host -ForegroundColor White "$disablenotifs       "
-	Write-Host "Disale Game Bar                               " -n; Write-Host -ForegroundColor White "$disablegamebar      "
-	Write-Host "Disale AutoPlay                               " -n; Write-Host -ForegroundColor White "$disableautoplay     "
-	Write-Host "Disale multi-monitor taskbar                  " -n; Write-Host -ForegroundColor White "$disablemultitaskbar "
-	Write-Host "Disale Transparency                           " -n; Write-Host -ForegroundColor White "$disabletransparency "
-	Write-Host "Disale window animations                      " -n; Write-Host -ForegroundColor White "$disableanimations   "
-	Write-Host "Disale Windows Ink Workspace (15063+)         " -n; Write-Host -ForegroundColor White "$disablewinink       "
-	Write-Host "Remove Downloads folder (DANGEROUS)           " -n; Write-Host -ForegroundColor White "$removedownloads     "
-	Write-Host 'Disable "Look for this app in Store"          ' -n; Write-Host -ForegroundColor White "$applookupinstore    "
-	Write-Host "Tune the Context menu                         " -n; Write-Host -ForegroundColor White "$contextmenuentries  "
-	Write-Host "Remove Quick Access                           " -n; Write-Host -ForegroundColor White "$removequickaccess   "
-	Write-Host "Disable Location icon                         " -n; Write-Host -ForegroundColor White "$disablelocationicon "
-	Write-Host "Activate Windows Photos viewer                " -n; Write-Host -ForegroundColor White "$activatephotoviewer "
-	Write-Host "Set Registered owner                          " -n; Write-Host -ForegroundColor White "$registeredowner     "
-	Write-Host "Enable Classic paint                          " -n; Write-Host -ForegroundColor White "$classicpaint        "
-	Write-Host "Disable Edge prelaunch on startup             " -n; Write-Host -ForegroundColor White "$disableedgeprelaunch"
-	Write-Host "Disable Cortana                               " -n; Write-Host -ForegroundColor White "$disablecortana      "
-	Write-Host "Disable automatic update of UWPs              " -n; Write-Host -ForegroundColor White "$disablestoreautoupd "
-	Write-Host "Enable classic ballon notifications           " -n; Write-Host -ForegroundColor White "$balloonnotifs       "
-	Write-Host "Show all icons in taskbar tray                " -n; Write-Host -ForegroundColor White "$showalltrayicons    "
-	Write-Host "Show hidden system files and folders          " -n; Write-Host -ForegroundColor White "$showsuperhidden     "
-	Write-Host "Disable Lock screen                           " -n; Write-Host -ForegroundColor White "$disablelockscrn     "
-	Write-Host "Use classic Alt+Tab                           " -n; Write-Host -ForegroundColor White "$classicalttab       "
-	Write-Host "Use classic volume control                    " -n; Write-Host -ForegroundColor White "$oldvolcontrol       "
-	Write-Host "Set accent color to Default Blue              " -n; Write-Host -ForegroundColor White "$defaultcolor        "
-	Write-Host "Remove 3D objects (16299+)                    " -n; Write-Host -ForegroundColor White "$remove3Dobjects     "
-	Write-Host "Hide Bluetooth icon                           " -n; Write-Host -ForegroundColor White "$hidebluetoothicon   "
-	Write-Host "Disable Login screen background               " -n; Write-Host -ForegroundColor White "$disablelogonbg      "
-	Write-Host "Remove Network icon from login screen         " -n; Write-Host -ForegroundColor White "$removelckscrneticon "
-	Write-Host "Disable Power Throttling                      " -n; Write-Host -ForegroundColor White "$nopowerthrottling   "
-	Write-Host "Reduce the amount of svchost.exes             " -n; Write-Host -ForegroundColor White "$svchostslimming     "
-	Write-Host "Enable ?????.???? desktop version             " -n; Write-Host -ForegroundColor White "$desktopversion      "
-	Write-Host " "
-	Write-Host "You are now in Advanced configuration mode, where you can adjust individual functions of the script." -ForegroundColor Black -BackgroundColor Yellow
-	Write-Host "Scroll up to the top and view the options." -ForegroundColor Yellow
+function Show-Disenabled($regvalue) {
+	if ($regvalue -eq 1) {
+		Write-Host -ForegroundColor Green " (ENABLED)"
+	} else {
+		Write-Host -ForegroundColor Red " (DISABLED)"
+	}
 }
-
-function Start-InstallHikaru {
-	& $coredir\kernel\getready.ps1
+function Select-Disenabled($regvalue) {
+	$regreturns = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").$regvalue
+	if ($regreturns -eq 1) {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 0 -Type DWord -Force
+	} else {
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 1 -Type DWord -Force
+	}
 }
-
+function Show-WelcomeText {
+	Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
+	Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
+}
 function Confirm-DeleteDownloads {
 	Write-Host -ForegroundColor Black -BackgroundColor Red "---------- HOLD UP ----------"
 	Write-Host " "
@@ -120,7 +61,6 @@ function Reset-Script {
 		default {exit}
 	}
 }
-
 function Check-Defender {
 	$notdctrled = Get-Process MsMpEng
 	if ($notdctrled) {
@@ -153,29 +93,8 @@ function Check-EnoughActions {
 	}
 }
 
-function Show-Disenabled($regvalue) {
-	if ($regvalue -eq 1) {
-		Write-Host -ForegroundColor Green " (ENABLED)"
-	} else {
-		Write-Host -ForegroundColor Red " (DISABLED)"
-	}
-}
-function Select-Disenabled($regvalue) {
-	$regreturns = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").$regvalue
-	if ($regreturns -eq 1) {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 0 -Type DWord -Force
-	} else {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 1 -Type DWord -Force
-	}
-}
-function Show-WelcomeText {
-	Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
-	Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
-}
-
 $confulee = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigEditing
 $confuone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ChangesMade
-$remotesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRSwitch
 $ds       = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 if ($confulee -eq 2) {$confules = 2} elseif ($confulee -eq 3) {$confules = 3}
 else {
@@ -205,7 +124,7 @@ else {
 			$stcolor = "White"
 		}
 	}
-	if ($remotesw -eq 1) {
+	if ($increasewait -eq 1) {
 		Write-Host " "
 		Write-Host "NOTE: " -ForegroundColor Black -BackgroundColor Yellow; Write-Host ' - Increase wait time is enabled. The script will wait 30 seconds on every system restart before continuing or until you press CTRL+C. You can toggle this option by selecting action 2.' -ForegroundColor White
 	}
@@ -239,7 +158,7 @@ switch ($confules) {
 		Write-Host -ForegroundColor Black -BackgroundColor Green "Alright, starting the script..."
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
 		Start-Sleep -Seconds 5
-		Start-InstallHikaru
+		& $coredir\kernel\getready.ps1
 	}
 	{$_ -like "2"} {
 		$confuleb = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).ConfigEditingSub
@@ -268,7 +187,7 @@ switch ($confules) {
 		if ($essentialapps -eq 1) {Write-Host -ForegroundColor White "8. Customize which Apps to install"}
 		Write-Host -ForegroundColor White "0. Accept the current configuration and return to main menu"
 		Write-Host " "
-		Write-Host "Your selection: " -n ; $confulee = Read-Host
+		Write-Host "> " -n ; $confulee = Read-Host
 		switch ($confulee) {
 			{$_ -like "1"} {if ($build -gt 10240) {Select-Disenabled WUmodeSwitch}; exit}
 			{$_ -like "2"} {Select-Disenabled SetWallpaper; exit}
@@ -293,7 +212,7 @@ switch ($confules) {
 		Write-Host -ForegroundColor White "   it will wait for you and refresh once you close Notepad"
 		Write-Host -ForegroundColor White "0. Accept the current configuration and return to main menu" -n; Write-Host " (Default answer)"
 		Write-Host " "
-		Write-Host "Your selection: " -n ; $confulee = Read-Host
+		Write-Host "> " -n ; $confulee = Read-Host
 		switch ($confulee) {
 			{$_ -like "1"} {
 				Write-Host -ForegroundColor Cyan "Now opening $PSScriptRoot\config.ps1 in Notepad"

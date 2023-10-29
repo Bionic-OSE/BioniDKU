@@ -9,9 +9,9 @@ switch ($build) {
 		Write-Host "- Toast Notification won't be disabled completely " -n; Write-Host -ForegroundColor Yellow "until you turn on Focus Assist (Do Not Distrub) in Settings, without exceptions (Alarms only and uncheck all checkboxes)."
 		Write-Host "- The Lock screen might not be disabled. If that's the case, " -n; Write-Host -ForegroundColor Yellow 'please use Winaero Tweaker to disable it instead.'
 	}
-	#{$_ -le 15063} {
-	#	Write-Host "- HomeGroup might not be removed in Explorer (and won't be removed for most cases, due to how hard it is to remove automatically). In that case, " -n; Write-Host -ForegroundColor Yellow 'please right click the item in the side pane and delete it.'
-	#}
+	{$_ -le 15063} {
+		Write-Host "- HomeGroup might not be removed in Explorer (and won't be removed for most cases, due to how hard it is to remove automatically). Fortunately, Winaero Tweaker supports removing that. " -n; Write-Host -ForegroundColor Yellow 'Boot it up, search for "Navigation Pane" and select the "Default Items" one. Unchecking it and re-signing in should make it go away.'
+	}
 	{$_ -eq 15063 -or $_ -eq 16299} {
 		Write-Host "- Windows Defender tray icon might not get removed. In that case, " -n; Write-Host -ForegroundColor Yellow 'please disable it in Task Manager > Startup tab, or use Winaero Tweaker.'
 	}

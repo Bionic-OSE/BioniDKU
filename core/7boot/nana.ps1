@@ -32,10 +32,11 @@ if (-not (Test-Path -Path "$datadir\values")) {New-Item -Path $datadir -Name "va
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped
 $remote = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).RunningThisRemotely
+$isexplorerup = Get-Process -Name explorer -ErrorAction SilentlyContinue
 if ($booted -eq 1) {
 	# Play the script startup sound
 	Show-Branding
-	if ($remote -eq 1) {
+	if ($remote -eq 1 -and -not $isexplorerup) {
 		Start-Process powershell -Wait -ArgumentList "-Command $workdir\modules\lib\WaitRemote.ps1"
 	}
 	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
@@ -197,7 +198,7 @@ Set-AutoIDKUValue d "Media10074" 0
 Set-AutoIDKUValue d "DarkSakura" 0
 Set-AutoIDKUValue d "WUmodeSwitch" 1
 
-if (Get-RemoteSoftware) {Set-AutoIDKUValue d "RunningThisRSwitch" 1} else {Set-AutoIDKUValue d "RunningThisRSwitch" 0}
+if (Get-RemoteSoftware) {Set-AutoIDKUValue d "RunningThisRemotely" 1} else {Set-AutoIDKUValue d "RunningThisRemotely" 0}
 if ($build -le 10586) {Set-AutoIDKUValue d "Pwsh" 5}
 elseif ($build -ge 14393) {Set-AutoIDKUValue d "Pwsh" 7}
 
@@ -210,13 +211,13 @@ $meetor = Test-Path -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer'
 $meesys = Test-Path -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies'
 switch ($false) {
 	{$meeter -eq $_} {
-		New-Item -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'Explorer'
+		New-Item -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'Explorer' | Out-Null
 	}
 	{$meetor -eq $_} {
-		New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Explorer'
+		New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Explorer' | Out-Null
 	}
 	{$meesys -eq $_} {
-		New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'System'
+		New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'System' | Out-Null
 	}
 }
 
@@ -235,7 +236,12 @@ if ($build -le 17134 -and $build -ge 10240) {
 
 # Get the ambient sound package and play the script startup sound
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Getting dependencies ready"
-Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\hikarug.ps1 0"
+while ($true) {
+	Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\hikarug.ps1 0"
+	$aexists = Test-Path -Path "$datadir\ambient"
+	if ($aexists) {break}
+	Start-Sleep -Seconds 1
+}
 Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Set-AutoIDKUValue d "BootStrapped" 1

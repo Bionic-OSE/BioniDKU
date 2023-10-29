@@ -21,25 +21,12 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v ShellFeedsTask
 "@
 } else {$hkrdockico = ""}
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SkipNotGABWarn
-$edition = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").EditionID
-$editiok = "Professional","Core","Enterprise"
 if ($pwsh -eq 5) {
 	$hkrbuildkey = "CurrentBuildNumber"
 } else {
 	$hkrbuildkey = "BuildLab"
 	$hkrbuildog = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").BuildLab
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "BuildLabOg" -Value $hkrbuildog -Type String -Force
-}
-if ($desktopversion -and $ngawarn -ne 1 -and $editiok.Contains($edition)) {
-	Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "PaintDesktopVersion" -Value 1 -Type DWord -Force
-} else {
-	if ($desktopversion) {
-		Write-Host -ForegroundColor Black -BackgroundColor Red "Welp,"
-		Write-Host -ForegroundColor Red "The script could not perform the DesktopVersion mod." -n; Write-Host -ForegroundColor White " This is likely because:"
-		Write-Host -ForegroundColor White "- Either you are not running on a General Availability build"
-		Write-Host -ForegroundColor White "- Or you are not running Home, Pro or Enterprise editions of Windows 10"
-		Start-Sleep -Seconds 3
-	}
 }
 
 # Also from here, reenable UAC if it's a GA build
@@ -98,9 +85,7 @@ $hkbp = New-ScheduledTask -Action $hkbpaction -Principal $hkbprincipal -Settings
 Register-ScheduledTask $hkbpstname -InputObject $hkbp
 $hklcstname = 'BioniDKU UWP Lockdown Controller'
 $hklcaction = New-ScheduledTaskAction -Execute "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument "-Command `"& %SystemDrive%\Bionic\Hikaru\ApplicationControlHost.ps1`""
-$hklcrincipal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-$hklcsettings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
-$hklc = New-ScheduledTask -Action $hklcaction -Principal $hklcrincipal -Settings $hklcsettings
+$hklc = New-ScheduledTask -Action $hklcaction -Principal $hkbprincipal -Settings $hkbpsettings
 Register-ScheduledTask $hklcstname -InputObject $hklc
 
 $Scheduler = New-Object -ComObject "Schedule.Service"; $Scheduler.Connect() # From: https://www.osdeploy.com/blog/2021/scheduled-tasks/task-permissions

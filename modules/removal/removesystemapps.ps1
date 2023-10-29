@@ -37,33 +37,6 @@ function Grant-Ownership($item) {
 	icacls $item /grant Administrators:F /t
 }
 
-# Microsoft Edge Chromium
-if ($keepedgechromium -ne 1) {
-	$edghouse = "$env:SYSTEMDRIVE\Program Files (x86)\Microsoft"
-	$edgoogle = "$edghouse\Edge\Application\msedge.exe"
-	$edgecore = "EdgeCore"
-	$edgeview = "EdgeWebView"
-	$edgupdte = "$edghouse\EdgeUpdate\MicrosoftEdgeUpdate.exe"
-	$edgefami = $edgoogle, $edgupdte
-	$edgeFOLD = $edgecore, $edgeview
-	
-	foreach ($edgefile in $edgefami) {
-		Stop-Processes
-		if (Test-Path $edgefile) {
-			Grant-Ownership $edgefile 
-			Disable-Executable $edgefile
-		}
-	}
-	foreach ($edgefldr in $edgeFOLD) {
-		Stop-Processes
-		$edgefldd = "$edghouse\$edgefldr"
-		if (Test-Path -Path $edgefldd) {
-			Grant-Ownership $edgefldd
-			Rename-AppsFolder $edgefldd "$edgefldr.FOLDED"
-		}
-	}
-}
-
 # Microsoft Edge Legacy and other system UWPs
 $sappfldr = "$env:SYSTEMDRIVE\Windows\SystemApps"
 $edgexaml = "Microsoft.MicrosoftEdge_8wekyb3d8bbwe"
@@ -80,7 +53,7 @@ foreach ($sapp in $sappfami) {
 		#Rename-AppsFolder $sapppath "$sapp.DISABLED"
 	}
 }
-$sappfldr = "$env:SYSTEMDRIVE\Windows\SystemApps"
+
 $edgexaml = Test-Path "$sappfldr\Microsoft.MicrosoftEdge_8wekyb3d8bbwe"
 $lockxaml = Test-Path "$sappfldr\Microsoft.LockApp_cw5n1h2txyewy"
 $srchxaml = Test-Path "$sappfldr\Microsoft.Windows.Search_cw5n1h2txyewy"
