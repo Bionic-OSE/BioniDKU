@@ -20,14 +20,6 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v IsFeedsAvailab
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Feeds" /v ShellFeedsTaskbarViewMode /t REG_DWORD /d 2 /f
 "@
 } else {$hkrdockico = ""}
-$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SkipNotGABWarn
-if ($pwsh -eq 5) {
-	$hkrbuildkey = "CurrentBuildNumber"
-} else {
-	$hkrbuildkey = "BuildLab"
-	$hkrbuildog = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").BuildLab
-	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "BuildLabOg" -Value $hkrbuildog -Type String -Force
-}
 
 # Also from here, reenable UAC if it's a GA build
 if ($keepuac -and $ngawarn -ne 1) {Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -Name EnableLUA -Value 1 -Force}
@@ -39,13 +31,6 @@ rem ####### Hikaru-chan by Bionic Butter #######
 
 $hkrdockico
 "@ | Out-File -FilePath "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikarun.bat" -Encoding ascii
-
-@"
-@echo off
-rem ####### Hikaru-chan by Bionic Butter #######
-
-reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v $hkrbuildkey /t REG_SZ /d "?????.????_release.??????-????" /f
-"@ | Out-File -FilePath "$env:SYSTEMDRIVE\Bionic\Hikaru\Hikaran.bat" -Encoding ascii
 
 # Install HikaruQM and pre-apply system restrictions (set restrictions but at disabled state)
 $WScriptObj = New-Object -ComObject ("WScript.Shell")
@@ -78,8 +63,8 @@ Disable-ScheduledTask 'BioniDKU Quick Menu Update Checker'
 
 # With the new UAC-enabled system, permission issues became a problem. The chunk of code below is to address all of that.
 $hkbpstname = 'BioniDKU Windows Build String Modifier'
-$hkbpaction = New-ScheduledTaskAction -Execute "%SystemRoot%\System32\cmd.exe" -Argument "/c %SystemDrive%\Bionic\Hikaru\Hikaran.bat"
-$hkbprincipal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$hkbpaction = New-ScheduledTaskAction -Execute "%SystemDrive%\Bionic\Hikaru\HikaruBuildMod.exe"
+$hkbprincipal = New-ScheduledTaskPrincipal -UserID "$env:USERNAME" -LogonType Interactive -RunLevel Highest
 $hkbpsettings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
 $hkbp = New-ScheduledTask -Action $hkbpaction -Principal $hkbprincipal -Settings $hkbpsettings
 Register-ScheduledTask $hkbpstname -InputObject $hkbp

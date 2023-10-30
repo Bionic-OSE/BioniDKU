@@ -8,6 +8,7 @@ function Start-DownloadLoop($link,$destfile,$name) {
 			Write-Host " "
 			Write-Host -ForegroundColor Black -BackgroundColor Red "Ehhhhhhh"
 			Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
+			Start-Sleep -Seconds 1
 		}
 	}
 }
@@ -84,8 +85,8 @@ if ($hkau -eq 1) {
 	Start-Process "$env:SYSTEMDRIVE\Windows\SysWOW64\SndVol.exe"
 	Write-Host -ForegroundColor White "For more information on the currently playing music, refer to $datadir\ambient\ChillWaitInfo.txt"
 	Write-Host -ForegroundColor Yellow "DO NOT adjust the volume of FFPlay! It will affect your music experience later on!"
+	Start-Sleep -Seconds 3
 }
-Start-Sleep -Seconds 3
 
 Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU/raw/main/PATCHME.ps1" "PATCHME.ps1" "Software versions information file"
 . $datadir\dls\PATCHME.ps1

@@ -124,6 +124,7 @@ else {
 			$stcolor = "White"
 		}
 	}
+	$increasewait = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRemotely
 	if ($increasewait -eq 1) {
 		Write-Host " "
 		Write-Host "NOTE: " -ForegroundColor Black -BackgroundColor Yellow; Write-Host ' - Increase wait time is enabled. The script will wait 30 seconds on every system restart before continuing or until you press CTRL+C. You can toggle this option by selecting action 2.' -ForegroundColor White
