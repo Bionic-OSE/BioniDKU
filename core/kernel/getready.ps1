@@ -21,7 +21,7 @@ Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Write-Host " "
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Hooking the script to the startup sequence"
 Copy-Item "$datadir\ambient\FFPlay.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru"
-. $coredir\kernel\hikaru.ps1
+. $coredir\kernel\minihikaru.ps1
 Set-HikaruChan
 
 switch ($true) {
@@ -77,7 +77,8 @@ Set-AutoIDKUValue d "HikaruMode" 4
 Set-AutoIDKUValue d "ChangesMade" 1
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device"
-Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe -WindowStyle Hidden -ArgumentList "-i $env:SYSTEMDRIVE\Bionic\Hikaru\ShellSpinner.mp4 -fs -alwaysontop -noborder"
+$n = Get-Random -Minimum 1 -Maximum 6
+Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe -WindowStyle Hidden -ArgumentList "-i $env:SYSTEMDRIVE\Bionic\Hikaru\ShellSpinner$n.mp4 -fs -alwaysontop -noborder"
 Start-Sleep -Seconds 1
 
 $setwallpaper = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SetWallpaper
@@ -87,7 +88,7 @@ if ($setwallpaper -eq 1) {
 	& $workdir\modules\desktop\wallpaper.ps1
 }
 
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 1
 shutdown -r -t 0
 Start-Sleep -Seconds 30
 exit

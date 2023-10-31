@@ -59,22 +59,6 @@ switch ($true) {
 		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsInkWorkspace' -Name 'AllowWindowsInkWorkspace' -Value 0 -Type DWord -Force
 	}
 	
-	$removedownloads {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing Downloads Folder"
-		$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
-		if ($dlhasfiles -eq $true) {
-			Write-Host "DELETING YOUR DOWNLOADS FOLDER as you specified." -ForegroundColor Red -BackgroundColor DarkGray
-			Import-Module -Name $PSScriptRoot\..\lib\Remove-ItemWithProgress.psm1
-			Remove-ItemWithProgress -Path "$env:USERPROFILE\Downloads"
-		} else {
-			Remove-Item -Path "$env:USERPROFILE\Downloads" -Force -Recurse
-		}
-		Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}' -Force
-		Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}' -Force 
-		Remove-Item -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}' -Force
-		Remove-Item -Path 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}' -Force
-	}
-	
 	{$classicpaint -and $build -ge 15063} {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Enabling Classic Paint"
 		New-item -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Applets\Paint' -Name "Settings"

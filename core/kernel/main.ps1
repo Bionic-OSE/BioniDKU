@@ -14,15 +14,16 @@ function Show-Branding($s1) {
 function Stop-Script {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 	Stop-Process -Name "FFPlay" -Force -ErrorAction SilentlyContinue
-	Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe -WindowStyle Hidden -ArgumentList "-i $env:SYSTEMDRIVE\Bionic\Hikaru\ShellSpinner.mp4 -fs -alwaysontop -noborder"
+	$n = Get-Random -Minimum 1 -Maximum 6
+	Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe -WindowStyle Hidden -ArgumentList "-i $env:SYSTEMDRIVE\Bionic\Hikaru\ShellSpinner$n.mp4 -fs -alwaysontop -noborder"
 	Start-Sleep -Seconds 1
 	exit
 }
 function Get-ScriptProgress($value) {
 	$proc = Get-Content -Path $datadir\values\progress.txt
 	$valnt = [int32]$value
-	$pg = [Math]::Round(($valnt / 24) * 100) 
-	# Currently we have a maximum of 23 actions, taking that +1 so action 23 won't become 100%
+	$pg = [Math]::Round(($valnt / 25) * 100) 
+	# Currently we have a maximum of 24 actions, taking that +1 so action 24 won't become 100%
 	Show-WindowTitle 3 $pg
 	return [int32]$proc -le $valnt
 }
@@ -72,7 +73,7 @@ Show-WindowTitle 3 0 noclose
 Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
 
 # Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
-. $coredir\kernel\hikaru.ps1
+. $coredir\kernel\minihikaru.ps1
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
 if ($hkm -eq 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Switching to normal mode"
@@ -104,15 +105,12 @@ $pendingreboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Com
 $pendingrebootcount = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").PendingRebootCount
 if ($pendingreboot -eq $true) {
 	if ($pendingrebootcount -gt 3) {
-		Show-WindowTitle
 		Write-Host -ForegroundColor Black -BackgroundColor Yellow "Your PC have queued a restart more than 3 times!"
 		Write-Host -ForegroundColor Yellow "This is likely due to Windows Update being busy at the moment. I suggest checking the page in Settings for any on-going updates, or check in Task Manager for any WU-related processes and wait for them to finish if possible."
 		Write-Host -ForegroundColor White "If you wish to continue the script despite the pending restart, press Enter twice. Otherwise, please restart the system manually (the script will automatically resume when you do so)."
 		Read-Host
 		Read-Host
-		Show-WindowTitle noclose
-	} else {
-		Show-WindowTitle
+	} elseif (SPV 0) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Your PC has a pending restart, which has to be done before running this script. Automatically restarting in 5 seconds..."
 		$pendingrebootcounting = $pendingrebootcount + 1
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "PendingRebootCount" -Value $pendingrebootcounting -Type DWord -Force
@@ -176,15 +174,24 @@ switch ($true) {
 
 	# A4
 	{$removehomegroup -and $build -lt 17134 -and (SPV 4)} {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Partially removing HomeGroup"
-		# First, with the permission seal removed earlier, DESTROY the key (well technically not)
-		#Rename-Item "HKLM:\SOFTWARE\Classes\CLSID\{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}" -NewName "{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}.$build" Okay for whatever reason this is creating an undeletable HomeGroup (32-bit)
-		# Then, we need to disable the service.
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Trying to remove HomeGroup"
+		# With the permission seal removed earlier, DESTROY the keys
+		$clsid = "SOFTWARE\Classes\CLSID"
+		$ns = "Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace"
+		$homegroup = "{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}"
+		$byekeys = @("$clsid\$homegroup",
+			"$clsid\$homegroup\ShellFolder",
+			"SOFTWARE\$ns\$homegroup",
+			"SOFTWARE\WOW6432Node\$ns\$homegroup")
+		foreach ($keys in $byekeys) {
+			Remove-Item "HKLM:\$keys" -Recurse -Force -ErrorAction SilentlyContinue
+		}
+		# Then, we need to disable the services.
 		Stop-Service -Name HomeGroupProvider
 		Stop-Service -Name HomeGroupListener
 		Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "config HomeGroupProvider start= DISABLED"
 		Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "config HomeGroupListener start= DISABLED"
-		# And all it's left is to tell the user to right click and delete the key in Explorer, done!
+		# If we're lucky, the folder should be gone completely, but if not, then Winaero is the only way
 		UPV 5
 	}
 
@@ -231,52 +238,57 @@ switch ($true) {
 		& $workdir\modules\desktop\desktopshortcuts.ps1; UPV 12
 	}
 
+	# A12
+	{$removedownloads -and (SPV 12)} {
+		& $workdir\modules\desktop\dlreplacement.ps1; UPV 13
+	}
+
 	# Installation zone
 
-	# A12
-	{$essentialapps -eq 1 -and (SPV 12)} {
-		& $workdir\modules\apps\essentialapps.ps1; UPV 13
+	# A13
+	{$essentialapps -eq 1 -and (SPV 13)} {
+		& $workdir\modules\apps\essentialapps.ps1; UPV 14
 	}
 
 	# Destruction zone
 
-	# A13
-	{$removeonedrive -and (SPV 13)} {
-		& $workdir\modules\removal\removeonedrive.ps1; UPV 14
-	}
-
 	# A14
-	{$removewaketimers -and (SPV 14)} {
-		& $workdir\modules\removal\removewaketimers.ps1; UPV 15
+	{$removeonedrive -and (SPV 14)} {
+		& $workdir\modules\removal\removeonedrive.ps1; UPV 15
 	}
 
 	# A15
-	{$replaceemojifont -and (SPV 15)} {
-		& $workdir\modules\removal\replaceemojifont.ps1; UPV 16
+	{$removewaketimers -and (SPV 15)} {
+		& $workdir\modules\removal\removewaketimers.ps1; UPV 16
 	}
 
 	# A16
-	{$removeedgeshortcut -and (SPV 16)} {
-		& $workdir\modules\removal\removeedgeshortcut.ps1; UPV 17
+	{$replaceemojifont -and (SPV 16)} {
+		& $workdir\modules\removal\replaceemojifont.ps1; UPV 17
 	}
 
 	# A17
-	{$sltoshutdownwall -and (SPV 17)} {
-		& $workdir\modules\desktop\slidetoshutdownwall.ps1; UPV 18
+	{$removeedgeshortcut -and (SPV 17)} {
+		& $workdir\modules\removal\removeedgeshortcut.ps1; UPV 18
 	}
 
 	# A18
-	{$registrytweaks -and (SPV 18)} {
-		& $workdir\modules\essential\simpleregistry.ps1; UPV 19
+	{$sltoshutdownwall -and (SPV 18)} {
+		& $workdir\modules\desktop\slidetoshutdownwall.ps1; UPV 19
 	}
 
 	# A19
-	{$embeddedlogon -and $build -ge 14393 -and (SPV 19)} {
-		& $workdir\modules\desktop\embeddedlogon.ps1; UPV 20
+	{$registrytweaks -and (SPV 19)} {
+		& $workdir\modules\essential\simpleregistry.ps1; UPV 20
 	}
 
 	# A20
-	{$removeUWPapps -and (SPV 20)} {
+	{$embeddedlogon -and $build -ge 14393 -and (SPV 20)} {
+		& $workdir\modules\desktop\embeddedlogon.ps1; UPV 21
+	}
+
+	# A21
+	{$removeUWPapps -and (SPV 21)} {
 		# On certain builds, there is a freeze issue where the script will just hang here forever, we have to use another method...
 		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\utils\SuwakoDebloaterLite-Bionic.7z -o$datadir\utils\SuwakoDebloaterLite-Bionic -aoa"
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing all UWP apps possible"
@@ -290,18 +302,18 @@ switch ($true) {
 			if ($suwakodone -eq 1) {break}
 			Write-Host "." -n; Start-Sleep -Seconds 1
 		}
-		UPV 21
-	}
-
-	# A21
-	{$customsounds -and (SPV 21)} {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing custom system sounds" 
-		Start-Process powershell -Wait -ArgumentList "$workdir\modules\desktop\customsounds.ps1"
 		UPV 22
 	}
 
 	# A22
-	{$removesystemapps -and (SPV 22)} {
+	{$customsounds -and (SPV 22)} {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing custom system sounds" 
+		Start-Process powershell -Wait -ArgumentList "$workdir\modules\desktop\customsounds.ps1"
+		UPV 23
+	}
+
+	# A23
+	{$removesystemapps -and (SPV 23)} {
 		# Same as A20
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling system apps" 
 		Start-Process powershell -ArgumentList "$workdir\modules\removal\removesystemapps.ps1"
@@ -310,12 +322,12 @@ switch ($true) {
 			if ($sappdone -eq 1) {break}
 			Write-Host "." -n; Start-Sleep -Seconds 1
 		}
-		Write-Host " "; UPV 23
+		Write-Host " "; UPV 24
 	}
 
-	# A23
-	{$disableaddressbar -and (SPV 23)} {
-		& $workdir\modules\apps\addressbar.ps1; UPV 24
+	# A24
+	{$disableaddressbar -and (SPV 24)} {
+		& $workdir\modules\apps\addressbar.ps1; UPV 25
 	}
 
 }
@@ -337,5 +349,5 @@ Start-Process "$datadir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentL
 & $PSScriptRoot\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta
 Read-Host
-shutdown -r -t 6 -c " "
+shutdown -r -t 5 -c " "
 Stop-Script

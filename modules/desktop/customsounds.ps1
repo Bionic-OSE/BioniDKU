@@ -13,8 +13,8 @@ Show-Branding
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Custom system sounds"
 function Remove-SystemFile($item) {
 	takeown /f $item /r
-	icacls $item /grant Administrators:F /t
-	Remove-Item -Path $item -Force -Recurse -ErrorAction SilentlyContinue
+	Start-Process icacls -Wait -NoNewWindow -ArgumentList "$item /grant Administrators:F /t"
+	Remove-Item -Path "$item" -Force -Recurse -ErrorAction SilentlyContinue
 }
 
 Write-Host -ForegroundColor Cyan "Removing old system sounds until all files are gone, starting in 3 seconds"
@@ -24,11 +24,12 @@ while ($true) {
 	if ($testmedia) {Remove-SystemFile $env:SYSTEMDRIVE\Windows\Media} else {break}
 }
 
-Write-Host -ForegroundColor Cyan "Old sounds have been removed, now placing new sounds in 3 seconds"
-Start-Sleep -Seconds 3
+Write-Host -ForegroundColor Cyan "Old sounds have been removed, now placing new sounds"
+Start-Sleep -Seconds 1
 $media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
 if ($media10074 -eq 1) {$var = "1k74"} else {$var = "9200"}
 New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "Media" -ItemType directory -ErrorAction SilentlyContinue
+Start-Process icacls -Wait -NoNewWindow -ArgumentList "$env:SYSTEMDRIVE\Windows\Media /grant Everyone:(OI)(CI)F /t /inheritance:r"
 Expand-Archive -Path $datadir\utils\Media${var}.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media
 Copy-Item -Path $datadir\utils\* -Include Media*.zip -Destination $env:SYSTEMDRIVE\Windows
 Write-Host -ForegroundColor Green -BackgroundColor DarkGray "Custom system sounds have been installed"

@@ -92,7 +92,7 @@ if ($chonkexists -eq $false) {
 			Write-Host -ForegroundColor Red "Did the transfer fail?" -n; Write-Host " Retrying..."
 		}
 	}
-	Show-WindowTitle
+	Show-WindowTitle 2.2 "Windows Update mode"
 	Write-Host -ForegroundColor Cyan "Download complete. Opening the MSU in wusa.exe so you can install it..."
 } else {
 	Write-Host -ForegroundColor Cyan "It looks like the update file has downloaded before. Moving on to handle the task using wusa.exe..."

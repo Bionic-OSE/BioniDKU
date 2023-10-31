@@ -15,4 +15,3 @@ function Start-HikaruShell {
 	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainAmbient.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Start-Sleep -Seconds 5
 }
-

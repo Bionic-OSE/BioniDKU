@@ -40,9 +40,9 @@ if %re%==0x3 goto BioniDKU
 echo https://youtu.be/zry4zeN0SHw
 exit
 
-:Hikarupdate
+:UpdateMode
 timeout 1 /nobreak > nul
-powershell ..\servicing\hikarupdate.ps1
+powershell ..\servicing\idkupdate.ps1
 goto PSRestartS
 
 :DownloadMode
@@ -52,7 +52,7 @@ goto PSRestartS
 
 :BioniDKU
 for /f "tokens=3" %%a in ('reg query "HKCU\Software\AutoIDKU" /v HikaruMode  ^|findstr /ri "REG_DWORD"') do set "hku=%%a"
-if %hku%==0x2 goto Hikarupdate
+if %hku%==0x2 goto UpdateMode
 if %hku%==0x4 goto DownloadMode
 timeout 1 /nobreak > nul
 powershell ..\kernel\main.ps1

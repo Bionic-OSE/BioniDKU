@@ -9,6 +9,9 @@ if ($hkreg -eq $false) {
 }
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "ProductName" -Value "BioniDKU" -Type String -Force
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value $var -Type DWord -Force
+$media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
+if ($media10074 -eq 1) {$sar = 2} else {$sar = 1}
+Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "SystemSoundVariant" -Value $sar -Type DWord -Force
 Show-WindowTitle noclose
 
 # Hikarun on-demand customization section
@@ -54,7 +57,7 @@ $hkF5trigger = @(
 	$(New-ScheduledTaskTrigger -AtLogon),
 	$(New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At 8am)
 )
-$hkF5settings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+$hkF5settings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
 $hkF5 = New-ScheduledTask -Action $hkF5action -Trigger $hkF5trigger -Settings $hkF5settings
 Register-ScheduledTask 'BioniDKU Quick Menu Update Checker' -InputObject $hkF5
 
@@ -65,7 +68,7 @@ Disable-ScheduledTask 'BioniDKU Quick Menu Update Checker'
 $hkbpstname = 'BioniDKU Windows Build String Modifier'
 $hkbpaction = New-ScheduledTaskAction -Execute "%SystemDrive%\Bionic\Hikaru\HikaruBuildMod.exe"
 $hkbprincipal = New-ScheduledTaskPrincipal -UserID "$env:USERNAME" -LogonType Interactive -RunLevel Highest
-$hkbpsettings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+$hkbpsettings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries -StartWhenAvailable -ExecutionTimeLimit 0 -MultipleInstances IgnoreNew
 $hkbp = New-ScheduledTask -Action $hkbpaction -Principal $hkbprincipal -Settings $hkbpsettings
 Register-ScheduledTask $hkbpstname -InputObject $hkbp
 $hklcstname = 'BioniDKU UWP Lockdown Controller'
