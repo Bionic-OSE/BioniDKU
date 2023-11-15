@@ -86,6 +86,7 @@ $Account = New-Object System.Security.Principal.NTAccount('BuiltIn\Administrator
 $RegistryZipUsersRule = New-Object System.Security.AccessControl.RegistryAccessRule($Account, $SystemRights, $InheritanceFlag, $PropagationFlag, $AccessControlType)
 #[Bionic] Storing some key paths as variables so we don't have to repeat them
 $clsid = "SOFTWARE\Classes\CLSID"
+$clsid64 = "SOFTWARE\Wow6432Node\Classes\CLSID"
 $ns = "Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace"
 $homegroup = "{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}"
 $qa = "{679f85cb-0220-4080-b29b-5540cc05aab6}"
@@ -95,7 +96,9 @@ $keylist = @("$clsid\$homegroup", #[Bionic] HomeGroup
 			"SOFTWARE\$ns\$homegroup",
 			"SOFTWARE\WOW6432Node\$ns\$homegroup",
 			"$clsid\$qa", #[Bionic] The ones for QA on 1511-
-			"$clsid\$qa\ShellFolder")
+			"$clsid\$qa\ShellFolder",
+			"$clsid64\$qa",
+			"$clsid64\$qa\ShellFolder")
 #[Sunryze] disable inheritance, remove users, add zip_users for each registry key
 foreach ($key in $keylist) {
 	Take-Permissions 'HKLM' "$key" 'S-1-5-32-544' $true

@@ -134,6 +134,11 @@ if ($esapps -eq 1) {
 }
 
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
+$pwsh7 = "https://github.com/PowerShell/PowerShell/releases/download/v${pwsh7ver}/PowerShell-${pwsh7ver}-win-x64.msi"
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "`r`nDownloading PowerShell 7" -n; Write-Host " (Required for Hikaru)"
+Write-Host -ForegroundColor White "This will take a while depending on your hardware"
+Start-DownloadLoop $pwsh7 core7.msi "PowerShell ${pwsh7ver}"
+
 $dotnet462d = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").NET462
 if ($pwsh -eq 5 -and $dotnet462d -eq 1) {
 	Write-Host " "

@@ -2,8 +2,8 @@
 
 ##############################################################
 # Import basic functions and grab some neccessary variables
-$releasetype = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseType
-$butter = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ReleaseIDEx
+$releasetype = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseType
+$butter = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseIDEx
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
 function Show-Branding($s1) {
 	if ($s1 -like "clear") {Clear-Host}
@@ -294,7 +294,7 @@ switch ($true) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing all UWP apps possible"
 		Write-Host -ForegroundColor Cyan "This process will spit out of errors, and that is normal."
 		Write-Host -ForegroundColor Cyan "In addition, it will also create a repeatedly flashing console HUD. If you are sensitive to flashes, please minimize or do not look at that window."
-		if (-not $keepedgechromium) {$keepedgeparam = '$true $true'} else {$keepedgeparam = '$false $false'}
+		if (-not $keepedgechromium -and $build -ge 17763) {$keepedgeparam = '$true $true'} else {$keepedgeparam = '$false $false'}
 		$suwakoparam = "& $datadir\utils\SuwakoDebloaterLite-Bionic\Scripts\Remove-Runner.ps1" + ' $true $true $true $true ' + $keepedgeparam + '; Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name UWPAppsRemoved" -Value 1 -Type DWord -Force'
 		Start-Process powershell -ArgumentList $suwakoparam
 		while ($true) {
@@ -302,7 +302,7 @@ switch ($true) {
 			if ($suwakodone -eq 1) {break}
 			Write-Host "." -n; Start-Sleep -Seconds 1
 		}
-		UPV 22
+		Write-Host " "; UPV 22
 	}
 
 	# A22
@@ -314,7 +314,7 @@ switch ($true) {
 
 	# A23
 	{$removesystemapps -and (SPV 23)} {
-		# Same as A20
+		# Same as A21
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling system apps" 
 		Start-Process powershell -ArgumentList "$workdir\modules\removal\removesystemapps.ps1"
 		while ($true) {

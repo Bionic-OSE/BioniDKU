@@ -50,10 +50,12 @@ function Show-Edition {& $workdir\modules\lib\PrintEdition.ps1}
 # Create registry folder
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting up environment"
 $autoidku = Test-Path -Path 'HKCU:\SOFTWARE\AutoIDKU' -ErrorAction SilentlyContinue
+$bionidku = Test-Path -Path 'HKCU:\SOFTWARE\BioniDKU' -ErrorAction SilentlyContinue
 $adkumsic = Test-Path -Path 'HKCU:\SOFTWARE\AutoIDKU\Music' -ErrorAction SilentlyContinue
 $adkuapps = Test-Path -Path 'HKCU:\SOFTWARE\AutoIDKU\Apps' -ErrorAction SilentlyContinue
 switch ($false) {
 	$autoidku {New-Item -Path 'HKCU:\SOFTWARE' -Name AutoIDKU | Out-Null}
+	$bionidku {New-Item -Path 'HKCU:\SOFTWARE' -Name BioniDKU | Out-Null}
 	$adkumsic {New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Music | Out-Null}
 	$adkuapps {New-Item -Path 'HKCU:\SOFTWARE\AutoIDKU' -Name Apps | Out-Null}
 }
@@ -144,7 +146,7 @@ function Set-AutoIDKUValue($type,$value,$data) {
 	if ($type -like "d") {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $value -Value $data -Type DWord -Force
 	} elseif ($type -like "str") {
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $value -Value $data
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $value -Value $data -Type String -Force
 	} elseif ($type -like "app") {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps" -Name $value -Value $data -Type DWord -Force
 	}
@@ -167,9 +169,9 @@ for ($m = 1; $m -le 5; $m++) {
 	else {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music" -Name $m -Value 0 -Type DWord -Force}
 }
 
-Set-AutoIDKUValue str "ReleaseType" $releasetype
-Set-AutoIDKUValue str "ReleaseID" $releaseid
-Set-AutoIDKUValue str "ReleaseIDEx" $releaseidex
+Set-ItemProperty -Path "HKCU:\Software\BioniDKU" -Name "ReleaseType" -Value $releasetype -Type String -Force 
+Set-ItemProperty -Path "HKCU:\Software\BioniDKU" -Name "ReleaseID" -Value $releaseid -Type String -Force 
+Set-ItemProperty -Path "HKCU:\Software\BioniDKU" -Name "ReleaseIDEx" -Value $releaseidex -Type String -Force
 
 Set-AutoIDKUValue app WinaeroTweaker 1
 Set-AutoIDKUValue app OpenShell 1

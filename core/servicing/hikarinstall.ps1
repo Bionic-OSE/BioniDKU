@@ -1,3 +1,5 @@
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing PowerShell 7"
+Start-Process msiexec -Wait -ArgumentList "/package $datadir\dls\core7.msi /quiet ADD_PATH=1 DISABLE_TELEMETRY=1"
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Configuring Hikaru-chan"
 
 $ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
@@ -12,7 +14,11 @@ Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" 
 $media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
 if ($media10074 -eq 1) {$sar = 2} else {$sar = 1}
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "SystemSoundVariant" -Value $sar -Type DWord -Force
-Show-WindowTitle noclose
+if ($pwsh -eq 7) {
+	$hkrbuildog = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").BuildLab
+	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "BuildLabOg" -Value $hkrbuildog -Type String -Force
+}
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "BuildLabOSE" -Value "1????.????_release.??????-????" -Type String -Force
 
 # Hikarun on-demand customization section
 if ($hidetaskbaricons -and $build -ge 18362) {

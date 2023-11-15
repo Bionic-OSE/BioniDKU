@@ -7,6 +7,9 @@ taskkill.exe /F /IM "OneDriveSetup.exe"
 taskkill.exe /F /IM "OneDrive.exe"
 taskkill.exe /F /IM "explorer.exe"
 
+# Give them 3 seconds
+Start-Sleep -Seconds 3
+
 Write-Host -ForegroundColor White "Remove OneDrive"
 if (Test-Path "$env:systemroot\System32\OneDriveSetup.exe") {
     & "$env:systemroot\System32\OneDriveSetup.exe" /uninstall

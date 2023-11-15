@@ -7,26 +7,6 @@ function Show-Branding {
 	Write-Host "Windows Update mode" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
-$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
-$global:coredir = Split-Path "$PSScriptRoot"
-$global:datadir = "$workdir\data"
-
-$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
-$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
-. $workdir\modules\lib\getedition.ps1
-. $workdir\modules\lib\DynamicTitlebar.ps1
-Show-WindowTitle 2.2 "Windows Update mode"
-Show-Branding
-Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
-
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components"
-. $datadir\dls\PATCHME.ps1
-$bubr = $latest | Select-String -Pattern $build
-$lubr = $bubr.Line.Substring($bubr.Line.LastIndexOf(".")+1)
-if ([int]$ubr -ge [int]$lubr) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU"  -Name "Wupdated" -Value 1 -Type DWord -Force}
-$wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
-$global:hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
-
 function Stop-UpdateMode {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
@@ -49,12 +29,12 @@ function Stop-UpdateModeAborted {
 function Start-HikaruMusicAndShell {
 	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainChallengeStart.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	if ($hkau -eq 1) {Start-Process powershell -ArgumentList "-Command $coredir\music\musicplayer.ps1"}
-	Write-Host "Starting WinXShell" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ", a lightweight desktop environment used in Windows Preinstalled Environments (Windows PE)"
 	$hkws = Test-Path -Path "$env:SYSTEMDRIVE\Bionic\WinXShell"
 	if ($hkws -eq $false) {
 		Expand-Archive -Path $datadir\utils\WinXShell.zip -DestinationPath $env:SYSTEMDRIVE\Bionic\WinXShell
 		$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 		if ($ds -eq 1) {Move-Item "$env:SYSTEMDRIVE\Bionic\WinXShell\sakuraground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -Force}
+		Write-Host "Starting WinXShell" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ", a lightweight desktop environment used in Windows Preinstalled Environments (Windows PE)"
 	}
 	Start-Process "$env:SYSTEMDRIVE\Bionic\WinXShell\WinXShell.exe"
 	Start-Sleep -Seconds 5
@@ -81,24 +61,19 @@ function Restart-UpdateMode {
 		Start-Sleep -Seconds 30
 		exit
 	} else {
-		Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'null' -Type String
-		Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'null' -Type String
-		& $workdir\modules\lib\interuptmessage.ps1
 		Stop-UpdateModeSuccess
 	}
 }
 function Show-StuckHelp {
 	$targetcheck = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -ErrorAction SilentlyContinue).TargetReleaseVersion
-	if ($targetcheck -eq 1 -and $edition -notmatch "Core") {
+	if ($targetcheck -eq 1 -and $edition -notmatch "Core" -and $build -ge 17134) {
 		Write-Host " "
 		Write-Host "HINT: " -ForegroundColor Magenta -n; Write-Host "If you got stuck at a Feature Update, try the following fix" -ForegroundColor Cyan
 		Write-Host "- Start Windows Update mode with Wumgr (option 2)"
 		Write-Host "- Open Registry Editor via the Run dialog like usual and nagivate to"
 		Write-Host "  HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -ForegroundColor White
-		if ($build -gt 10240) {
-			Write-Host "- Change value" -n; Write-Host ' "TargetReleaseVersionInfo" ' -ForegroundColor White -n; Write-Host "to an older version"
-			Write-Host "  (say if it's 2004, change it to 1909)"
-		}
+		Write-Host "- Change value" -n; Write-Host ' "TargetReleaseVersionInfo" ' -ForegroundColor White -n; Write-Host "to an older version"
+		Write-Host "  (say if it's 2004, change it to 1909)"
 		Write-Host "- Then, switch value" -n; Write-Host ' "TargetReleaseVersion" ' -ForegroundColor White -n; Write-Host "to 0"
 		Write-Host '- After that, via Run, open a Command Prompt and type ' -n; Write-Host '"powershell Restart-Service -Name wuauserv"' -ForegroundColor White
 		Write-Host "- Switch value" -n; Write-Host ' "TargetReleaseVersion" ' -ForegroundColor White -n; Write-Host "back to 1"
@@ -108,6 +83,26 @@ function Show-StuckHelp {
 		Write-Host "  your only choice then is to give Microsoft a middle finger, and abort WU mode."
 	}
 }
+
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:coredir = Split-Path "$PSScriptRoot"
+$global:datadir = "$workdir\data"
+
+$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
+$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
+. $workdir\modules\lib\getedition.ps1
+. $workdir\modules\lib\DynamicTitlebar.ps1
+Show-WindowTitle 2.2 "Windows Update mode"
+Show-Branding
+Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
+
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components"
+. $datadir\dls\PATCHME.ps1
+$bubr = $latest | Select-String -Pattern $build
+$lubr = $bubr.Line.Substring($bubr.Line.LastIndexOf(".")+1)
+if ([int]$ubr -ge [int]$lubr) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU"  -Name "Wupdated" -Value 1 -Type DWord -Force}
+$wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
+$global:hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikareboot" -Value 0 -Type DWord -Force
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikancel" -Value 1 -Type DWord -Force

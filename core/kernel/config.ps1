@@ -115,8 +115,8 @@ function Show-ModulesConfig {
 	Write-Host "Replace SlideToShutDown.exe background               " -n; Write-Host -ForegroundColor White "$sltoshutdownwall    "
 	Write-Host "Don't touch Edge Chromium**                          " -n; Write-Host -ForegroundColor White "$keepedgechromium    "
 	Write-Host "Keep Windows Search***                               " -n; Write-Host -ForegroundColor White "$keepsearch          "
-	Write-Host "Keep UAC (Stable only)                               " -n; Write-Host -ForegroundColor White "$keepsearch          "
-	Write-Host "Hide the shut down/restart screen (non-Home/Servers) " -n; Write-Host -ForegroundColor White "$keepsearch          "
+	Write-Host "Keep UAC (Stable only)                               " -n; Write-Host -ForegroundColor White "$keepuac             "
+	Write-Host "Hide the shut down/restart screen (non-Home/Servers) " -n; Write-Host -ForegroundColor White "$embeddedlogon       "
 	Write-Host " "
 	Write-Host "  * You MUST enable the Essential Apps option and include Open-Shell or this will have no effect." -ForegroundColor Cyan
 	Write-Host " ** If you keep Edge Chromium, the Edge Shortcut removal will be skipped if it's installed." -ForegroundColor Cyan
@@ -126,7 +126,7 @@ function Show-ModulesConfig {
 	Write-Host "------ ADVANCED SCRIPT CONFIGURATION: Registry Switches ------" -ForegroundColor Black -BackgroundColor Green
 	Write-Host " "
 	Write-Host "Enable registry tweaks                               " -n; Write-Host -ForegroundColor White "$registrytweaks      "
-	Write-Host " "
+	Write-Host " "; if ($registrytweaks) { 
 	Write-Host "Disable Defender startup entry                       " -n; Write-Host -ForegroundColor White "$disabledefenderstart"
 	Write-Host "Disable Toast notifications                          " -n; Write-Host -ForegroundColor White "$disablenotifs       "
 	Write-Host "Disale Game Bar                                      " -n; Write-Host -ForegroundColor White "$disablegamebar      "
@@ -159,7 +159,7 @@ function Show-ModulesConfig {
 	Write-Host "Remove Network icon from login screen                " -n; Write-Host -ForegroundColor White "$removelckscrneticon "
 	Write-Host "Disable Power Throttling                             " -n; Write-Host -ForegroundColor White "$nopowerthrottling   "
 	Write-Host "Reduce the amount of svchost.exes                    " -n; Write-Host -ForegroundColor White "$svchostslimming     "
-	Write-Host " "
+	Write-Host " "}
 	Write-Host "You are now in Advanced configuration mode, where you can adjust individual functions of the script." -ForegroundColor Black -BackgroundColor Yellow
 	Write-Host "Scroll up to the top and view the options." -ForegroundColor Yellow
 }

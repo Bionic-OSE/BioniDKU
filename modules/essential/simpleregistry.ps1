@@ -19,6 +19,9 @@ switch ($true) {
 			Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' -Name 'HubMode' -Value 1 -Type DWord -Force
 		} else {
 			Set-ItemProperty -Path "HKLM:\SOFTWARE\Classes\CLSID\{679f85cb-0220-4080-b29b-5540cc05aab6}\ShellFolder" -Name 'Attributes' -Value 0xA0600000 -Type DWord -Force
+			Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Classes\CLSID\{679f85cb-0220-4080-b29b-5540cc05aab6}\ShellFolder" -Name 'Attributes' -Value 0xA0600000 -Type DWord -Force
+			Set-ItemProperty -Path "HKLM:\SOFTWARE\Classes\CLSID\{679f85cb-0220-4080-b29b-5540cc05aab6}" -Name 'System.IsPinnedToNameSpaceTree' -Value 0 -Type DWord -Force
+			Set-ItemProperty -Path "HKLM:\SOFTWARE\Wow6432Node\Classes\CLSID\{679f85cb-0220-4080-b29b-5540cc05aab6}" -Name 'System.IsPinnedToNameSpaceTree' -Value 0 -Type DWord -Force
 		}
 	}
 
