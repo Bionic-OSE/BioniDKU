@@ -106,7 +106,7 @@ Write-Host " "; Write-Host -ForegroundColor Yellow "Wait for a while, then when 
 Write-Host "If wusa.exe fails to open, you can manually open the update at $datadir\dls\$cwuf"
 Write-Host "Good luck updating!" -ForegroundColor White
 
-& $workdir\modules\essential\cWUngun.ps1
+& $coredir\support\cWUngun.ps1
 Read-Host; Read-Host
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Looks like you're done. Restarting..."
 Start-Sleep -Seconds 5

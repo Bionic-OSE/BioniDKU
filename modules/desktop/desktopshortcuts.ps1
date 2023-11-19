@@ -33,10 +33,5 @@ $shortcut3.Save()
 $shortcut4.Save()
 
 if (-not $removedownloads) {
-	$SourceFilePath5 = "$env:USERPROFILE\Downloads"
-	$ShortcutPath5 = "$env:USERPROFILE\Desktop\Downloads.lnk"
-	$shortcut5 = $WscriptObj.CreateShortcut($ShortcutPath5)
-	$shortcut5.TargetPath = $SourceFilePath5
-	$shortcut5.WindowStyle = 1
-	$shortcut5.Save()
+	Expand-Archive -Path $datadir\utils\dl.zip -DestinationPath $env:USERPROFILE\Desktop
 }

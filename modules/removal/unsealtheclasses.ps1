@@ -76,7 +76,7 @@ Take-KeyPermissions $rootKey $key $sid $recurse
 #[Sunryze] Administrators group 'S-1-5-32-544'
 #[Bionic] Here was supposed to be the Take-KeyPermissions part, but I moved it down to the foreach loop
 #[Sunryze] create a link to Hkey_classes_root
-#if (-not (test-path hkcr:\)) {New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT} #[Bionic] The old HKCR line
+if (-not (Test-Path HKCR:\)) {New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT} #[Bionic] Apparently removing QA needs HKCR as well.
 #[Sunryze] create new registry access rule to add to the ACL
 $SystemRights = [System.Security.AccessControl.RegistryRights]::ReadKey
 $InheritanceFlag = [System.Security.AccessControl.InheritanceFlags]'ContainerInherit, ObjectInherit'
@@ -91,7 +91,7 @@ $ns = "Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace"
 $homegroup = "{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}"
 $qa = "{679f85cb-0220-4080-b29b-5540cc05aab6}"
 #[Sunryze] List of registry keys to change
-$keylist = @("$clsid\$homegroup", #[Bionic] HomeGroup
+$hklmlist = @("$clsid\$homegroup", #[Bionic] HomeGroup
 			"$clsid\$homegroup\ShellFolder",
 			"SOFTWARE\$ns\$homegroup",
 			"SOFTWARE\WOW6432Node\$ns\$homegroup",
@@ -99,19 +99,28 @@ $keylist = @("$clsid\$homegroup", #[Bionic] HomeGroup
 			"$clsid\$qa\ShellFolder",
 			"$clsid64\$qa",
 			"$clsid64\$qa\ShellFolder")
+$hkcrlist = @("CLSID\$qa",
+			"CLSID\$qa\ShellFolder",
+			"Wow6432Node\CLSID\$qa",
+			"Wow6432Node\CLSID\$qa\ShellFolder")
+
 #[Sunryze] disable inheritance, remove users, add zip_users for each registry key
-foreach ($key in $keylist) {
-	Take-Permissions 'HKLM' "$key" 'S-1-5-32-544' $true
-	$fullkey = "HKLM:\$key"
-	$thisacl = Get-Acl -path $fullkey
-	$thisacl.SetAccessRuleProtection($true,$true)  #[Sunryze] this removes inheritance
-	$thisacl | Set-Acl -path $fullkey  #[Sunryze] write it back
-	$thisacl = Get-Acl -path $fullkey  #[Sunryze] get it again as the inheritance rules must match or it won't take additional commands
-	$userkeys = $thisacl.Access | Where-Object {$_.IdentityReference.value.Contains('BUILTIN\Users')}  #[Sunryze] get a list of rules to remove
-	foreach ($ukey in $userkeys) {$thisacl.RemoveAccessRule($ukey)}  #[Sunryze] remove rules from list
-	#$thisacl.RemoveAccessRuleAll($builtinusers)     #[Sunryze] I could not get removeaccessruleall to work for builtin account
-	$thisacl.AddAccessRule($RegistryZipUsersRule)    #[Sunryze] add the new rule
-	$thisacl | Set-Acl -path $fullkey                #[Sunryze] write back changes.
+function Unseal-TheClasses($kr,[string[]]$kl) {
+	foreach ($key in $kl) {
+		Take-Permissions "$kr" "$key" 'S-1-5-32-544' $true
+		$fullkey = "${kr}:\$key"
+		$thisacl = Get-Acl -path $fullkey
+		$thisacl.SetAccessRuleProtection($true,$true)  #[Sunryze] this removes inheritance
+		$thisacl | Set-Acl -path $fullkey  #[Sunryze] write it back
+		$thisacl = Get-Acl -path $fullkey  #[Sunryze] get it again as the inheritance rules must match or it won't take additional commands
+		$userkeys = $thisacl.Access | Where-Object {$_.IdentityReference.value.Contains('BUILTIN\Users')}  #[Sunryze] get a list of rules to remove
+		foreach ($ukey in $userkeys) {$thisacl.RemoveAccessRule($ukey)}  #[Sunryze] remove rules from list
+		#$thisacl.RemoveAccessRuleAll($builtinusers)  #[Sunryze] I could not get removeaccessruleall to work for builtin account
+		$thisacl.AddAccessRule($RegistryZipUsersRule)  #[Sunryze] add the new rule
+		$thisacl | Set-Acl -path $fullkey  #[Sunryze] write back changes.
+	}
 }
+Unseal-TheClasses "HKLM" $hklmlist
+Unseal-TheClasses "HKCR" $hkcrlist
 # =========================================================================================
 # With the permission seal out of the way, we can now DESTROY those keys later. Thanks Sunryze once again for the code!

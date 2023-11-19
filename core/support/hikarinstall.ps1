@@ -1,5 +1,9 @@
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing PowerShell 7"
 Start-Process msiexec -Wait -ArgumentList "/package $datadir\dls\core7.msi /quiet ADD_PATH=1 DISABLE_TELEMETRY=1"
+if ($build -ge 18362) {
+	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing ContextMenuNormalizer"
+	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\ContextMenuNormalizer.exe" -Type String -Force
+}
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Configuring Hikaru-chan"
 
 $ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
@@ -51,8 +55,8 @@ $hkQMLSh.Save()
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "BioniDKU Quick Menu Tray" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe" -Type String -Force
 
 Copy-Item -Path $env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ApplicationFrameHost.QUARANTINE"
-Copy-Item -Path $coredir\7z\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
-Copy-Item -Path $coredir\7z\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
+#Copy-Item -Path $coredir\7z\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
+#Copy-Item -Path $coredir\7z\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
 taskkill /f /im ApplicationFrameHost.exe
 takeown /f "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe"
 icacls "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe" /grant Administrators:F

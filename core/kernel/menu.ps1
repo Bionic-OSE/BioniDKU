@@ -57,7 +57,7 @@ function Reset-Script {
 
 	Write-Host "> " -n ; $resetfirm = Read-Host
 	switch ($resetfirm) {
-		{$resetfirm -like "yes"} {Remove-Item $datadir -Force -Recurse; Remove-Item HKCU:\Software\AutoIDKU -Recurse; exit}
+		{$resetfirm -like "yes"} {Remove-Item $datadir -Force -Recurse; Remove-Item HKCU:\Software\AutoIDKU -Recurse; Remove-Item HKCU:\Software\BioniDKU -Recurse; exit}
 		default {exit}
 	}
 }
@@ -69,24 +69,10 @@ function Check-Defender {
 }
 function Check-EnoughActions {
 	switch ($true) {
-		$hidetaskbaricons {}
-		$removeonedrive {}  
-		{$removehomegroup -eq $true -and $build -lt 17134} {}
-		$desktopshortcuts {}
 		{$essentialapps -eq 1} {}
-		$openshellconfig {}
-		$removewaketimers {}
 		$removeUWPapps {}
-		$taskbarpins {}
-		$explorericon {}
-		$disableaddressbar {}
-		$oldbatteryflyout {}
 		$registrytweaks {}
-		$customsounds {}
-		$replaceemojifont {}
-		$removeedgeshortcut {}
 		$removesystemapps {}
-		$sltoshutdownwall {}
 		default {
 			return $false
 		}
@@ -147,7 +133,6 @@ switch ($confules) {
 			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 			exit
 		}
-		if ($build -lt 14393) {& $workdir\core\kernel\confirmwupdated.ps1}
 		$dlhasfiles = Test-Path -Path "$env:USERPROFILE\Downloads\*"
 		if ($removedownloads -and $dlhasfiles) {
 			Confirm-DeleteDownloads
@@ -159,11 +144,11 @@ switch ($confules) {
 		Write-Host -ForegroundColor Black -BackgroundColor Green "Alright, starting the script..."
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
 		Start-Sleep -Seconds 5
-		& $coredir\kernel\getready.ps1
+		& $coredir\support\getready.ps1
 	}
 	{$_ -like "2"} {
 		$confuleb = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).ConfigEditingSub
-		if ($confuleb -eq 7) {& $workdir\modules\apps\appspicker.ps1; exit}
+		if ($confuleb -eq 7) {& $coredir\support\appspicker.ps1; exit}
 		if ($confuleb -eq 5) {& $coredir\music\musicpicker.ps1; exit}
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 2 -Type DWord -Force
@@ -175,10 +160,10 @@ switch ($confules) {
 		$essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EssentialApps
 		$windowsupdatesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmodeSwitch
 		$media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
-		if ($build -eq 10240) {$wucolor = "DarkGray"} else {$wucolor = "White"}
+		if ($build -eq 10240 -and $disablelogonbg) {$wucolor = "DarkGray"} else {$wucolor = "White"}
 		Write-Host " "
 		Write-Host -ForegroundColor Yellow "Configure the script by tuning the following options to your desire."
-		Write-Host -ForegroundColor $wucolor "1. Toggle Windows Update mode" -n; if ($build -gt 10240) {Show-Disenabled $windowsupdatesw} else {Write-Host " (FORCEFULLY ENABLED)" -ForegroundColor DarkGray}
+		Write-Host -ForegroundColor $wucolor "1. Toggle Windows Update mode" -n; if ($build -eq 10240 -and $disablelogonbg) {Write-Host " (FORCEFULLY ENABLED)" -ForegroundColor DarkGray} else {Show-Disenabled $windowsupdatesw}
 		Write-Host -ForegroundColor White "2. Set desktop wallpaper to the one from the script" -n; Show-Disenabled $setwallpaper
 		Write-Host -ForegroundColor White "3. Use sounds from Windows 10 build 10074 instead of Windows 8" -n; Show-Disenabled $media10074
 		Write-Host -ForegroundColor White "4. Increase wait time (ideal for remote setups)" -n; Show-Disenabled $increasewait
@@ -190,14 +175,14 @@ switch ($confules) {
 		Write-Host " "
 		Write-Host "> " -n ; $confulee = Read-Host
 		switch ($confulee) {
-			{$_ -like "1"} {if ($build -gt 10240) {Select-Disenabled WUmodeSwitch}; exit}
+			{$_ -like "1"} {if ($build -eq 10240 -and $disablelogonbg) {exit} else {Select-Disenabled WUmodeSwitch; exit}}
 			{$_ -like "2"} {Select-Disenabled SetWallpaper; exit}
 			{$_ -like "3"} {Select-Disenabled Media10074; exit}
 			{$_ -like "4"} {Select-Disenabled RunningThisRemotely; exit}
 			{$_ -like "5"} {Select-Disenabled HikaruMusic; exit}
 			{$_ -like "6"} {if ($setupmusic -eq 1) {& $coredir\music\musicpicker.ps1}; exit}
 			{$_ -like "7"} {Select-Disenabled EssentialApps; exit}
-			{$_ -like "8"} {if ($essentialapps -eq 1) {& $workdir\modules\apps\appspicker.ps1}; exit}
+			{$_ -like "8"} {if ($essentialapps -eq 1) {& $coredir\support\appspicker.ps1}; exit}
 			{$_ -like "0"} {
 				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 0 -Type DWord -Force
 				exit

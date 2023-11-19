@@ -13,7 +13,7 @@
 ## ================================================ MODULE SWITCHES ===============================================
 ## These are most of the things the script will do during its execution.
 
-<# Install .NET 4.6.2 (10586-) #>  if ($pwsh -eq 5) {         $dotnet462 =                   $true }
+<# Install .NET 4.6.2 (10586-)**** #> if ($pwsh -eq 5) {      $dotnet462 =                   $true }
 <# Enable .NET 3.5 #>                                         $dotnet35 =                    $true
 <# Hide system icons from the taskbar #>                      $hidetaskbaricons =            $true
 <# Remove Microsoft Edge Shortcuts** #>                       $removeedgeshortcut =          $true
@@ -25,10 +25,11 @@
 <# Remove taskbar pins #>                                     $taskbarpins =                 $true
 <# Replace seguiemj.ttf with Windows 11's #>                  $replaceemojifont =            $true 
 <# Set default apps #>                                        $defaultapps =                 $true 
-<# Remove Explorer address bar #>                             $disableaddressbar =           $true
+<# Remove Explorer address bar #>                             $disableaddressbar =           $false
+<# Shrink Explorer address bar (18363 & 1904x only) #>        $thinneraddressbar =           $true
 <# Remove Microsoft OneDrive #>                               $removeonedrive =              $true
 <# Remove HomeGroup (16299-) #>                               $removehomegroup =             $true
-<# Defaults Explorer to This PC #>                            $explorerstartfldr =           $true
+<# Default Explorer to This PC***** #>                        $explorerstartfldr =           $true
 <# Use classic battery flyout #>                              $oldbatteryflyout =            $true
 <# Install custom system sound #>                             $customsounds =                $true
 <# Disable some system apps*** #>                             $removesystemapps =            $true
@@ -36,12 +37,14 @@
 <# Don't touch Edge Chromium** #>                             $keepedgechromium =            $false
 <# Keep Windows Search*** #>                                  $keepsearch =                  $true
 <# Keep UAC (Stable only) #>                                  $keepuac =                     $true
-<# Hide the shut down/restart screen (non-Home/Servers) #>    $embeddedlogon =               $true
+<# Hide LogonUI spin screens (non-Home/Servers, 14393+) #>    $embeddedlogon =               $true
 
-#i  *  You MUST enable the Essential Apps option and include Open-Shell in the apps selection.
-#i **  If you choose to $keepedgechromium, $removeedgeshortcut be skipped if it's installed.
-#i     (MEANING on certain builds if you have Chromium alongside Legacy shortcuts for both will NOT be removed!)
-#i *** $keepsearch is an option of $removesystemapps, and will have no effect when disabling the latter.
+#i     *  You MUST enable the Essential Apps option and include Open-Shell in the apps selection.
+#i    **  If you choose to $keepedgechromium, $removeedgeshortcut be skipped if it's installed.
+#i        (MEANING on certain builds if you have Chromium alongside Legacy shortcuts for both will NOT be removed!)
+#i   ***  $keepsearch is an option of $removesystemapps, and will have no effect if the latter is disabled.
+#i  ****  If you choose not to install .NET 4.6.2 on 10240, the classic WU disabling method will be used.
+#i *****  If you disable this option, Quick Access will not be removed.
 
 ## ================================================ REGISTRY SWICHES ===============================================
 ## Below are registry-applied tweaks. You can enable/disable all of them, or toggle individual options.
@@ -93,7 +96,7 @@ function Show-ModulesConfig {
 	Write-Host 'BioniDKU is a script bundle consisting multiple script files, called "(BioniDKU) Modules".' -ForegroundColor Green
 	Write-Host 'Below are most of the function modules you can adjust, each should be self-explainatory:' -ForegroundColor Green
 	Write-Host " "; if ($pwsh -eq 5) {
-	Write-Host "Install .NET 4.6.2 (10586-)                          " -n; Write-Host -ForegroundColor White "$dotnet462           "}
+	Write-Host "Install .NET 4.6.2 (10586-)****                      " -n; Write-Host -ForegroundColor White "$dotnet462           "}
 	Write-Host "Enable .NET 3.5                                      " -n; Write-Host -ForegroundColor White "$dotnet35            "
 	Write-Host "Hide system icons from the taskbar                   " -n; Write-Host -ForegroundColor White "$hidetaskbaricons    "
 	Write-Host "Remove Microsoft Edge Shortcuts**                    " -n; Write-Host -ForegroundColor White "$removeedgeshortcut  "
@@ -106,9 +109,10 @@ function Show-ModulesConfig {
 	Write-Host "Replace seguiemj.ttf with Windows 11's               " -n; Write-Host -ForegroundColor White "$replaceemojifont    "
 	Write-Host "Set default apps                                     " -n; Write-Host -ForegroundColor White "$defaultapps         "
 	Write-Host "Remove Explorer address bar                          " -n; Write-Host -ForegroundColor White "$disableaddressbar   "
+	Write-Host "Shrink Explorer address bar (18363 & 1904x only)     " -n; Write-Host -ForegroundColor White "$thinneraddressbar   "
 	Write-Host "Remove Microsoft OneDrive                            " -n; Write-Host -ForegroundColor White "$removeonedrive      "
 	Write-Host "Remove HomeGroup (16299-)                            " -n; Write-Host -ForegroundColor White "$removehomegroup     "
-	Write-Host "Defaults Explorer to This PC                         " -n; Write-Host -ForegroundColor White "$explorerstartfldr   "
+	Write-Host "Default Explorer to This PC*****                     " -n; Write-Host -ForegroundColor White "$explorerstartfldr   "
 	Write-Host "Use classic battery flyout                           " -n; Write-Host -ForegroundColor White "$oldbatteryflyout    "
 	Write-Host "Install custom system sound                          " -n; Write-Host -ForegroundColor White "$customsounds        "
 	Write-Host "Disable some system apps***                          " -n; Write-Host -ForegroundColor White "$removesystemapps    "
@@ -116,12 +120,14 @@ function Show-ModulesConfig {
 	Write-Host "Don't touch Edge Chromium**                          " -n; Write-Host -ForegroundColor White "$keepedgechromium    "
 	Write-Host "Keep Windows Search***                               " -n; Write-Host -ForegroundColor White "$keepsearch          "
 	Write-Host "Keep UAC (Stable only)                               " -n; Write-Host -ForegroundColor White "$keepuac             "
-	Write-Host "Hide the shut down/restart screen (non-Home/Servers) " -n; Write-Host -ForegroundColor White "$embeddedlogon       "
+	Write-Host "Hide LogonUI spin screens (non-Home/Servers, 14393+) " -n; Write-Host -ForegroundColor White "$embeddedlogon       "
 	Write-Host " "
-	Write-Host "  * You MUST enable the Essential Apps option and include Open-Shell or this will have no effect." -ForegroundColor Cyan
-	Write-Host " ** If you keep Edge Chromium, the Edge Shortcut removal will be skipped if it's installed." -ForegroundColor Cyan
+	Write-Host "    * You MUST enable the Essential Apps option and include Open-Shell or this will have no effect." -ForegroundColor Cyan
+	Write-Host "   ** If you keep Edge Chromium, the Edge Shortcut removal will be skipped if it's installed." -ForegroundColor Cyan
 	Write-Host "    (MEANING on certain builds if you have Chromium alongside Legacy shortcuts for both will NOT be removed!)" -ForegroundColor Cyan
-	Write-Host "*** Keep Windows Search is an option of Disable system apps, and will have no effect if disabling the latter." -ForegroundColor Cyan
+	Write-Host "  *** Keep Windows Search is an option of Disable system apps, and will have no effect if disabling the latter." -ForegroundColor Cyan
+	if ($pwsh -eq 5) {Write-Host " **** If you choose not to install .NET 4.6.2 on 10240, the classic WU disabling method will be used." -ForegroundColor Cyan}
+	if ($registrytweaks) {Write-Host "***** If you disable this option, Quick Access will not be removed." -ForegroundColor Cyan}
 	Write-Host " "
 	Write-Host "------ ADVANCED SCRIPT CONFIGURATION: Registry Switches ------" -ForegroundColor Black -BackgroundColor Green
 	Write-Host " "
@@ -138,7 +144,7 @@ function Show-ModulesConfig {
 	Write-Host "Remove Downloads folder (DANGEROUS)                  " -n; Write-Host -ForegroundColor White "$removedownloads     "
 	Write-Host 'Disable "Look for this app in Store"                 ' -n; Write-Host -ForegroundColor White "$applookupinstore    "
 	Write-Host "Tune the Context menu                                " -n; Write-Host -ForegroundColor White "$contextmenuentries  "
-	Write-Host "Remove Quick Access                                  " -n; Write-Host -ForegroundColor White "$removequickaccess   "
+	Write-Host "Remove Quick Access*****                             " -n; Write-Host -ForegroundColor White "$removequickaccess   "
 	Write-Host "Disable Location icon                                " -n; Write-Host -ForegroundColor White "$disablelocationicon "
 	Write-Host "Activate Windows Photos viewer                       " -n; Write-Host -ForegroundColor White "$activatephotoviewer "
 	Write-Host "Set Registered owner                                 " -n; Write-Host -ForegroundColor White "$registeredowner     "
@@ -159,6 +165,8 @@ function Show-ModulesConfig {
 	Write-Host "Remove Network icon from login screen                " -n; Write-Host -ForegroundColor White "$removelckscrneticon "
 	Write-Host "Disable Power Throttling                             " -n; Write-Host -ForegroundColor White "$nopowerthrottling   "
 	Write-Host "Reduce the amount of svchost.exes                    " -n; Write-Host -ForegroundColor White "$svchostslimming     "
+	Write-Host " "
+	Write-Host '***** This option will not work if "Default Explorer to This PC" is disabled.' -ForegroundColor Cyan
 	Write-Host " "}
 	Write-Host "You are now in Advanced configuration mode, where you can adjust individual functions of the script." -ForegroundColor Black -BackgroundColor Yellow
 	Write-Host "Scroll up to the top and view the options." -ForegroundColor Yellow

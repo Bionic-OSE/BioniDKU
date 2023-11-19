@@ -93,11 +93,8 @@ Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU/raw/main/PATCHME.ps1"
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting Utilities package"
 Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\utilsg.ps1"
-if ((Test-Path -Path "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer") -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Windows" -Name "ContextMenuNormalizer" -ItemType directory}
-if ($build -ge 18362) {
-	Copy-Item "$datadir\utils\ContextMenuNormalizer.exe" -Destination "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer"
-	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Windows\ContextMenuNormalizer\ContextMenuNormalizer.exe" -Type String -Force
-}
+Copy-Item "$datadir\utils\ContextMenuNormalizer.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ContextMenuNormalizer.exe"
+Copy-Item -Path $datadir\utils\AddressBarRemover2.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\AddressBarRemover2.exe"
 
 if ($hkau -eq 1) {
 	Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal.ps1" "normal.ps1" "Music packages information file"

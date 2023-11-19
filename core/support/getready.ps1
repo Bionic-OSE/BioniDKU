@@ -89,6 +89,7 @@ if ($setwallpaper -eq 1) {
 	& $workdir\modules\desktop\wallpaper.ps1
 }
 
+Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 Start-Sleep -Seconds 1
 shutdown -r -t 0
 Start-Sleep -Seconds 30

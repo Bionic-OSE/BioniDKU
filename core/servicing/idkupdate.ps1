@@ -52,7 +52,7 @@ function Start-Wumgr {
 }
 function Restart-UpdateMode {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikareboot" -Value 1 -Type DWord -Force
-	Start-Process powershell -Wait -ArgumentList "-Command $PSScriptRoot\hikancel.ps1"
+	Start-Process powershell -Wait -ArgumentList "-Command $coredir\support\hikancel.ps1"
 	$hkbrb = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Hikareboot
 	if ($hkbrb -eq 0) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting to finish installing updates"
@@ -106,7 +106,7 @@ $global:hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikareboot" -Value 0 -Type DWord -Force
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikancel" -Value 1 -Type DWord -Force
-Start-Process powershell -Wait -ArgumentList "-Command $PSScriptRoot\hikancel.ps1"
+Start-Process powershell -Wait -ArgumentList "-Command $coredir\support\hikancel.ps1"
 $hkc = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Hikancel
 if ($hkc -eq 1) {
 	if ($wupdated -eq 1) {
@@ -146,7 +146,7 @@ Write-Host "Starting Windows Update mode normally" -ForegroundColor Cyan -Backgr
 Start-HikaruMusicAndShell
 
 Write-Host "Getting Windows ready" -ForegroundColor Cyan -BackgroundColor DarkGray
-if ($wupdated -ne 1) {& $workdir\modules\essential\cWUngus.ps1}
+if ($wupdated -ne 1) {& $coredir\support\cWUngus.ps1}
 Import-Module PSWindowsUpdate
 
 Write-Host " "

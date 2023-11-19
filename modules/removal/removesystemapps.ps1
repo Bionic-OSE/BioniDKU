@@ -1,6 +1,7 @@
 $workdir = "$PSScriptRoot\..\.."
 $keepedgechromium = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeNoMercy
 $keepsearch = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SearchNoMercy
+. $workdir\modules\lib\DestructionsBlessing.ps1
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | System Apps disabler module"
 function Show-Branding {
@@ -32,10 +33,6 @@ function Stop-Processes {
 	Stop-Process -Force -ErrorAction SilentlyContinue -Name SearchHost.exe
 	Stop-Process -Force -ErrorAction SilentlyContinue -Name StartMenuExperienceHost.exe
 }
-function Grant-Ownership($item) {
-	takeown /f $item /r
-	icacls $item /grant Administrators:F /t
-}
 
 # Microsoft Edge Legacy and other system UWPs
 $sappfldr = "$env:SYSTEMDRIVE\Windows\SystemApps"
@@ -49,7 +46,7 @@ foreach ($sapp in $sappfami) {
 	#Stop-Processes
 	$sapppath = "$sappfldr\$sapp"
 	if (Test-Path -Path $sapppath) {
-		Grant-Ownership $sapppath
+		Grant-Ownership D $sapppath
 		#Rename-AppsFolder $sapppath "$sapp.DISABLED"
 	}
 }

@@ -1,7 +1,7 @@
 # BioniDKU main orchestrator file - (c) Bionic Butter
 
 ##############################################################
-# Import basic functions and grab some neccessary variables
+# Declare basic functions and grab some neccessary variables
 $releasetype = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseType
 $butter = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseIDEx
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
@@ -81,7 +81,7 @@ if ($hkm -eq 1) {
 	Set-HikaruChan
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing startup obstacles"
 	& $workdir\modules\removal\letsNOTfinish.ps1
-	if ($build -ge 18362 -and $build -le 19042) {
+	if ($build -ge 18362 -and $build -le 19041) {
 		Start-Process powershell -ArgumentList "-Command $workdir\modules\removal\edgekiller.ps1"
 		Start-Sleep -Seconds 3
 	} if ($build -ge 18362) {
@@ -98,8 +98,8 @@ if (-not $isexplorerup) {
 	$wasexplorerup = $false
 } else {$wasexplorerup = $true}
 
-# Continue importing required components
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components"
+# Continue importing values
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing environment"
 
 $pendingreboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
 $pendingrebootcount = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").PendingRebootCount
@@ -169,43 +169,26 @@ switch ($true) {
 
 	# A3
 	{$dotnet462 -and (SPV 3)} {
-		UPV 4; & $workdir\modules\apps\dotnet462install.ps1
+		UPV 4; Write-Host "Installing .NET 4.6.2" -ForegroundColor Cyan -BackgroundColor DarkGray
+		Write-Host -ForegroundColor Cyan "`r`nUntil .NET finishes the installation and automatically restarts the system, please DO NOT:"
+		Write-Host -ForegroundColor Cyan "- Try to stop the installation process"
+		Write-Host -ForegroundColor Cyan "- Restart the computer manually (unless if it doesn't do so automatically)"
+		Start-Process $datadir\dls\dotnet462.exe -NoNewWindow -Wait -ArgumentList "/passive /log %temp%\net.htm"
+		Start-Sleep -Seconds 30
+		Read-Host
 	}
 
 	# A4
-	{$removehomegroup -and $build -lt 17134 -and (SPV 4)} {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Trying to remove HomeGroup"
-		# With the permission seal removed earlier, DESTROY the keys
-		$clsid = "SOFTWARE\Classes\CLSID"
-		$ns = "Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace"
-		$homegroup = "{B4FB3F98-C1EA-428d-A78A-D1F5659CBA93}"
-		$byekeys = @("$clsid\$homegroup",
-			"$clsid\$homegroup\ShellFolder",
-			"SOFTWARE\$ns\$homegroup",
-			"SOFTWARE\WOW6432Node\$ns\$homegroup")
-		foreach ($keys in $byekeys) {
-			Remove-Item "HKLM:\$keys" -Recurse -Force -ErrorAction SilentlyContinue
-		}
-		# Then, we need to disable the services.
-		Stop-Service -Name HomeGroupProvider
-		Stop-Service -Name HomeGroupListener
-		Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "config HomeGroupProvider start= DISABLED"
-		Start-Process sc.exe -Wait -NoNewWindow -ArgumentList "config HomeGroupListener start= DISABLED"
-		# If we're lucky, the folder should be gone completely, but if not, then Winaero is the only way
-		UPV 5
-	}
-
-	# A5
-	{$firefox -eq 1 -and (SPV 5)} {
+	{$firefox -eq 1 -and (SPV 4)} {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Mozilla Firefox ESR" -n; Write-Host -ForegroundColor White " (right now, as we will need it for the next part)"
 		Start-Process $datadir\dls\firefoxesr.exe -Wait -NoNewWindow -ArgumentList "/S /PrivateBrowsingShortcut=false /PreventRebootRequired=true /TaskbarShortcut=false"
-		UPV 6
+		UPV 5
 	}
 	
 }
 
-# A6
-if (SPV 6) {& $workdir\modules\essential\manualstuffs.ps1; UPV 7}
+# A5
+if (SPV 5) {& $coredir\support\manualstuffs.ps1; UPV 6}
 
 switch ($true) {
 	
@@ -213,24 +196,33 @@ switch ($true) {
 
 	# Taskbar and desktop zone
 
+	# A6
+	{$hidetaskbaricons -and (SPV 6)} {
+		& $workdir\modules\desktop\hidetaskbaricons.ps1; UPV 7
+	}
+
 	# A7
-	{$hidetaskbaricons -and (SPV 7)} {
-		& $workdir\modules\taskbar\hidetaskbaricons.ps1; UPV 8
+	{$taskbarpins -and (SPV 7)} {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing pinned items from taskbar"
+		Stop-Process -Name "explorer" -Force 
+		Remove-Item "$env:appdata\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\*" -Force -Recurse
+		Start-Process explorer.exe
+		UPV 8
 	}
 
 	# A8
-	{$taskbarpins -and (SPV 8)} {
-		& $workdir\modules\taskbar\removetaskbarpinneditems.ps1; UPV 9
+	{$explorericon -and (SPV 8)} {
+		& $workdir\modules\desktop\explorericon.ps1; UPV 9
 	}
 
 	# A9
-	{$explorericon -and (SPV 9)} {
-		& $workdir\modules\taskbar\explorericon.ps1; UPV 10
+	{$removedownloads -and (SPV 9)} {
+		& $workdir\modules\desktop\dlreplacement.ps1; UPV 10
 	}
 
 	# A10
-	{$oldbatteryflyout -and (SPV 10)} {
-		& $workdir\modules\taskbar\oldbatteryflyout.ps1; UPV 11
+	{$removeedgeshortcut -and (SPV 10)} {
+		& $workdir\modules\removal\removeedgeshortcut.ps1; UPV 11
 	}
 
 	# A11
@@ -238,60 +230,60 @@ switch ($true) {
 		& $workdir\modules\desktop\desktopshortcuts.ps1; UPV 12
 	}
 
-	# A12
-	{$removedownloads -and (SPV 12)} {
-		& $workdir\modules\desktop\dlreplacement.ps1; UPV 13
-	}
-
 	# Installation zone
 
-	# A13
-	{$essentialapps -eq 1 -and (SPV 13)} {
-		& $workdir\modules\apps\essentialapps.ps1; UPV 14
+	# A12
+	{$essentialapps -eq 1 -and (SPV 12)} {
+		& $workdir\modules\essential\essentialapps.ps1; UPV 13
 	}
 
 	# Destruction zone
 
+	# A13
+	{$removeonedrive -and (SPV 13)} {
+		& $workdir\modules\removal\removeonedrive.ps1; UPV 14
+	}
+
 	# A14
-	{$removeonedrive -and (SPV 14)} {
-		& $workdir\modules\removal\removeonedrive.ps1; UPV 15
+	{$removewaketimers -and (SPV 15)} {
+		Write-Host "Disabling Wake Timers" -BackgroundColor DarkGray -ForegroundColor Cyan
+		powercfg.exe /SETACVALUEINDEX SCHEME_CURRENT 238c9fa8-0aad-41ed-83f4-97be242c8f20 bd3b718a-0680-4d9d-8ab2-e1d2b4ac806d 0
+		if ($null -ne $battery) {
+			powercfg.exe /SETDCVALUEINDEX SCHEME_CURRENT 238c9fa8-0aad-41ed-83f4-97be242c8f20 bd3b718a-0680-4d9d-8ab2-e1d2b4ac806d 0
+		}
+		UPV 15
 	}
 
 	# A15
-	{$removewaketimers -and (SPV 15)} {
-		& $workdir\modules\removal\removewaketimers.ps1; UPV 16
+	{$replaceemojifont -and (SPV 15)} {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Replacing Segoe UI Emoji Font with the one from Windows 11 build 23475"
+		Copy-Item -Path $datadir\utils\seguiemj11.ttf -Destination $env:SYSTEMDRIVE\Windows\Fonts\seguiemj11.ttf
+		Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Fonts" -Name "Segoe UI Emoji (TrueType)" -Value "seguiemj11.ttf" -Type String -Force
+		UPV 16
 	}
 
 	# A16
-	{$replaceemojifont -and (SPV 16)} {
-		& $workdir\modules\removal\replaceemojifont.ps1; UPV 17
+	{$removehomegroup -and $build -lt 17134 -and (SPV 16)} {
+		& $workdir\modules\removal\removehomegroup.ps1; UPV 17
 	}
 
 	# A17
-	{$removeedgeshortcut -and (SPV 17)} {
-		& $workdir\modules\removal\removeedgeshortcut.ps1; UPV 18
+	{$registrytweaks -and (SPV 17)} {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Applying Registry tweaks"
+		& $workdir\modules\essential\simpleregistry.ps1; UPV 18
 	}
 
 	# A18
-	{$sltoshutdownwall -and (SPV 18)} {
-		& $workdir\modules\desktop\slidetoshutdownwall.ps1; UPV 19
+	{$embeddedlogon -and $build -ge 14393 -and (SPV 18)} {
+		& $workdir\modules\desktop\embeddedlogon.ps1; UPV 19
 	}
 
 	# A19
-	{$registrytweaks -and (SPV 19)} {
-		& $workdir\modules\essential\simpleregistry.ps1; UPV 20
-	}
-
-	# A20
-	{$embeddedlogon -and $build -ge 14393 -and (SPV 20)} {
-		& $workdir\modules\desktop\embeddedlogon.ps1; UPV 21
-	}
-
-	# A21
-	{$removeUWPapps -and (SPV 21)} {
+	{$removeUWPapps -and (SPV 19)} {
 		# On certain builds, there is a freeze issue where the script will just hang here forever, we have to use another method...
 		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\utils\SuwakoDebloaterLite-Bionic.7z -o$datadir\utils\SuwakoDebloaterLite-Bionic -aoa"
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Removing all UWP apps possible"
+		Write-Host -ForegroundColor Cyan "DO NOT CLOSE THE OPENED WINDOW!"
 		Write-Host -ForegroundColor Cyan "This process will spit out of errors, and that is normal."
 		Write-Host -ForegroundColor Cyan "In addition, it will also create a repeatedly flashing console HUD. If you are sensitive to flashes, please minimize or do not look at that window."
 		if (-not $keepedgechromium -and $build -ge 17763) {$keepedgeparam = '$true $true'} else {$keepedgeparam = '$false $false'}
@@ -302,19 +294,24 @@ switch ($true) {
 			if ($suwakodone -eq 1) {break}
 			Write-Host "." -n; Start-Sleep -Seconds 1
 		}
-		Write-Host " "; UPV 22
+		Write-Host " "; UPV 20
+	}
+
+	# A20
+	{$sltoshutdownwall -and (SPV 20)} {
+		& $workdir\modules\desktop\slidetoshutdownwall.ps1; UPV 21
+	}
+
+	# A21
+	{$customsounds -and (SPV 21)} {
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing custom system sounds" 
+		Start-Process powershell -Wait -ArgumentList "$workdir\modules\desktop\customsounds.ps1"
+		UPV 22
 	}
 
 	# A22
-	{$customsounds -and (SPV 22)} {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing custom system sounds" 
-		Start-Process powershell -Wait -ArgumentList "$workdir\modules\desktop\customsounds.ps1"
-		UPV 23
-	}
-
-	# A23
-	{$removesystemapps -and (SPV 23)} {
-		# Same as A21
+	{$removesystemapps -and (SPV 22)} {
+		# Same as A19
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Disabling system apps" 
 		Start-Process powershell -ArgumentList "$workdir\modules\removal\removesystemapps.ps1"
 		while ($true) {
@@ -322,19 +319,24 @@ switch ($true) {
 			if ($sappdone -eq 1) {break}
 			Write-Host "." -n; Start-Sleep -Seconds 1
 		}
-		Write-Host " "; UPV 24
+		Write-Host " "; UPV 23
+	}
+
+	# A23
+	{$thinneraddressbar -and (SPV 23)} {
+		& $workdir\modules\desktop\addressbartweaks.ps1 1; UPV 24
 	}
 
 	# A24
 	{$disableaddressbar -and (SPV 24)} {
-		& $workdir\modules\apps\addressbar.ps1; UPV 25
+		& $workdir\modules\desktop\addressbartweaks.ps1 2; UPV 25
 	}
 
 }
 
 # This the last action, and must not be interrupted.
 Show-WindowTitle 3 99 noclose
-& $coredir\servicing\hikarinstall.ps1 
+& $coredir\support\hikarinstall.ps1 
 
 # Finalize things, and the job ends!
 if ($build -le 14393 -and $balloonnotifs -eq $false) {
@@ -346,7 +348,7 @@ Show-WindowTitle 3 100
 Write-Host "This was the final step of the script. In order to complete the setup, please press Enter to restart" -ForegroundColor Black -BackgroundColor Green
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 Start-Process "$datadir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
-& $PSScriptRoot\notefinish.ps1
+& $coredir\support\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta
 Read-Host
 shutdown -r -t 5 -c " "

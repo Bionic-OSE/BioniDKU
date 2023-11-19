@@ -15,13 +15,14 @@ Write-Host " "
 Write-Host "###### SECTION 2: BioniDKU User experience ######" -ForegroundColor Cyan
 Write-Host " "
 Write-Host " Programs included in the Utilities package:" -ForegroundColor Blue
-Write-Hhhh " - AutoHotKey" " (AddressBarRemover2, BioniDKU Quick Menu tray app): https://www.autohotkey.com"
+Write-Hhhh " - AutoHotKey" " (AddressBarRemover2, BioniDKU Menus Launcher tray app): https://www.autohotkey.com"
 Write-Hhhh " - AdvancedRun" " (Hikaru-chan): https://www.nirsoft.net/utils/advanced_run.html"
 Write-Hhhh " - PE Network Manager" ": https://www.penetworkmanager.de"
 Write-Hhhh " - Paint.NET" ": https://www.getpaint.net"
 Write-Hhhh " - Classic Task manager & System Configuration" ": https://win7games.com/#taskmgr7"
 Write-Hhhh " - WinXShell" " (Windows Update mode shell): https://theoven.org/viewtopic.php?t=89"
 Write-Hhhh " - Wu10Man" ": https://github.com/WereDev/Wu10Man"
+Write-Hhhh " - ContextMenuNormalizer" ": https://github.com/krlvm/ContextMenuNormalizer"
 Write-Host " Programs included in the Essential Apps kit:" -ForegroundColor Blue
 Write-Hhhh " - Winaero Tweaker" ": https://winaerotweaker.com"
 Write-Hhhh " - Open-Shell" ": https://github.com/Open-Shell/Open-Shell-Menu"
@@ -46,7 +47,7 @@ Write-Host " "
 Write-Host " I would also like to thank the following people for making this script possible:" -ForegroundColor Blue
 Write-Host " (All usernames listed below are Discord usernames)"
 Write-Host " - AutoIDKU author" -ForegroundColor Green -n; Write-Host ": @sunryze"
-Write-Hhhh " - Volunteered testers" ": @juliastechspot, @zippykool"
+Write-Hhhh " - Volunteered testers" ": @juliastechspot, @zippykool, @strawtech8"
 Write-Host " "
 Write-Host " "
 Write-Host "Press Enter to return to main menu." -ForegroundColor Yellow
