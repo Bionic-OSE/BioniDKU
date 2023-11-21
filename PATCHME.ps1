@@ -10,7 +10,7 @@
 	<#  PSCore7  #> $global:pwsh7ver = "7.2.16"
 
 # SECTION 2: Windows Update UBRs (November 2023)
-. $workdir\modules\lib\GetEdition.ps1
+. $workdir\modules\lib\Get-Edition.ps1
 switch ($edition) {
 	
 	# Consumer and any other editions
