@@ -13,5 +13,6 @@ function Show-WindowTitle($s1,$s2,$s3) {
 	}
 	if ($s3 -like "noclose") {$nc = " | DO NOT CLOSE THIS WINDOW${nd}"} else {$nc = $null}
 	if ($s1 -eq 0) {$ph = "Main menu"} else {$ph = "Phase ${s1}/3"}
-	$host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | ${ph}${pg}${nc}"
+	$rid = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseID; $vid = $rid.Substring(6)
+	$host.UI.RawUI.WindowTitle = "Project BioniDKU (Version ${vid}) - (c) Bionic Butter | ${ph}${pg}${nc}"
 }

@@ -15,13 +15,13 @@ function Show-WaitTime($wti) {
 }
 
 $wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
-$hikareboot = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Hikareboot
+$hikareboot = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RebootConfirm
 if ($wupdated -eq 1) {
 	if ($hikareboot -eq 1) {
 		Show-Branding
 		Write-Host "Your system have reached or passed the desired UBR." -ForegroundColor Black -BackgroundColor Green -n; Write-Host " If there were no additional updates, you can press CTRL+C to leave Windows Update mode within 10 seconds." -ForegroundColor Cyan
 		Show-WaitTime 10
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikareboot" -Value 0 -Type DWord -Force
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootConfirm" -Value 0 -Type DWord -Force
 		exit
 	} else {
 		Show-Branding
@@ -32,7 +32,7 @@ if ($wupdated -eq 1) {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikancel" -Value 0 -Type DWord -Force
 		exit
 	}
-} elseif ($hikareboot -eq 1) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikareboot" -Value 0 -Type DWord -Force; exit}
+} elseif ($hikareboot -eq 1) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootConfirm" -Value 0 -Type DWord -Force; exit}
 else {
 	Show-Branding
 	$remote = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRemotely

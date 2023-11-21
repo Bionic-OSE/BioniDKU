@@ -25,7 +25,6 @@
 <# Remove taskbar pins #>                                     $taskbarpins =                 $true
 <# Replace seguiemj.ttf with Windows 11's #>                  $replaceemojifont =            $true 
 <# Set default apps #>                                        $defaultapps =                 $true 
-<# Remove Explorer address bar #>                             $disableaddressbar =           $false
 <# Shrink Explorer address bar (18363 & 1904x only) #>        $thinneraddressbar =           $true
 <# Remove Microsoft OneDrive #>                               $removeonedrive =              $true
 <# Remove HomeGroup (16299-) #>                               $removehomegroup =             $true

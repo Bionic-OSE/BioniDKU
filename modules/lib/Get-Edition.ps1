@@ -8,7 +8,7 @@
 # $editione: Just for the "N" at the end
 # $editiond = $editionf + $editione. This is the final edition display string the script will give
 
-$edition = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").EditionID
+$global:edition = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").EditionID
 
 # OS type detection
 switch ($edition) {
@@ -66,4 +66,4 @@ switch ($editionn) {
 }
 
 # Assemble the final display name
-$editiond = "${editionf}${editione}"
+$global:editiond = "${editionf}${editione}"

@@ -1,5 +1,5 @@
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing PowerShell 7"
-Start-Process msiexec -Wait -ArgumentList "/package $datadir\dls\core7.msi /quiet ADD_PATH=1 DISABLE_TELEMETRY=1"
+Start-Process msiexec -Wait -ArgumentList "/package $datadir\dls\core7.msi /passive /norestart ADD_PATH=1 DISABLE_TELEMETRY=1"
 if ($build -ge 18362) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing ContextMenuNormalizer"
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\ContextMenuNormalizer.exe" -Type String -Force
@@ -83,7 +83,8 @@ $hkbp = New-ScheduledTask -Action $hkbpaction -Principal $hkbprincipal -Settings
 Register-ScheduledTask $hkbpstname -InputObject $hkbp
 $hklcstname = 'BioniDKU UWP Lockdown Controller'
 $hklcaction = New-ScheduledTaskAction -Execute "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -Argument "-Command `"& %SystemDrive%\Bionic\Hikaru\ApplicationControlHost.ps1`""
-$hklc = New-ScheduledTask -Action $hklcaction -Principal $hkbprincipal -Settings $hkbpsettings
+$hklcrincipal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$hklc = New-ScheduledTask -Action $hklcaction -Principal $hklcrincipal -Settings $hkbpsettings
 Register-ScheduledTask $hklcstname -InputObject $hklc
 
 $Scheduler = New-Object -ComObject "Schedule.Service"; $Scheduler.Connect() # From: https://www.osdeploy.com/blog/2021/scheduled-tasks/task-permissions

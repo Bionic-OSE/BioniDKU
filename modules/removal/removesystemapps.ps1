@@ -1,7 +1,11 @@
-$workdir = "$PSScriptRoot\..\.."
+# BioniDKU System Apps disabler module
+
+$global:workdir = Split-Path(Split-Path "$PSScriptRoot")
+$global:datadir = "$workdir\data"
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Destructor.psm1
 $keepedgechromium = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeNoMercy
 $keepsearch = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SearchNoMercy
-. $workdir\modules\lib\DestructionsBlessing.ps1
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | System Apps disabler module"
 function Show-Branding {
@@ -10,6 +14,7 @@ function Show-Branding {
 	Write-Host "System Apps disabler module" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
+Start-Logging NormalMode_RemoveSysApps
 Show-Branding
 
 Write-Host "Disabling some System Apps" -ForegroundColor Cyan -BackgroundColor DarkGray

@@ -1,5 +1,10 @@
 # BioniDKU main menu - The thing that appears on first run of the script
 
+Show-WindowTitle 0
+function Show-WelcomeText {
+	Write-OSInfo
+	Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
+}
 function Show-Disenabled($regvalue) {
 	if ($regvalue -eq 1) {
 		Write-Host -ForegroundColor Green " (ENABLED)"
@@ -14,10 +19,6 @@ function Select-Disenabled($regvalue) {
 	} else {
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name $regvalue -Value 1 -Type DWord -Force
 	}
-}
-function Show-WelcomeText {
-	Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
-	Write-Host -ForegroundColor Magenta "Welcome to BioniDKU!"
 }
 function Confirm-DeleteDownloads {
 	Write-Host -ForegroundColor Black -BackgroundColor Red "---------- HOLD UP ----------"
@@ -160,6 +161,7 @@ switch ($confules) {
 		$essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EssentialApps
 		$windowsupdatesw = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmodeSwitch
 		$media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
+		$logging = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Transcribe
 		if ($build -eq 10240 -and $disablelogonbg) {$wucolor = "DarkGray"} else {$wucolor = "White"}
 		Write-Host " "
 		Write-Host -ForegroundColor Yellow "Configure the script by tuning the following options to your desire."
@@ -171,6 +173,7 @@ switch ($confules) {
 		if ($setupmusic -eq 1) {Write-Host -ForegroundColor White "6. Customize your music selection"}
 		Write-Host -ForegroundColor White "7. Toggle the installation of Essential Apps" -n; Show-Disenabled $essentialapps
 		if ($essentialapps -eq 1) {Write-Host -ForegroundColor White "8. Customize which Apps to install"}
+		Write-Host -ForegroundColor White "9. Toggle logging for troubleshooting purposes" -n; Show-Disenabled $logging
 		Write-Host -ForegroundColor White "0. Accept the current configuration and return to main menu"
 		Write-Host " "
 		Write-Host "> " -n ; $confulee = Read-Host
@@ -183,6 +186,7 @@ switch ($confules) {
 			{$_ -like "6"} {if ($setupmusic -eq 1) {& $coredir\music\musicpicker.ps1}; exit}
 			{$_ -like "7"} {Select-Disenabled EssentialApps; exit}
 			{$_ -like "8"} {if ($essentialapps -eq 1) {& $coredir\support\appspicker.ps1}; exit}
+			{$_ -like "9"} {Select-Disenabled Transcribe; exit}
 			{$_ -like "0"} {
 				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditing" -Value 0 -Type DWord -Force
 				exit

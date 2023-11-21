@@ -3,6 +3,7 @@
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Music fetcher module"
 function Show-Branding {
@@ -14,6 +15,7 @@ function Show-Branding {
 $mexists = Test-Path -Path "$datadir\music"
 if ($mexists -eq $true) {exit}
 
+Start-Logging DownloadMode_Musicn
 Show-Branding
 Import-Module BitsTransfer
 . $datadir\dls\normal.ps1

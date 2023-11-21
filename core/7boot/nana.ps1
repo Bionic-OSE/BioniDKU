@@ -28,6 +28,7 @@ if (-not (Test-Path -Path "$workdir\data")) {New-Item -Path $workdir -Name "data
 $global:datadir = "$workdir\data"
 if (-not (Test-Path -Path "$datadir\dls")) {New-Item -Path $datadir -Name "dls" -itemType Directory | Out-Null}
 if (-not (Test-Path -Path "$datadir\values")) {New-Item -Path $datadir -Name "values" -itemType Directory | Out-Null}
+if (-not (Test-Path -Path "$datadir\logs")) {New-Item -Path $datadir -Name "logs" -itemType Directory | Out-Null}
 
 # Is the bootstrap process already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped
@@ -65,7 +66,7 @@ switch ($false) {
 # Your system must also be running a 64-bit OS.
 # Support for Server edition is currently experimental, and Server Core installations are not supported.
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Checking your PC"
-& $workdir\core\kernel\checkpc.ps1
+& $coredir\kernel\checkpc.ps1
 $amd64 = [Environment]::Is64BitOperatingSystem
 if ($amd64 -ne $true) {
 	Write-Host "This script does not support 32-bit systems." -ForegroundColor Black -BackgroundColor Red -n; Write-Host " Press Enter to exit."
@@ -74,10 +75,8 @@ if ($amd64 -ne $true) {
 	Read-Host
 	exit
 }
-$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
-$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
+. $coredir\kernel\osinfo.ps1
 $gablds = 10240,10586,14393,15063,16299,17134,17763,18362,18363,19041,19042,19043,19044,19045,20348
-. $workdir\modules\lib\getedition.ps1
 switch ($build) {
 	{$_ -ge 10240 -and $_ -le 21390} {
 		if ($gablds.Contains($_)) {
@@ -100,7 +99,7 @@ switch ($build) {
 		exit
 	}
 }
-Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
+Write-OSInfo
 
 if ($editiontype -like "Server") {
 	$sconfig = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").InstallationType
@@ -190,14 +189,15 @@ Set-AutoIDKUValue d "ConfigEditing" 0
 Set-AutoIDKUValue d "ConfigEditingSub" 0 
 Set-AutoIDKUValue d "ChangesMade" 0
 Set-AutoIDKUValue d "Denied" 0
-Set-AutoIDKUValue d "HikaruMode" 0
-Set-AutoIDKUValue d "SetWallpaper" 1
-Set-AutoIDKUValue d "HikaruMusic" 1
-Set-AutoIDKUValue d "EssentialApps" 1
-Set-AutoIDKUValue d "EdgeKilled"  0
-Set-AutoIDKUValue d "PendingRebootCount" 0
-Set-AutoIDKUValue d "Media10074" 0
 Set-AutoIDKUValue d "DarkSakura" 0
+Set-AutoIDKUValue d "EdgeKilled"  0
+Set-AutoIDKUValue d "EssentialApps" 1
+Set-AutoIDKUValue d "Media10074" 0
+Set-AutoIDKUValue d "HikaruMode" 0
+Set-AutoIDKUValue d "HikaruMusic" 1
+Set-AutoIDKUValue d "PendingRebootCount" 0
+Set-AutoIDKUValue d "Transcribe" 1
+Set-AutoIDKUValue d "SetWallpaper" 1
 Set-AutoIDKUValue d "WUmodeSwitch" 1
 
 if (Get-RemoteSoftware) {Set-AutoIDKUValue d "RunningThisRemotely" 1} else {Set-AutoIDKUValue d "RunningThisRemotely" 0}

@@ -36,7 +36,7 @@ switch ($action) {
 		$hexists = Test-Path -Path "$datadir\dls\sakuraground.7z" -PathType Leaf
 		if ($hexists) {exit}
 
-		$hikalink = "download/400_b6b" # Stable "latest/download"
+		$hikalink = "download/400_b7" # Stable "latest/download"
 		
 		Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/${hikalink}/Scripts.7z" "Scripts.7z" "Getting Hikaru-chan" "Downloading soft (scripts) layer"
 		Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/${hikalink}/Executables.7z" "Executables.7z" "Getting Hikaru-chan" "Downloading hard (executables) layer"

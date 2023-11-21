@@ -3,22 +3,24 @@
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
-if (-not (Test-Path -Path "$datadir\utils")) {New-Item -Path $datadir -Name "utils" -itemType Directory | Out-Null}
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Utilites fetcher module | DO NOT CLOSE THIS WINDOW OR DISCONNECT INTERNET"
-$uexists = Test-Path -Path "$datadir\utils\WinXShell.zip" -PathType Leaf
-if ($uexists) {exit}
-
 function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
 	Write-Host "Utilites fetcher module" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
+$uexists = Test-Path -Path "$datadir\utils\WinXShell.zip" -PathType Leaf
+if ($uexists) {exit}
+
+Start-Logging DownloadMode_Utilsg
 Show-Branding
 Import-Module BitsTransfer
 
 . $coredir\7boot\versioninfo.ps1
+if (-not (Test-Path -Path "$datadir\utils")) {New-Item -Path $datadir -Name "utils" -itemType Directory | Out-Null}
 
 while ($true) {
 	Start-BitsTransfer -DisplayName "Getting the Utilites package" -Description " " -Source "https://github.com/Bionic-OSE/BioniDKU-utils/releases/download/$utag/utils.7z" -Destination $datadir\utils -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue

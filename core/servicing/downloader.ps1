@@ -55,6 +55,12 @@ if ($hkm -eq 0) {
 	exit
 }
 
+function Show-Branding {
+	Clear-Host
+	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
+	Write-Host "Download mode" -ForegroundColor Blue -BackgroundColor Gray
+	Write-Host " "; Write-OSInfo; Write-Host " "
+}
 function Stop-DownloadMode($nhkm) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value $nhkm -Type DWord -Force
@@ -62,19 +68,16 @@ function Stop-DownloadMode($nhkm) {
 	Stop-Process -Name "SndVol" -Force -ErrorAction SilentlyContinue
 	exit
 }
-function Show-Branding {
-	Clear-Host
-	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
-	Write-Host "Download mode" -ForegroundColor Blue -BackgroundColor Gray
-	Write-Host " "
-}
+
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
-$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
 . $workdir\modules\lib\kuery.ps1
-. $workdir\modules\lib\DynamicTitlebar.ps1
+. $coredir\kernel\osinfo.ps1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
 Show-WindowTitle 2.1 "Download mode" noclose
+Start-Logging DownloadMode_MainWindow
 Show-Branding
 
 $hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
@@ -132,8 +135,8 @@ if ($esapps -eq 1) {
 
 $pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
 $pwsh7 = "https://github.com/PowerShell/PowerShell/releases/download/v${pwsh7ver}/PowerShell-${pwsh7ver}-win-x64.msi"
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "`r`nDownloading PowerShell 7" -n; Write-Host " (Required for Hikaru)"
-Write-Host -ForegroundColor White "This will take a while depending on your hardware"
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "`r`nDownloading PowerShell 7"
+Write-Host -ForegroundColor White "Required for Hikaru. This will take a while depending on your hardware"
 Start-DownloadLoop $pwsh7 core7.msi "PowerShell ${pwsh7ver}"
 
 $dotnet462d = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").NET462

@@ -1,29 +1,18 @@
 # BioniDKU main orchestrator file - (c) Bionic Butter
 
 ##############################################################
-# Declare basic functions and grab some neccessary variables
-$releasetype = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseType
-$butter = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseIDEx
-$pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
+# Declare basic functions
 function Show-Branding($s1) {
 	if ($s1 -like "clear") {Clear-Host}
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
 	Write-Host "$releasetype - $butter" -ForegroundColor Black -BackgroundColor White
 	Write-Host " "
 }
-function Stop-Script {
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
-	Stop-Process -Name "FFPlay" -Force -ErrorAction SilentlyContinue
-	$n = Get-Random -Minimum 1 -Maximum 6
-	Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe -WindowStyle Hidden -ArgumentList "-i $env:SYSTEMDRIVE\Bionic\Hikaru\ShellSpinner$n.mp4 -fs -alwaysontop -noborder"
-	Start-Sleep -Seconds 1
-	exit
-}
 function Get-ScriptProgress($value) {
 	$proc = Get-Content -Path $datadir\values\progress.txt
 	$valnt = [int32]$value
-	$pg = [Math]::Round(($valnt / 25) * 100) 
-	# Currently we have a maximum of 24 actions, taking that +1 so action 24 won't become 100%
+	$pg = [Math]::Round(($valnt / 24) * 100) 
+	# Currently we have a maximum of 23 actions, taking that +1 so action 23 won't become 100%
 	Show-WindowTitle 3 $pg
 	return [int32]$proc -le $valnt
 }
@@ -32,20 +21,21 @@ function Set-ScriptProgress($value) {[int32]$value | Out-File -FilePath $datadir
 Set-Alias -Name UPV -Value Set-ScriptProgress # UPV = Update Progress Value
 # UPV always = SPV + 1!!!
 
-# Set Working directory, Core folder's directory and Data folder's directory
+# Grab neccessary variables, then set the Working directory, Core folder's directory and Data folder's directory
+$global:releasetype = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseType
+$global:butter = (Get-ItemProperty -Path "HKCU:\Software\BioniDKU").ReleaseIDEx
+$global:pwsh = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Pwsh
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
 
-# Load modules, variables and configurations from file
+# Load modules, values and configurations from files
+. $coredir\kernel\osinfo.ps1
 . $coredir\kernel\config.ps1
-. $workdir\modules\lib\getedition.ps1
-. $workdir\modules\lib\DynamicTitlebar.ps1
-$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
-$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
 
 # Main menu section
-Show-WindowTitle 0
 $confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
 if ($confuled -eq 0 -or $confuled -eq 2) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force}
 while ($true) {
@@ -68,9 +58,10 @@ elseif ($confuled -eq 0) {
 ######################## BEGIN SCRIPT ########################
 
 # Show branding
-Show-Branding clear
 Show-WindowTitle 3 0 noclose
-Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
+Start-Logging NormalMode_MainWindow
+Show-Branding clear
+Write-OSInfo
 
 # Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
 . $coredir\kernel\minihikaru.ps1
@@ -115,9 +106,7 @@ if ($pendingreboot -eq $true) {
 		$pendingrebootcounting = $pendingrebootcount + 1
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "PendingRebootCount" -Value $pendingrebootcounting -Type DWord -Force
 		Start-Sleep -Seconds 5
-		shutdown -r -t 0
-		Start-Sleep -Seconds 30
-		exit
+		Restart-System
 	}
 }
 $setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
@@ -292,9 +281,9 @@ switch ($true) {
 		while ($true) {
 			$suwakodone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").UWPAppsRemoved
 			if ($suwakodone -eq 1) {break}
-			Write-Host "." -n; Start-Sleep -Seconds 1
+			Start-Sleep -Seconds 1
 		}
-		Write-Host " "; UPV 20
+		UPV 20
 	}
 
 	# A20
@@ -317,19 +306,14 @@ switch ($true) {
 		while ($true) {
 			$sappdone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SystemAppsRemoved
 			if ($sappdone -eq 1) {break}
-			Write-Host "." -n; Start-Sleep -Seconds 1
+			Start-Sleep -Seconds 1
 		}
-		Write-Host " "; UPV 23
+		UPV 23
 	}
 
 	# A23
 	{$thinneraddressbar -and (SPV 23)} {
 		& $workdir\modules\desktop\addressbartweaks.ps1 1; UPV 24
-	}
-
-	# A24
-	{$disableaddressbar -and (SPV 24)} {
-		& $workdir\modules\desktop\addressbartweaks.ps1 2; UPV 25
 	}
 
 }
@@ -343,6 +327,7 @@ if ($build -le 14393 -and $balloonnotifs -eq $false) {
 	Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 0 -Type DWord -Force
 }
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
+Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force # This prevents the script from being ran again
 Write-Host " "
 Show-WindowTitle 3 100
 Write-Host "This was the final step of the script. In order to complete the setup, please press Enter to restart" -ForegroundColor Black -BackgroundColor Green
@@ -351,5 +336,4 @@ Start-Process "$datadir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentL
 & $coredir\support\notefinish.ps1
 Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta
 Read-Host
-shutdown -r -t 5 -c " "
-Stop-Script
+Restart-System

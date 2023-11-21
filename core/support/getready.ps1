@@ -10,6 +10,7 @@ function Set-AutoIDKUValue($type,$value,$data) {
 	}
 }
 
+Start-Logging PrepMode
 Show-WindowTitle 1 "Getting ready" noclose
 Show-Branding clear
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting ready"
@@ -78,10 +79,7 @@ Set-AutoIDKUValue d "HikaruMode" 4
 Set-AutoIDKUValue d "ChangesMade" 1
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device"
-$n = Get-Random -Minimum 1 -Maximum 6
-Start-Process $env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe -WindowStyle Hidden -ArgumentList "-i $env:SYSTEMDRIVE\Bionic\Hikaru\ShellSpinner$n.mp4 -fs -alwaysontop -noborder"
-Start-Sleep -Seconds 1
-
+Restart-System ManualExit
 $setwallpaper = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SetWallpaper
 if ($setwallpaper -eq 1) {
 	if ((Test-Path -Path "$env:SYSTEMDRIVE\Bionic\Wallpapers") -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Bionic" -Name "Wallpapers" -ItemType directory}
@@ -90,7 +88,5 @@ if ($setwallpaper -eq 1) {
 }
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
-Start-Sleep -Seconds 1
-shutdown -r -t 0
 Start-Sleep -Seconds 30
 exit

@@ -5,7 +5,7 @@ function Show-Branding {
 	Clear-Host
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
 	Write-Host "Windows Update mode" -ForegroundColor Blue -BackgroundColor Gray
-	Write-Host " "
+	Write-Host " "; Write-OSInfo; Write-Host " "
 }
 function Stop-UpdateMode {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
@@ -14,6 +14,7 @@ function Stop-UpdateMode {
 	Stop-Process -Name "WinXShell" -Force -ErrorAction SilentlyContinue
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 	Stop-Process -Name "FFPlay" -Force -ErrorAction SilentlyContinue
+	Remove-Item -Path "$env:SYSTEMDRIVE\Bionic\WinXShell" -Recurse -Force
 	exit
 }
 function Stop-UpdateModeSuccess {
@@ -51,15 +52,13 @@ function Start-Wumgr {
 	Restart-UpdateMode
 }
 function Restart-UpdateMode {
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikareboot" -Value 1 -Type DWord -Force
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootConfirm" -Value 1 -Type DWord -Force
 	Start-Process powershell -Wait -ArgumentList "-Command $coredir\support\hikancel.ps1"
-	$hkbrb = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Hikareboot
+	$hkbrb = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RebootConfirm
 	if ($hkbrb -eq 0) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting to finish installing updates"
-		Start-Sleep -Seconds 5
-		shutdown -r -t 0
-		Start-Sleep -Seconds 30
-		exit
+		Start-Sleep -Seconds 2
+		Restart-System
 	} else {
 		Stop-UpdateModeSuccess
 	}
@@ -88,15 +87,14 @@ $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
 
-$build = [System.Environment]::OSVersion.Version | Select-Object -ExpandProperty "Build"
-$ubr = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').UBR
-. $workdir\modules\lib\getedition.ps1
-. $workdir\modules\lib\DynamicTitlebar.ps1
-Show-WindowTitle 2.2 "Windows Update mode"
-Show-Branding
-Write-Host -ForegroundColor White "You're running Windows $editiontype $editiond, OS build"$build"."$ubr
+. $coredir\kernel\osinfo.ps1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
 
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Initializing components"
+Show-WindowTitle 2.2 "Windows Update mode"
+Start-Logging WUMode
+Show-Branding
+
 . $datadir\dls\PATCHME.ps1
 $bubr = $latest | Select-String -Pattern $build
 $lubr = $bubr.Line.Substring($bubr.Line.LastIndexOf(".")+1)

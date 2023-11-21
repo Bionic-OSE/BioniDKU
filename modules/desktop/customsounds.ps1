@@ -1,6 +1,9 @@
+# BioniDKU custom sounds installer module
+
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:datadir = "$workdir\data"
-. $workdir\modules\lib\DestructionsBlessing.ps1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Destructor.psm1
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Custom sound installer module"
 function Show-Branding {
@@ -9,6 +12,7 @@ function Show-Branding {
 	Write-Host "Custom sound installer module" -ForegroundColor Blue -BackgroundColor Gray
 	Write-Host " "
 }
+Start-Logging NormalMode_CustomSounds
 Show-Branding
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Custom system sounds"
