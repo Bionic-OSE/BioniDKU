@@ -46,7 +46,7 @@ function Start-Wumgr {
 	Start-HikaruMusicAndShell
 	$hkwumgr = Test-Path -Path "$datadir\utils\Wumgr"
 	if ($hkwumgr -eq $false) {
-		Expand-Archive -Path $workdir\utils\Wumgr.zip -DestinationPath $datadir\utils\Wumgr
+		Expand-Archive -Path $datadir\utils\Wumgr.zip -DestinationPath $datadir\utils\Wumgr
 	}
 	Start-Process "$datadir\utils\Wumgr\wumgr.exe" -Wait
 	Restart-UpdateMode

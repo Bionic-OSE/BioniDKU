@@ -35,6 +35,13 @@ $global:datadir = "$workdir\data"
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
 
+# This is for the script to just display the final message if it was started after a successful run
+$cmpstat = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ALLCOMPLETED
+if ($cmpstat -eq 16384) {
+	& $coredir\support\notefinish.ps1 1
+	exit
+}
+
 # Main menu section
 $confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
 if ($confuled -eq 0 -or $confuled -eq 2) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force}
@@ -116,10 +123,10 @@ $essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction 
 
 # NOW WE GET TO THE REAL BUSINESS
 
-if ($setupmusic -eq 1 -and $wasexplorerup -eq $false) {
-	Write-Host "Starting Music player in the background" -BackgroundColor DarkGray -ForegroundColor Cyan
-	Start-Process powershell -WindowStyle Hidden -ArgumentList "-Command $coredir\music\musicplayer.ps1"
-}
+if ($setupmusic -eq 1) {
+	if ($wasexplorerup -eq $false) {Write-Host "Starting Music player in the background" -BackgroundColor DarkGray -ForegroundColor Cyan; Start-Process powershell -WindowStyle Hidden -ArgumentList "-Command $coredir\music\musicplayer.ps1"}
+	$setupmusicend = "/after the currently playing song ends, whichever comes first"
+} else {$setupmusicend = $null}
 
 if (SPV 0) {$startmsg = "begins"} else {$startmsg = "continues"}
 Show-WindowTitle
@@ -327,13 +334,17 @@ if ($build -le 14393 -and $balloonnotifs -eq $false) {
 	Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 0 -Type DWord -Force
 }
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
-Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force # This prevents the script from being ran again
+Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ALLCOMPLETED" -Value 16384 -Type DWord -Force 
+
 Write-Host " "
 Show-WindowTitle 3 100
-Write-Host "This was the final step of the script. In order to complete the setup, please press Enter to restart" -ForegroundColor Black -BackgroundColor Green
+Set-HikaruChan runonce
+Start-Process powershell -WindowStyle Hidden -ArgumentList "-Command $coredir\support\noterestart.ps1"
+Write-Host "This was the final step of the script." -ForegroundColor Black -BackgroundColor Green
+Write-Host "In order to complete the operation, please press Enter to restart." -ForegroundColor Green
+Write-Host "(Or the device will restart after 60 seconds${setupmusicend})." -ForegroundColor Green
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
 Start-Process "$datadir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
-& $coredir\support\notefinish.ps1
-Write-Host " "; Show-Branding; Write-Host "Made by Bionic Butter with Love <3" -ForegroundColor Magenta
-Read-Host
+& $coredir\support\notefinish.ps1 0
+Set-HikaruChan undonce
 Restart-System

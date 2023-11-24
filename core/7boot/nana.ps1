@@ -30,13 +30,14 @@ if (-not (Test-Path -Path "$datadir\dls")) {New-Item -Path $datadir -Name "dls" 
 if (-not (Test-Path -Path "$datadir\values")) {New-Item -Path $datadir -Name "values" -itemType Directory | Out-Null}
 if (-not (Test-Path -Path "$datadir\logs")) {New-Item -Path $datadir -Name "logs" -itemType Directory | Out-Null}
 
-# Is the bootstrap process already completed?
+# Is the bootstrap process already completed? Or is the run already completed?
 $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).BootStrapped
+$comped = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).ALLCOMPLETED
 $remote = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).RunningThisRemotely
 $isexplorerup = Get-Process -Name explorer -ErrorAction SilentlyContinue
-if ($booted -eq 1) {
+if ($comped -eq 16384) {exit}
+elseif ($booted -eq 1) {
 	# Play the script startup sound
-	Show-Branding
 	if ($remote -eq 1 -and -not $isexplorerup) {
 		Start-Process powershell -Wait -ArgumentList "-Command $workdir\modules\lib\WaitRemote.ps1"
 	}
