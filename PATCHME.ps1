@@ -7,7 +7,7 @@
 	<#    VLC    #> $global:VLCver = "3.0.20"
 	<# OpenShell #> $global:OShellDispver = "4.4.191"; $global:OShellExecver = "4_4_191"
 	<# Notepad++ #> $global:NPPver = "8.5.8"
-	<#  PSCore7  #> $global:pwsh7ver = "7.2.16"
+	<#  PSCore7  #> $global:pwsh7ver = "7.4.0"
 
 # SECTION 2: Windows Update UBRs (November 2023)
 . $workdir\modules\lib\Get-Edition.ps1
