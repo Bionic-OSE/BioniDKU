@@ -62,7 +62,7 @@ switch ($edition) {
 		<# LTSC 2021 #>     "19044.3693"
 	)}
 	
-	# Server editions (Why? Perhaps Nana can answer that question...)
+	# Server editions
 	{$_ -match "Server"} {$latest = @(
 		<# ====== Alive builds ====== #>
 		<# Server 2016 #>   "14393.6452"
