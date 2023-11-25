@@ -4,9 +4,10 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
 * text=auto
 
-# Declare files that will always have CRLF line endings on checkout.
-*.ps1 text eol=crlf
-*.bat text eol=crlf
+# Declare files that will always have CRLF line endings and with UTF-8 encoding on checkout.
+*.ps1 text eol=crlf encoding=utf-8
+*.psm1 text eol=crlf encoding=utf-8
+*.bat text eol=crlf encoding=utf-8
 
 # Denote all files that are truly binary and should not be modified.
 *.exe binary
