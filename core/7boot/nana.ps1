@@ -35,19 +35,16 @@ $booted = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction Silentl
 $comped = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).ALLCOMPLETED
 $remote = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).RunningThisRemotely
 $isexplorerup = Get-Process -Name explorer -ErrorAction SilentlyContinue
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Ambient.psm1
 if ($comped -eq 16384) {exit}
 elseif ($booted -eq 1) {
 	# Play the script startup sound
 	if ($remote -eq 1 -and -not $isexplorerup) {
-		Start-Process powershell -Wait -ArgumentList "-Command $workdir\modules\lib\WaitRemote.ps1"
+		Start-Process powershell -Wait -ArgumentList "-Command $workdir\modules\lib\Wait-Remote.ps1"
 	}
-	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Play-Ambient 0
 	exit
 }
-
-$7zxc = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String("a2VybmVsXGNoZWNrcGMucHMx"))
-Move-Item -Path "$coredir\7z\7zxb.dll" -Destination "$coredir\$7zxc" -ErrorAction SilentlyContinue
-function Show-Edition {& $workdir\modules\lib\PrintEdition.ps1}
 
 # Create registry folder
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting up environment"
@@ -67,7 +64,6 @@ switch ($false) {
 # Your system must also be running a 64-bit OS.
 # Support for Server edition is currently experimental, and Server Core installations are not supported.
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Checking your PC"
-& $coredir\kernel\checkpc.ps1
 $amd64 = [Environment]::Is64BitOperatingSystem
 if ($amd64 -ne $true) {
 	Write-Host "This script does not support 32-bit systems." -ForegroundColor Black -BackgroundColor Red -n; Write-Host " Press Enter to exit."
@@ -82,10 +78,8 @@ switch ($build) {
 	{$_ -ge 10240 -and $_ -le 21390} {
 		if ($gablds.Contains($_)) {
 			Write-Host "Supported stable build of Windows $editiontype detected" -ForegroundColor Green -BackgroundColor DarkGray
-			Show-Edition
 		} else {
 			Write-Host "Your Windows $editiontype build appears to be in the supported range, but doesn't seem to be a General Availability build. `r`nStability might suffer and I will not be providing support for issues happening on such builds." -ForegroundColor Yellow -BackgroundColor DarkGray
-			Show-Edition
 			$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
 			if ($ngawarn -ne 1) {
 				Write-Host "Press Enter to continue."; Read-Host
@@ -190,7 +184,6 @@ Set-AutoIDKUValue d "ConfigEditing" 0
 Set-AutoIDKUValue d "ConfigEditingSub" 0 
 Set-AutoIDKUValue d "ChangesMade" 0
 Set-AutoIDKUValue d "Denied" 0
-Set-AutoIDKUValue d "DarkSakura" 0
 Set-AutoIDKUValue d "EdgeKilled"  0
 Set-AutoIDKUValue d "EssentialApps" 1
 Set-AutoIDKUValue d "Media10074" 0
@@ -245,7 +238,7 @@ while ($true) {
 	if ($aexists) {break}
 	Start-Sleep -Seconds 1
 }
-Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\SpiralAbyss.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+Play-Ambient 0
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue
 Set-AutoIDKUValue d "BootStrapped" 1
 exit

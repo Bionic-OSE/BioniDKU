@@ -1,7 +1,6 @@
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Essential Apps"
 . $coredir\servicing\downloader.ps1
 if ($essentialnone) {exit}
-$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 
 switch (1) {
 	$WinaeroTweaker {
@@ -13,7 +12,7 @@ switch (1) {
 		Start-Process $datadir\dls\openshellinstaller.exe -Wait -NoNewWindow -ArgumentList "/qn ADDLOCAL=StartMenu"
 		if ($openshellconfig) {
 			Expand-Archive -Path $datadir\utils\Fluent.zip -DestinationPath "$env:PROGRAMFILES\Open-Shell\Skins"
-			Start-Process "$env:PROGRAMFILES\Open-Shell\StartMenu.exe" -NoNewWindow -ArgumentList "-xml $datadir\utils\menu${ds}.xml"
+			Start-Process "$env:PROGRAMFILES\Open-Shell\StartMenu.exe" -NoNewWindow -ArgumentList "-xml $datadir\utils\menu.xml"
 		}
 	}
 	$TClock {

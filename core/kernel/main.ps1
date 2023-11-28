@@ -34,6 +34,7 @@ $global:datadir = "$workdir\data"
 . $coredir\kernel\config.ps1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Ambient.psm1
 
 # This is for the script to just display the final message if it was started after a successful run
 $cmpstat = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ALLCOMPLETED
@@ -92,6 +93,7 @@ if ($hkm -eq 1) {
 $isexplorerup = Get-Process -Name explorer -ErrorAction SilentlyContinue
 if (-not $isexplorerup) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer"
+	Play-Ambient 6
 	Start-HikaruShell
 	$wasexplorerup = $false
 } else {$wasexplorerup = $true}
@@ -338,13 +340,11 @@ Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ALLCOMPLETED" -Value 163
 
 Write-Host " "
 Show-WindowTitle 3 100
-Set-HikaruChan runonce
 Start-Process powershell -WindowStyle Hidden -ArgumentList "-Command $coredir\support\noterestart.ps1"
 Write-Host "This was the final step of the script." -ForegroundColor Black -BackgroundColor Green
 Write-Host "In order to complete the operation, please press Enter to restart." -ForegroundColor Green
 Write-Host "(Or the device will restart after 60 seconds${setupmusicend})." -ForegroundColor Green
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 1 -Type DWord -Force
-Start-Process "$datadir\ambient\FFPlay.exe" -Wait -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainCompletedAll.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+Play-Ambient 8
 & $coredir\support\notefinish.ps1 0
-Set-HikaruChan undonce
 Restart-System

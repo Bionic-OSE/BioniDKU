@@ -6,10 +6,6 @@ function Set-HikaruChan($runonce) {
 			$launchkey = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce"
 			$launchval = "BioniDKU Completion Screen"
 		}
-		"undonce" {
-			Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "BioniDKU Completion Screen" -Force
-			return
-		}
 		default {
 			$launchkey = "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 			$launchval = "Shell"
@@ -26,6 +22,5 @@ function Set-HikaruChan($runonce) {
 
 function Start-HikaruShell {
 	Start-Process $env:SYSTEMDRIVE\Windows\explorer.exe 
-	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainAmbient.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
 	Start-Sleep -Seconds 5
 }

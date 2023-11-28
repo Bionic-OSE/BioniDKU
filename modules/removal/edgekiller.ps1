@@ -5,6 +5,7 @@ $global:datadir = "$workdir\data"
 $edgoogle = Test-Path "$env:SYSTEMDRIVE\Program Files (x86)\Microsoft\Edge"
 $edgedone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeKilled
 if ($edgoogle -eq $false -or $edgedone -eq 1) {exit}
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Ambient.psm1
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Microsoft Edge Chromium terminator module"
 function Show-Branding {
@@ -25,7 +26,7 @@ while ($true) {
 	if ($chedgeck) {
 		Write-Host "GOTCHA" -ForegroundColor Magenta
 		taskkill /f /im msedge.exe
-		Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainBonus.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+		Play-Ambient 7
 		Write-Host "Murder operation complete. Adios" -ForegroundColor Green -BackgroundColor DarkGray
 		Start-Sleep -Seconds 5
 		break

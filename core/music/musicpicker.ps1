@@ -1,6 +1,5 @@
-# Music picker module, part of the main menu - Still in the works
+# Music picker module, part of the main menu
 
-#if ($confuleb -eq 0) {& $coredir\music\musicheck.ps1}
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigEditingSub" -Value 5 -Type DWord -Force
 Show-Branding clear
 Show-WelcomeText

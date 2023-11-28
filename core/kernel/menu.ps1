@@ -82,7 +82,6 @@ function Check-EnoughActions {
 
 $confulee = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigEditing
 $confuone = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ChangesMade
-$ds       = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
 if ($confulee -eq 2) {$confules = 2} elseif ($confulee -eq 3) {$confules = 3}
 else {
 	$snareason1 = " - You did not select enough options in Advanced script configuration to proceed.`r`n   Try select a few more options, and try again."
@@ -141,7 +140,7 @@ switch ($confules) {
 		}
 		Confirm-Starting
 		Write-Host " "
-		Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainAccepted${ds}.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+		Play-Ambient 1
 		Write-Host -ForegroundColor Black -BackgroundColor Green "Alright, starting the script..."
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 1 -Type DWord -Force
 		Start-Sleep -Seconds 5

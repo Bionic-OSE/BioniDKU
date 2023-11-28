@@ -1,7 +1,6 @@
 # BioniDKU music player - Powered by FFPlay - (c) Bionic Butter
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 0 -Type DWord -Force
-& $PSScriptRoot\chichi.ps1
 function Show-NotifyBalloon($title,$message1,$message2) {
 	[system.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null
 	$Global:Balloon = New-Object System.Windows.Forms.NotifyIcon

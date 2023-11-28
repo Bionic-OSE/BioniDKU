@@ -1,20 +1,22 @@
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing PowerShell 7"
-Start-Process msiexec -Wait -ArgumentList "/package $datadir\dls\core7.msi /passive /norestart ADD_PATH=1 DISABLE_TELEMETRY=1"
+Start-Process msiexec -Wait -ArgumentList "/package $datadir\dls\core7.msi /qr /norestart ADD_PATH=1 DISABLE_TELEMETRY=1 USE_MU=0 ENABLE_MU=0"
 if ($build -ge 18362) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing ContextMenuNormalizer"
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\ContextMenuNormalizer.exe" -Type String -Force
 }
-Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Configuring Hikaru-chan"
+$OpenShell = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").OpenShell
+if ($OpenShell -eq 1) {
+	Set-ItemProperty -Path "HKCU:\Software\OpenShell\StartMenu\Settings" -Name "TaskbarOpacity" -Value 80 -Type DWord -Force
+}
 
-$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
-if ($ds -eq 1) {$var = 3} else {$var = 1}
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Configuring Hikaru-chan"
 reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\ShellHikaru.reg"
 $hkreg = Test-Path -Path 'HKCU:\SOFTWARE\Hikaru-chan'
 if ($hkreg -eq $false) {
 	New-Item -Path 'HKCU:\SOFTWARE' -Name Hikaru-chan
 }
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "ProductName" -Value "BioniDKU" -Type String -Force
-Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value $var -Type DWord -Force
+Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "StartupSoundVariant" -Value 1 -Type DWord -Force
 $media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
 if ($media10074 -eq 1) {$sar = 2} else {$sar = 1}
 Set-ItemProperty -Path "HKCU:\Software\Hikaru-chan" -Name "SystemSoundVariant" -Value $sar -Type DWord -Force
@@ -48,15 +50,12 @@ $hkrdockico
 # Install HikaruQM and pre-apply system restrictions (set restrictions but at disabled state)
 $WScriptObj = New-Object -ComObject ("WScript.Shell")
 $hkQML = "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe"
-$hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\BioniDKU Quick Menu Tray.lnk"
+$hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\BioniDKU Menus Tray.lnk"
 $hkQMLSh = $WscriptObj.CreateShortcut($hkQMLS)
 $hkQMLSh.TargetPath = $hkQML
 $hkQMLSh.Save()
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "BioniDKU Quick Menu Tray" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe" -Type String -Force
 
 Copy-Item -Path $env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ApplicationFrameHost.QUARANTINE"
-#Copy-Item -Path $coredir\7z\7za.exe -Destination "$env:SYSTEMDRIVE\Windows\7za.exe"
-#Copy-Item -Path $coredir\7z\7zxa.dll -Destination "$env:SYSTEMDRIVE\Windows\7zxa.dll"
 taskkill /f /im ApplicationFrameHost.exe
 takeown /f "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe"
 icacls "$env:SYSTEMDRIVE\Windows\System32\ApplicationFrameHost.exe" /grant Administrators:F
@@ -69,10 +68,10 @@ $hkF5trigger = @(
 )
 $hkF5settings = New-ScheduledTaskSettingsSet -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
 $hkF5 = New-ScheduledTask -Action $hkF5action -Trigger $hkF5trigger -Settings $hkF5settings
-Register-ScheduledTask 'BioniDKU Quick Menu Update Checker' -InputObject $hkF5
+Register-ScheduledTask 'BioniDKU Menus System Update Checker' -InputObject $hkF5
 
 # This line is here for Hikaru beta. Remove it on final please.
-Disable-ScheduledTask 'BioniDKU Quick Menu Update Checker'
+Disable-ScheduledTask 'BioniDKU Menus System Update Checker'
 
 # With the new UAC-enabled system, permission issues became a problem. The chunk of code below is to address all of that.
 $hkbpstname = 'BioniDKU Windows Build String Modifier'

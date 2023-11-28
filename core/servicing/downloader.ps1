@@ -24,7 +24,6 @@ $PENM           = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").PENM
 $ClassicTM      = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").ClassicTM
 $DesktopInfo    = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").DesktopInfo
 $VLC            = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").VLC
-$ds             = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU"     ).DarkSakura
 $essentialnone  = $false
 function Write-AppsList($action) {
 	Write-Host -ForegroundColor Cyan "The following programs will be $action"
@@ -72,19 +71,17 @@ function Stop-DownloadMode($nhkm) {
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
-. $workdir\modules\lib\kuery.ps1
 . $coredir\kernel\osinfo.ps1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Ambient.psm1
 Show-WindowTitle 2.1 "Download mode" noclose
 Start-Logging DownloadMode_MainWindow
 Show-Branding
 
 $hkau = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
-if ($ds -eq 1) {$min = 4; $max = 7; $avg = "s"} elseif ($kn) {$min = 7; $max = 8; $avg = "n"} else {$min = 1; $max = 5; $avg = "n"}
 if ($hkau -eq 1) {
-	$n = Get-Random -Minimum $min -Maximum $max
-	Start-Process "$env:SYSTEMDRIVE\Bionic\Hikaru\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\ChillWait$n.mp3 -nodisp -loglevel quiet -loop 0 -hide_banner"
+	Play-Ambient 2
 	Start-Process "$env:SYSTEMDRIVE\Windows\SysWOW64\SndVol.exe"
 	Write-Host -ForegroundColor White "For more information on the currently playing music, refer to $datadir\ambient\ChillWaitInfo.txt"
 	Write-Host -ForegroundColor Yellow "DO NOT adjust the volume of FFPlay! It will affect your music experience later on!"
@@ -102,7 +99,7 @@ Copy-Item -Path $datadir\utils\AddressBarRemover2.exe -Destination "$env:SYSTEMD
 if ($hkau -eq 1) {
 	Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal.ps1" "normal.ps1" "Music packages information file"
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting music packages"
-	Start-Process powershell -Wait -ArgumentList "-Command $coredir\music\music${avg}.ps1"
+	Start-Process powershell -Wait -ArgumentList "-Command $coredir\music\musicn.ps1"
 }
 
 $esapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).EssentialApps

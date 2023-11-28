@@ -18,26 +18,24 @@ function Stop-UpdateMode {
 	exit
 }
 function Stop-UpdateModeSuccess {
-	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainCompleted.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Play-Ambient 4
 	Write-Host "The latest updates have been installed." -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 }
 function Stop-UpdateModeAborted {
-	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainFailed.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
+	Play-Ambient 5
 	Write-Host "You have aborted updates." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."
 	Stop-UpdateMode
 }
 function Start-HikaruMusicAndShell {
-	Start-Process "$datadir\ambient\FFPlay.exe" -WindowStyle Hidden -ArgumentList "-i $datadir\ambient\DomainChallengeStart.mp3 -nodisp -hide_banner -autoexit -loglevel quiet"
-	if ($hkau -eq 1) {Start-Process powershell -ArgumentList "-Command $coredir\music\musicplayer.ps1"}
 	$hkws = Test-Path -Path "$env:SYSTEMDRIVE\Bionic\WinXShell"
 	if ($hkws -eq $false) {
 		Expand-Archive -Path $datadir\utils\WinXShell.zip -DestinationPath $env:SYSTEMDRIVE\Bionic\WinXShell
-		$ds = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").DarkSakura
-		if ($ds -eq 1) {Move-Item "$env:SYSTEMDRIVE\Bionic\WinXShell\sakuraground.jpg" -Destination "$env:SYSTEMDRIVE\Bionic\WinXShell\background.jpg" -Force}
 		Write-Host "Starting WinXShell" -ForegroundColor Cyan -BackgroundColor DarkGray -n; Write-Host ", a lightweight desktop environment used in Windows Preinstalled Environments (Windows PE)"
 	}
+	Play-Ambient 3
 	Start-Process "$env:SYSTEMDRIVE\Bionic\WinXShell\WinXShell.exe"
+	if ($hkau -eq 1) {Start-Process powershell -ArgumentList "-Command $coredir\music\musicplayer.ps1"}
 	Start-Sleep -Seconds 5
 }
 function Start-Wumgr {
@@ -90,6 +88,7 @@ $global:datadir = "$workdir\data"
 . $coredir\kernel\osinfo.ps1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Ambient.psm1
 
 Show-WindowTitle 2.2 "Windows Update mode"
 Start-Logging WUMode

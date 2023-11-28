@@ -13,21 +13,21 @@ function Show-Branding {
 	Write-Host " "
 }
 $mexists = Test-Path -Path "$datadir\music"
-if ($mexists -eq $true) {exit}
+if ($mexists -eq $true) {exit} else {New-Item -Path $datadir -Name "music" -itemType Directory | Out-Null}
 
 Start-Logging DownloadMode_Musicn
 Show-Branding
 Import-Module BitsTransfer
 . $datadir\dls\normal.ps1
 
-if (-not (Test-Path -Path "$datadir\music")) {New-Item -Path $datadir -Name "music" -itemType Directory | Out-Null}
+$musicdn = "https://github.com/Bionic-OSE/BioniDKU-music/raw/music"
 for ($c = 1; $c -le 5; $c++) {
 	$cv = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music").$c
 	if ($cv -eq 1) {
 		Write-Host "Downloading category $c..." -ForegroundColor White
 		$nl = $nc[$c - 1]
 		for ($n = 1; $n -le $nl; $n++) {
-			Start-BitsTransfer -DisplayName "Downloading category $c" -Description "Attempt $n out of $nl" -Source "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal$c.7z.00$n" -Destination $datadir\dls -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+			Start-BitsTransfer -DisplayName "Downloading category $c" -Description "Attempt $n out of $nl" -Source "$musicdn/normal$c.7z.00$n" -Destination $datadir\dls -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
 		}
 		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\normal$c.7z.001 -o$datadir\music"
 	}

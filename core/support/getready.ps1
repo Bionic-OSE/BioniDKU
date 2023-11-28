@@ -34,8 +34,6 @@ switch ($true) {
 	{$build -le 14393} {
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 1 -Type DWord -Force
 	}
-	{$ds -eq 1} {$back = "sakura"}
-	{$ds -ne 1} {$back = "back"}
 }
 
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
@@ -81,11 +79,7 @@ Set-AutoIDKUValue d "ChangesMade" 1
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device"
 Restart-System ManualExit
 $setwallpaper = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SetWallpaper
-if ($setwallpaper -eq 1) {
-	if ((Test-Path -Path "$env:SYSTEMDRIVE\Bionic\Wallpapers") -eq $false) {New-Item -Path "$env:SYSTEMDRIVE\Bionic" -Name "Wallpapers" -ItemType directory}
-	Copy-Item "$datadir\dls\${back}ground.png" -Destination "$env:SYSTEMDRIVE\Bionic\Wallpapers\BioniDKU.png"
-	& $workdir\modules\desktop\wallpaper.ps1
-}
+if ($setwallpaper -eq 1) {& $workdir\modules\desktop\wallpaper.ps1}
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 Start-Sleep -Seconds 30
