@@ -15,30 +15,26 @@ function Show-WaitTime($wti) {
 }
 
 $wupdated = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wupdated
-$hikareboot = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RebootConfirm
+$wureboot = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Wureboot
 if ($wupdated -eq 1) {
-	if ($hikareboot -eq 1) {
+	if ($wureboot -eq 1) {
 		Show-Branding
 		Write-Host "Your system have reached or passed the desired UBR." -ForegroundColor Black -BackgroundColor Green -n; Write-Host " If there were no additional updates, you can press CTRL+C to leave Windows Update mode within 10 seconds." -ForegroundColor Cyan
 		Show-WaitTime 10
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootConfirm" -Value 0 -Type DWord -Force
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Wureboot" -Value 0 -Type DWord -Force
 		exit
 	} else {
 		Show-Branding
-		$remote = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRemotely
-		if ($remote -eq 1) {$sec = 30} else {$sec = 10}
-		Write-Host "Your system have reached or passed the desired UBR." -ForegroundColor Black -BackgroundColor Green -n; Write-Host " If you wish to continue updating, press CTRL+C within $sec seconds." -ForegroundColor Cyan
-		Show-WaitTime $sec
-		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikancel" -Value 0 -Type DWord -Force
+		Write-Host "Your system have reached or passed the desired UBR." -ForegroundColor Black -BackgroundColor Green -n; Write-Host " If you wish to continue updating, press CTRL+C within 10 seconds." -ForegroundColor Cyan
+		Show-WaitTime 10
+		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Wucancel" -Value 0 -Type DWord -Force
 		exit
 	}
-} elseif ($hikareboot -eq 1) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootConfirm" -Value 0 -Type DWord -Force; exit}
+} elseif ($wureboot -eq 1) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Wureboot" -Value 0 -Type DWord -Force; exit}
 else {
 	Show-Branding
-	$remote = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").RunningThisRemotely
-	if ($remote -eq 1) {$sec = 30} else {$sec = 10}
-	Write-Host "To interrupt Windows Update mode, press CTRL+C within $sec seconds." -ForegroundColor Black -BackgroundColor Cyan
-	Show-WaitTime $sec
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Hikancel" -Value 0 -Type DWord -Force
+	Write-Host "To interrupt Windows Update mode, press CTRL+C within 10 seconds." -ForegroundColor Black -BackgroundColor Cyan
+	Show-WaitTime 10
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Wucancel" -Value 0 -Type DWord -Force
 	exit
 }

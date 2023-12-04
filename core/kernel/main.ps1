@@ -91,7 +91,7 @@ if ($hkm -eq 1) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
 }
 $isexplorerup = Get-Process -Name explorer -ErrorAction SilentlyContinue
-if (-not $isexplorerup) {
+if ($hkm -eq 1 -or -not $isexplorerup) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer"
 	Play-Ambient 6
 	Start-HikaruShell

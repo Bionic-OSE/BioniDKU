@@ -5,7 +5,7 @@ if ($essentialnone) {exit}
 switch (1) {
 	$WinaeroTweaker {
 		Expand-Archive -Path $datadir\dls\winaero.zip -DestinationPath $datadir\dls
-		$waxe = (Get-ChildItem -Path $datadir\dls -Filter WinaeroTweaker*.exe)
+		$waxe = (Get-ChildItem -Path $datadir\dls -Filter WinaeroTweaker*.exe).Name
 		Start-Process "$datadir\dls\$waxe" -Wait -NoNewWindow -ArgumentList "/SP- /VERYSILENT"
 	}
 	$OpenShell {
