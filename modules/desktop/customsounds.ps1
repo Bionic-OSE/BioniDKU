@@ -2,7 +2,7 @@
 
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:datadir = "$workdir\data"
-Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Support.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Destructor.psm1
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | Custom sound installer module"

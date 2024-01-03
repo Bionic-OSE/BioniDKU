@@ -1,7 +1,7 @@
 # BioniDKU Explorer address bar thinning module for 1909 and 2004-22H2
 
 $vlblds = 18363,19041,19042,19043,19044,19045
-if (-not $vlblds.Contains($build)) {exit} elseif ($build -eq 19045 -and $ubr -ge 3754) {exit}
+if (-not $vlblds.Contains($build)) {exit} elseif ($build -lt 19041 -and $ubr -ge 3754) {exit}
 if ($build -eq 18363) {$brc = "Mn"} else {$brc = "Vb"}
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Destructor.psm1
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Thinning the Explorer address bar"

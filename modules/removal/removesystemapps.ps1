@@ -2,7 +2,7 @@
 
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:datadir = "$workdir\data"
-Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Support.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Destructor.psm1
 $keepedgechromium = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EdgeNoMercy
 $keepsearch = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SearchNoMercy

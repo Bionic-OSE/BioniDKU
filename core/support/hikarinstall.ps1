@@ -9,8 +9,11 @@ if ($OpenShell -eq 1) {
 	Set-ItemProperty -Path "HKCU:\Software\OpenShell\StartMenu\Settings" -Name "TaskbarOpacity" -Value 80 -Type DWord -Force
 }
 
+Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Custom System Sounds"
+Expand-Archive -Path $datadir\utils\Media9200.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media\Blue
+Expand-Archive -Path $datadir\utils\Media1k47.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media\Threshold
+
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Configuring Hikaru-chan"
-reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\ShellHikaru.reg"
 $hkreg = Test-Path -Path 'HKCU:\SOFTWARE\Hikaru-chan'
 if ($hkreg -eq $false) {
 	New-Item -Path 'HKCU:\SOFTWARE' -Name Hikaru-chan
@@ -112,3 +115,4 @@ $cmd = Test-Path -Path "HKCU:\Software\Microsoft\Command Processor"
 if ($cmd -eq $false) {
 	New-Item -Path "HKCU:\Software\Microsoft" -Name "Command Processor"
 }
+reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\ShellHikaru.reg"

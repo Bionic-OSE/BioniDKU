@@ -2,8 +2,8 @@
 
 ##############################################################
 # Declare basic functions
-function Show-Branding($s1) {
-	if ($s1 -like "clear") {Clear-Host}
+function Show-Branding($clr) {
+	if ($clr -like "clear") {Clear-Host}
 	Write-Host 'Project BioniDKU - Next Generation AutoIDKU' -ForegroundColor White -BackgroundColor Blue
 	Write-Host "$releasetype - $butter" -ForegroundColor Black -BackgroundColor White
 	Write-Host " "
@@ -32,31 +32,14 @@ $global:datadir = "$workdir\data"
 # Load modules, values and configurations from files
 . $coredir\kernel\osinfo.ps1
 . $coredir\kernel\config.ps1
-Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
-Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Windowing.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Support.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Ambient.psm1
 
 # This is for the script to just display the final message if it was started after a successful run
 $cmpstat = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ALLCOMPLETED
 if ($cmpstat -eq 16384) {
 	& $coredir\support\notefinish.ps1 1
-	exit
-}
-
-# Main menu section
-$confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
-if ($confuled -eq 0 -or $confuled -eq 2) {Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ConfigSet" -Value 3 -Type DWord -Force}
-while ($true) {
-	$confuled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").ConfigSet
-	if ($confuled -eq 0 -or $confuled -eq 1 -or $confuled -eq 2) {break} else {& $coredir\kernel\menu.ps1}
-}
-
-if ($confuled -eq 2) {
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 3 -Type DWord -Force
-	exit
-}
-elseif ($confuled -eq 0) {
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 	exit
 }
 
@@ -71,10 +54,10 @@ Start-Logging NormalMode_MainWindow
 Show-Branding clear
 Write-OSInfo
 
-# Remove startup obstacles while in Hikaru mode 1, then switch back to mode 0
+# Hikaru mode 2 will signal the removal of startup obstacles, after which it will switch to mode 1
 . $coredir\kernel\minihikaru.ps1
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMode
-if ($hkm -eq 1) {
+if ($hkm -eq 2) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Switching to normal mode"
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "Shell" -Value 'explorer.exe' -Type String
 	Set-HikaruChan
@@ -88,10 +71,10 @@ if ($hkm -eq 1) {
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'AppsUseLightTheme' -Value 1 -Type DWord -Force
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name 'SystemUsesLightTheme' -Value 0 -Type DWord -Force
 	}
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 0 -Type DWord -Force
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
 }
 $isexplorerup = Get-Process -Name explorer -ErrorAction SilentlyContinue
-if ($hkm -eq 1 -or -not $isexplorerup) {
+if ($hkm -eq 2 -or -not $isexplorerup) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Starting Windows Explorer"
 	Play-Ambient 6
 	Start-HikaruShell
@@ -119,7 +102,7 @@ if ($pendingreboot -eq $true) {
 	}
 }
 $setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
-$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").SkipNotGABWarn
+$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").NotGABuild
 $essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).EssentialApps
 
 
@@ -302,8 +285,11 @@ switch ($true) {
 
 	# A21
 	{$customsounds -and (SPV 21)} {
-		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing custom system sounds" 
-		Start-Process powershell -Wait -ArgumentList "$workdir\modules\desktop\customsounds.ps1"
+		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Pre-setting system sounds" 
+		Write-Warning "System sounds will not be available for a few moments." 
+		$media10074 = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Media10074
+		if ($media10074 -eq 1) {$var = "1"} else {$var = "2"}
+		reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\SystemSound${var}.reg"
 		UPV 22
 	}
 
@@ -332,7 +318,7 @@ Show-WindowTitle 3 99 noclose
 & $coredir\support\hikarinstall.ps1 
 
 # Finalize things, and the job ends!
-if ($build -le 14393 -and $balloonnotifs -eq $false) {
+if ($balloonnotifs -eq $false) {
 	Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 0 -Type DWord -Force
 }
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force

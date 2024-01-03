@@ -13,11 +13,11 @@
 ## ================================================ MODULE SWITCHES ===============================================
 ## These are most of the things the script will do during its execution.
 
-<# Install .NET 4.6.2 (10586-)**** #> if ($pwsh -eq 5) {      $dotnet462 =                   $true }
-<# Enable .NET 3.5 #>                                         $dotnet35 =                    $true
+<# Install .NET 4.6.2 (10586-)**** #> if ($pwsh -eq 5) {      $dotnet462 =                   $true } # Don't delete
+<# Enable .NET 3.5 #>                                         $dotnet35 =                    $true   # the bracket!
 <# Hide system icons from the taskbar #>                      $hidetaskbaricons =            $true
 <# Remove Microsoft Edge Shortcuts** #>                       $removeedgeshortcut =          $true
-<# Create desktop shortcuts #>                                $desktopshortcuts =            $true
+<# Create desktop shortcuts #>                                $desktopshortcuts =            $false
 <# Disable Wake timers #>                                     $removewaketimers =            $true
 <# Remove all UWP apps possible #>                            $removeUWPapps =               $true
 <# Use script's Open-Shell config* #>                         $openshellconfig =             $true
@@ -36,7 +36,7 @@
 <# Don't touch Edge Chromium** #>                             $keepedgechromium =            $false
 <# Keep Windows Search*** #>                                  $keepsearch =                  $true
 <# Keep UAC (Stable only) #>                                  $keepuac =                     $true
-<# Hide LogonUI spin screens (non-Home/Servers, 14393+) #>    $embeddedlogon =               $true
+<# Hide LogonUI spin screens (non-Home/Servers, 14393+) #>    $embeddedlogon =               $false
 
 #i     *  You MUST enable the Essential Apps option and include Open-Shell in the apps selection.
 #i    **  If you choose to $keepedgechromium, $removeedgeshortcut be skipped if it's installed.
@@ -48,7 +48,7 @@
 ## ================================================ REGISTRY SWICHES ===============================================
 ## Below are registry-applied tweaks. You can enable/disable all of them, or toggle individual options.
 
-<# Enable registry tweaks #>                                  $registrytweaks =              $true # Master switch for the rest below
+<# Enable registry tweaks #>                                  $registrytweaks =              $true # Master switch
 
 <# Disable Defender startup entry #>                          $disabledefenderstart =        $true
 <# Disable Toast notifications #>                             $disablenotifs =               $true 
@@ -58,18 +58,18 @@
 <# Disale Transparency #>                                     $disabletransparency =         $true 
 <# Disale window animations #>                                $disableanimations =           $true 
 <# Disale Windows Ink Workspace (15063+) #>                   $disablewinink =               $true 
-<# Remove Downloads folder #>                                 $removedownloads =             $true
+<# Remove Downloads folder (DANGEROUS) #>                     $removedownloads =             $true
 <# Disable "Look for this app in Store" #>                    $applookupinstore =            $true
 <# Tune the Context menu #>                                   $contextmenuentries =          $true
-<# Remove Quick Access #>                                     $removequickaccess =           $true
-<# Disable Location icon*** #>                                $disablelocationicon =         $true 
+<# Remove Quick Access* #>                                    $removequickaccess =           $true
+<# Disable Location icon #>                                   $disablelocationicon =         $true 
 <# Activate Windows Photos viewer #>                          $activatephotoviewer =         $true 
 <# Set Registered owner #>                                    $registeredowner =             $true 
 <# Enable Classic paint #>                                    $classicpaint =                $true 
 <# Disable Edge prelaunch on startup #>                       $disableedgeprelaunch =        $true
 <# Disable Cortana #>                                         $disablecortana =              $true 
-<# Disable automatic update of UWPs #>                        $disablestoreautoupd =         $true
-<# Enable classic ballon notifications #>                     $balloonnotifs =               $true 
+<# Disable automatic update of UWP apps #>                    $disablestoreautoupd =         $true
+<# Enable classic ballon notifications** #>                   $balloonnotifs =               $true 
 <# Show all icons in taskbar tray #>                          $showalltrayicons =            $false 
 <# Show hidden system files and folders #>                    $showsuperhidden =             $false 
 <# Disable Lock screen #>                                     $disablelockscrn =             $true
@@ -82,6 +82,10 @@
 <# Remove Network icon from login screen #>                   $removelckscrneticon =         $true
 <# Disable Power Throttling #>                                $nopowerthrottling =           $false
 <# Reduce the amount of svchost.exes #>                       $svchostslimming =             $true
+
+#i  * See "*****" in the previous section.
+#i ** Classic ballon notifications will be temporarily enabled during script operation, and will be turned off at
+#i    the end if you switch the option off.
 
 ## ^.^
 
@@ -143,7 +147,7 @@ function Show-ModulesConfig {
 	Write-Host "Remove Downloads folder (DANGEROUS)                  " -n; Write-Host -ForegroundColor White "$removedownloads     "
 	Write-Host 'Disable "Look for this app in Store"                 ' -n; Write-Host -ForegroundColor White "$applookupinstore    "
 	Write-Host "Tune the Context menu                                " -n; Write-Host -ForegroundColor White "$contextmenuentries  "
-	Write-Host "Remove Quick Access*****                             " -n; Write-Host -ForegroundColor White "$removequickaccess   "
+	Write-Host "Remove Quick Access*                                 " -n; Write-Host -ForegroundColor White "$removequickaccess   "
 	Write-Host "Disable Location icon                                " -n; Write-Host -ForegroundColor White "$disablelocationicon "
 	Write-Host "Activate Windows Photos viewer                       " -n; Write-Host -ForegroundColor White "$activatephotoviewer "
 	Write-Host "Set Registered owner                                 " -n; Write-Host -ForegroundColor White "$registeredowner     "
@@ -151,7 +155,7 @@ function Show-ModulesConfig {
 	Write-Host "Disable Edge prelaunch on startup                    " -n; Write-Host -ForegroundColor White "$disableedgeprelaunch"
 	Write-Host "Disable Cortana                                      " -n; Write-Host -ForegroundColor White "$disablecortana      "
 	Write-Host "Disable automatic update of UWPs                     " -n; Write-Host -ForegroundColor White "$disablestoreautoupd "
-	Write-Host "Enable classic ballon notifications                  " -n; Write-Host -ForegroundColor White "$balloonnotifs       "
+	Write-Host "Enable classic ballon notifications**                " -n; Write-Host -ForegroundColor White "$balloonnotifs       "
 	Write-Host "Show all icons in taskbar tray                       " -n; Write-Host -ForegroundColor White "$showalltrayicons    "
 	Write-Host "Show hidden system files and folders                 " -n; Write-Host -ForegroundColor White "$showsuperhidden     "
 	Write-Host "Disable Lock screen                                  " -n; Write-Host -ForegroundColor White "$disablelockscrn     "
@@ -165,7 +169,8 @@ function Show-ModulesConfig {
 	Write-Host "Disable Power Throttling                             " -n; Write-Host -ForegroundColor White "$nopowerthrottling   "
 	Write-Host "Reduce the amount of svchost.exes                    " -n; Write-Host -ForegroundColor White "$svchostslimming     "
 	Write-Host " "
-	Write-Host '***** This option will not work if "Default Explorer to This PC" is disabled.' -ForegroundColor Cyan
+	Write-Host ' * This option will not work if "Default Explorer to This PC" is disabled.' -ForegroundColor Cyan
+	Write-Host '** Classic ballon notifications will be temporarily enabled during script operation.' -ForegroundColor Cyan
 	Write-Host " "}
 	Write-Host "You are now in Advanced configuration mode, where you can adjust individual functions of the script." -ForegroundColor Black -BackgroundColor Yellow
 	Write-Host "Scroll up to the top and view the options." -ForegroundColor Yellow

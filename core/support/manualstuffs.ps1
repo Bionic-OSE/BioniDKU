@@ -15,17 +15,18 @@ if ($essentialapps -eq $true) {
 	Write-Host -ForegroundColor White " - Network icon"
 }
 if ($build -ge 18362) {
-    Write-Host -ForegroundColor White " - Microphone icon"
+	Write-Host -ForegroundColor White " - Microphone icon"
 	Write-Host -ForegroundColor White " - Meet now icon*"
 }
 if ($build -ge 18363) {
-    Write-Host -ForegroundColor White " - News and interests*"
+	Write-Host -ForegroundColor White " - News and interests*"
 }
 Write-Host -ForegroundColor Yellow "3. While still in Settings:"
 if ($firefox -eq 1) {Write-Host -ForegroundColor White " - Change the default browser to Firefox (and of course, ignore Windows' beg for Edge)."
 if ($keepedgechromium) {Write-Host "   (If you chose to keep Edge Chromium and want that instead, skip this step if it's already the default)"}}
 if ($sltoshutdownwall) {Write-Host -ForegroundColor White ' - Head over to Lock screen Settings and switch the background type to "Picture".'}
-Write-Host -ForegroundColor White " - Try your best to turn all kinds of notifications off."; if ($build -ge 15063 -and $setupmusic -eq 1) {Write-Host "   (DON'T turn on Focus Assit yet, as that may prevent the music player from showing song information)."}
+Write-Host -ForegroundColor White " - Try your best to turn all kinds of notifications off"
+if ($balloonnotifs) {Write-Host "   (Don't worry, it won't affect ballon notifications)"}
 Write-Host -ForegroundColor Yellow "4. Finally, unpin everything else except File Explorer (this means DO NOT unpin Explorer!)."
 Write-Host -ForegroundColor Cyan "Press Enter once you have done with those."
 Read-Host

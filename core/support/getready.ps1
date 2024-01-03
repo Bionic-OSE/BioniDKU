@@ -31,12 +31,9 @@ switch ($true) {
 		Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Setting Explorer to open on This PC" -n; Write-Host " (will take effect next time Explorer starts)"
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'LaunchTo' -Value 1 -Type DWord -Force
 	} {$dotnet462} {Set-AutoIDKUValue app "NET462" 1}
-	{$build -le 14393} {
-		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 1 -Type DWord -Force
-	}
 }
 
-$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
+$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).NotGABuild
 $windowsupdate = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").WUmodeSwitch
 if ($windowsupdate -eq 1 -and $ngawarn -ne 1 -and $edition -notlike "EnterpriseG") {
 	# Take control over Windows Update so it doesn't do stupid, unless if it's Home or Server edition.
@@ -71,10 +68,10 @@ Set-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'HideFileExt' -Value 0 -Type DWord -Force
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'SeparateProcess' -Value 1 -Type DWord -Force
 Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'DontUsePowerShellOnWinX' -Value 1 -Type DWord -Force
+Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 1 -Type DWord -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\BootAnimation" -Name "DisableStartupSound" -Value 1 -Type DWord -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -Name "AutoRestartShell" -Value 0 -Type DWord
 Set-AutoIDKUValue d "HikaruMode" 4
-Set-AutoIDKUValue d "ChangesMade" 1
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Restarting your device"
 Restart-System ManualExit

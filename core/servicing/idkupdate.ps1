@@ -8,8 +8,8 @@ $global:datadir = "$workdir\data"
 
 . $coredir\kernel\osinfo.ps1
 . $datadir\dls\PATCHME.ps1
-Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
-Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Windowing.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Support.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Ambient.psm1
 
 $bubr = $latest | Select-String -Pattern $build
@@ -76,7 +76,7 @@ function Stop-UpdateMode($status) {
 		"Success" {Play-Ambient 4; Write-Host "The latest updates have been installed." -ForegroundColor Green -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."}
 		"Aborted" {Play-Ambient 5; Write-Host "You have aborted updates." -ForegroundColor Yellow -BackgroundColor DarkGray -n; Write-Host " Leaving Windows Update mode..."}
 	}
-	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 1 -Type DWord -Force
+	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value 2 -Type DWord -Force
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 1 -Type DWord -Force
 	Start-Sleep -Seconds 5
 	Stop-Process -Name "WinXShell" -Force -ErrorAction SilentlyContinue

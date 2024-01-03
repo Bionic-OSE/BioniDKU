@@ -1,4 +1,4 @@
-# BioniDKU Logging support functions hive
+# BioniDKU System support functions hive
 
 function Start-Logging($module) {
 	$isloggingenabled = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").Transcribe

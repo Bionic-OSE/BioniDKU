@@ -47,7 +47,7 @@ function Write-AppsList($action) {
 	if ($essentialnone -ne $true) {Write-Host "Some of these might not be on their latest releases. You can update them on your own later."}
 }
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).HikaruMode
-if ($hkm -eq 0) {
+if ($hkm -eq 1) {
 	. $datadir\dls\PATCHME.ps1
 	Write-Host "Installing essential programs" -ForegroundColor Cyan -BackgroundColor DarkGray
 	Write-AppsList "installed:"
@@ -65,6 +65,7 @@ function Stop-DownloadMode($nhkm) {
 	Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMode" -Value $nhkm -Type DWord -Force
 	Stop-Process -Name "FFPlay" -Force -ErrorAction SilentlyContinue
 	Stop-Process -Name "SndVol" -Force -ErrorAction SilentlyContinue
+	Set-WindowState -State RESTORE -MainWindowHandle (Get-Process -Id $cpid).MainWindowHandle
 	exit
 }
 
@@ -72,10 +73,11 @@ $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
 $global:datadir = "$workdir\data"
 . $coredir\kernel\osinfo.ps1
-Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Titlebar.psm1
-Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Logging.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Windowing.psm1
+Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Support.psm1
 Import-Module -DisableNameChecking $workdir\modules\lib\Dynamic-Ambient.psm1
 Show-WindowTitle 2.1 "Download mode" noclose
+Set-WindowState -State MAXIMIZE -MainWindowHandle (Get-Process -Id $cpid).MainWindowHandle
 Start-Logging DownloadMode_MainWindow
 Show-Branding
 
@@ -147,7 +149,7 @@ if ($pwsh -eq 5 -and $dotnet462d -eq 1) {
 }
 
 $wu = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).WUmode
-$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
+$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).NotGABuild
 if ($wu -eq 1 -and $ngawarn -ne 1) {
 	Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "`r`nDownloading and installing PSWindowsUpdate"
 	$thpm = "$env:SYSTEMDRIVE\Program Files\WindowsPowerShell\Modules\PackageManagement"
@@ -164,7 +166,7 @@ if ($wu -eq 1 -and $ngawarn -ne 1) {
 		}
 		if (Get-Module -ListAvailable -Name PSWindowsUpdate) {
 			Write-Host -ForegroundColor Green "PSWindowsUpdate has been installed"
-			Stop-DownloadMode 2
+			Stop-DownloadMode 3
 		} 
 		else {
 			Write-Host -ForegroundColor Red "Did PSWindowsUpdate fail to install? Retrying... (${pswucheck}/5)"
@@ -175,4 +177,4 @@ if ($wu -eq 1 -and $ngawarn -ne 1) {
 	Write-Host -ForegroundColor Black -BackgroundColor Red "Failed to install PSWindowsUpdate. Windows Update mode has been disabled."
 }
 
-Stop-DownloadMode 1
+Stop-DownloadMode 2

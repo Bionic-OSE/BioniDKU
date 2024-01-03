@@ -1,6 +1,6 @@
 # BioniDKU version information file - (c) Bionic Butter
 
-$releasetype = "Candidate Release"
-$releaseid = "22107.400_rc1"
-$releaseidex = "22107.400_rc1.osesoft_rcrel.231203-2013"
+$releasetype = "Stable Release"
+$releaseid = "22107.400_stable"
+$releaseidex = "22107.400_stable.osesoft_mainrel.240103-1622"
 $utag = "400_stable"

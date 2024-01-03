@@ -163,11 +163,6 @@ switch ($true) {
 		Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell' -Name 'UseWin32BatteryFlyout' -Value 1 -Type DWord -Force
 	}
 
-	$balloonnotifs {
-		Write-Host -ForegroundColor Cyan "Enabling Balloon notificatons"
-		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -Name 'EnableLegacyBalloonNotifications' -Value 1 -Type DWord -Force
-	}
-	
 	$showalltrayicons {
 		Write-Host -ForegroundColor Cyan "Showing all tray icons in the taskbar"
 		Set-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer' -Name 'EnableAutoTray' -Value 0 -Type DWord -Force

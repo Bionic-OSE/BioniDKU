@@ -79,12 +79,9 @@ switch ($build) {
 		if ($gablds.Contains($_)) {
 			Write-Host "Supported stable build of Windows $editiontype detected" -ForegroundColor Green -BackgroundColor DarkGray
 		} else {
-			Write-Host "Your Windows $editiontype build appears to be in the supported range, but doesn't seem to be a General Availability build. `r`nStability might suffer and I will not be providing support for issues happening on such builds." -ForegroundColor Yellow -BackgroundColor DarkGray
-			$ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).SkipNotGABWarn
-			if ($ngawarn -ne 1) {
-				Write-Host "Press Enter to continue."; Read-Host
-				Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "SkipNotGABWarn" -Value 1 -Type DWord -Force
-			}
+			Write-Host "Supported non-General Availability build of Windows $editiontype detected" -ForegroundColor Yellow -BackgroundColor DarkGray
+			Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "NotGABuild" -Value 1 -Type DWord -Force
+			Start-Sleep -Seconds 1
 		}
 	}
 	default {
@@ -99,8 +96,8 @@ Write-OSInfo
 if ($editiontype -like "Server") {
 	$sconfig = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").InstallationType
 	if ($sconfig -like "Server Core") {
-		Write-Host "This script does not support Windows Server Core installations." -ForegroundColor Black -BackgroundColor Red -n; Write-Host " Press Enter to exit."
-		Write-Host "Windows Server with Desktop Experience is supported on the other hand... Time to reinstall, I guess?"
+		Write-Host "This script does not support Server Core installations." -ForegroundColor Black -BackgroundColor Red -n; Write-Host " Press Enter to exit."
+		Write-Host "Server with Desktop Experience is supported on the other hand... Time to reinstall, I guess?"
 		Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force
 		Read-Host
 		exit
@@ -114,8 +111,8 @@ if ($editiontype -like "Server") {
 switch ($edition) {
 	{$_ -like "PPIPro"} {
 		Write-Host " "
-		Write-Host "This script does not support Windows Team edition." -ForegroundColor Black -BackgroundColor Red
-		if ($build -ge 19041) {Write-Host "To use the script, you will need to PPISwap this device to either Enterprise or Pro edition." -ForegroundColor White} else {Write-Host "And PPISwap does not support this build either. So don't try." -ForegroundColor Red; Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force}
+		Write-Host "This script does not support Team edition." -ForegroundColor Black -BackgroundColor Red
+		if ($build -ge 19041 -and $build -le 19045) {Write-Host "To use the script, you will need to PPISwap this device to either Enterprise or Pro edition." -ForegroundColor White} else {Write-Host "And PPISwap does not support this build either. So don't try." -ForegroundColor Red; Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "Denied" -Value 1 -Type DWord -Force}
 		Write-Host " Press Enter to exit."
 		Read-Host; exit
 	}
