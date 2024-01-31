@@ -6,10 +6,10 @@
 # SECTION 1: Software version numbers:
 	<#    VLC    #> $global:VLCver = "3.0.20"
 	<# OpenShell #> $global:OShellDispver = "4.4.191"; $global:OShellExecver = "4_4_191"
-	<# Notepad++ #> $global:NPPver = "8.6"
-	<#  PSCore7  #> $global:pwsh7ver = "7.4.0"
+	<# Notepad++ #> $global:NPPver = "8.6.2"
+	<#  PSCore7  #> $global:pwsh7ver = "7.4.1"
 
-# SECTION 2: Windows Update UBRs (November 2023)
+# SECTION 2: Windows Update UBRs (January 2024)
 . $workdir\modules\lib\Get-Edition.ps1
 switch ($edition) {
 	
@@ -30,7 +30,7 @@ switch ($edition) {
 		<# 21H1 #>          "19043.2364"
   		<# 21H2 #>          "19044.3086"
 		<# ====== Alive builds ====== #>
-		<# 22H2 #>          "19045.3693"
+		<# 22H2 #>          "19045.3930"
 	)}
 	
 	# Commerical editions
@@ -49,25 +49,25 @@ switch ($edition) {
 		<# 20H2 #>          "19042.2965"
 		<# 21H1 #>          "19043.2364"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "19044.3693"
-		<# 22H2 #>          "19045.3693"
+		<# 21H2 #>          "19044.3930"
+		<# 22H2 #>          "19045.3930"
 	)}
 	
 	# Long-term servicing editions
 	{$_ -match "EnterpriseS"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# LTSB 2015 #>     "10240.20308"
-		<# LTSB 2016 #>     "14393.6452"
-		<# LTSC 2019 #>     "17763.5122"
-		<# LTSC 2021 #>     "19044.3693"
+		<# LTSB 2015 #>     "10240.20402"
+		<# LTSB 2016 #>     "14393.6614"
+		<# LTSC 2019 #>     "17763.5329"
+		<# LTSC 2021 #>     "19044.3930"
 	)}
 	
 	# Server editions
 	{$_ -match "Server"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# Server 2016 #>   "14393.6452"
-		<# Server 2019 #>   "17763.5122"
-		<# Server 2022 #>   "20348.2113"
+		<# Server 2016 #>   "14393.6614"
+		<# Server 2019 #>   "17763.5329"
+		<# Server 2022 #>   "20348.2227"
 	)}
 	
 }
