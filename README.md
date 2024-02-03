@@ -12,7 +12,7 @@ Head over to the [**Wiki section**](https://github.com/Bionic-OSE/BioniDKU/wiki)
 ![BioniDKU compatibility sheet](https://github.com/Bionic-OSE/BioniDKU/assets/44027930/b25a4d99-6c4c-4b3f-ad20-ea9f43327f9c)
 
 
-## "I know what this is now." Good, but before you launch this program...
+## *"I know what this is now."* Good, but before you launch this program...
 There are things that must be done first to how "dangerous" this script is to Windows.
 
 **1. Microsoft/Windows Defender MUST be disabled before you hit the Yes button on the confirmation prompt** (the script itself will also notice you about this once again if you forgot).
@@ -24,8 +24,6 @@ There are things that must be done first to how "dangerous" this script is to Wi
 - Click **Disable Defender** and restart the PC. You can now proceed.
 
 **2. A reliable internet connection is required.** If you're on a metered connection, a 1GB plan should work if you don't plan to run Windows Updates on the target system (about more than 400MB will be downloaded in total). You can go offline as soon as the script enters the 3rd phase. 
-
-**3. Patience & The ability to read English.** 
 
 ## Extras
 ### It's not just this repository
