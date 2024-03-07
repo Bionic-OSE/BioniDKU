@@ -21,7 +21,8 @@ There are things that must be done first to how "dangerous" this script is to Wi
 - To effectively disable Defender, go to [this link](https://zgc6v-my.sharepoint.com/:f:/g/personal/oseproductions_zgc6v_onmicrosoft_com/EmNJMTmNbrlEpsDCO6HqBv0BtIUaJ9n7IOSx9IhZVLvBTg) and download the **dControl.zip** file (Or you can get one from the internet making sure it isn't a malware). 
 - On your target system, in Defender settings turn off Real time protection (and Tamper protection too if it's there).
 - Now open the zip file and run **dControl.exe** inside it (no other programs or extraction needed, just double clicking and click "Run" when it asks if you want to better extract it). Password is: `sordum`
-- Click **Disable Defender** and restart the PC. You can now proceed.
+- Click **Disable Defender**, restart the device and then you can proceed. 
+- Another way for the last step is if you encounter the *"Starting the script is not allowed"* message because you forgot to do this, after clicking disable, just hit Enter with nothing typed in the prompt to refresh the status. The script should then allow you to start and since it will restart the system shortly after, you get 2 problems solved at once! 
 
 **2. A reliable internet connection is required.** If you're on a metered connection, a 1GB plan should work if you don't plan to run Windows Updates on the target system (about more than 400MB will be downloaded in total). You can go offline as soon as the script enters the 3rd phase. 
 
