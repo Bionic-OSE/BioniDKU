@@ -10,14 +10,14 @@ Head over to the [**Wiki section**](https://github.com/Bionic-OSE/BioniDKU/wiki)
 
 ## Compatibility
 ![BioniDKU compatibility sheet](https://github.com/Bionic-OSE/BioniDKU/assets/44027930/b25a4d99-6c4c-4b3f-ad20-ea9f43327f9c)
-
+<sup><sub>**(*)** The incompatibility in this edition is actually a currently known issue in the script and not a limitation. Once it has been addressed it will be just as functional as other editions.</sub></sup>
 
 ## *"I know what this is now."* Good, but before you launch this program...
 There are things that must be done first to how "dangerous" this script is to Windows.
 
 **1. Microsoft/Windows Defender MUST be disabled before you hit the Yes button on the confirmation prompt** (the script itself will also notice you about this once again if you forgot).
 - **Why is this?** BioniDKU itself is by all means not a malware. However some tools used to make it possible are often false flagged by AVs because of "signature" problems. Particularly this comes from the launcher executable file and several other components (that will be downloaded along the way) that are made made using **BatToExe**. If any of you have a flaggable-free appoarch for these batch-coverted EXEs please let me know. 
-- If you are doing this on Windows Server, skip the rest of the steps below and run `dism /online /disable-feature /featurename:Windows-Defender`.
+- If you are doing this on Windows Server, skip the rest of the steps below, run `dism /online /disable-feature /featurename:Windows-Defender` and restart the device.
 - To effectively disable Defender, go to [this link](https://zgc6v-my.sharepoint.com/:f:/g/personal/oseproductions_zgc6v_onmicrosoft_com/EmNJMTmNbrlEpsDCO6HqBv0BtIUaJ9n7IOSx9IhZVLvBTg) and download the **dControl.zip** file (Or you can get one from the internet making sure it isn't a malware). 
 - On your target system, in Defender settings turn off Real time protection (and Tamper protection too if it's there).
 - Now open the zip file and run **dControl.exe** inside it (no other programs or extraction needed, just double clicking and click "Run" when it asks if you want to better extract it). Password is: `sordum`
