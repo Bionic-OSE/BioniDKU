@@ -1,4 +1,4 @@
-# BioniDKU Download mode & Windows Update mode - Software versions information file
+# BioniDKU Download mode & Windows Update mode - Software versions information file - (c) Bionic Butter
 
 # The purpose of this file is so I can update the version number of apps and the UBRs every month without having to update the whole script package. The UBRs section takes effect starting with version 300_update1, and the software version section starting with version 300_update5.
 
@@ -6,10 +6,10 @@
 # SECTION 1: Software version numbers:
 	<#    VLC    #> $global:VLCver = "3.0.20"
 	<# OpenShell #> $global:OShellDispver = "4.4.191"; $global:OShellExecver = "4_4_191"
-	<# Notepad++ #> $global:NPPver = "8.6.2"
+	<# Notepad++ #> $global:NPPver = "8.6.4"
 	<#  PSCore7  #> $global:pwsh7ver = "7.4.1"
 
-# SECTION 2: Windows Update UBRs (January 2024)
+# SECTION 2: Windows Update UBRs (March 2024)
 . $workdir\modules\lib\Get-Edition.ps1
 switch ($edition) {
 	
@@ -30,11 +30,11 @@ switch ($edition) {
 		<# 21H1 #>          "19043.2364"
   		<# 21H2 #>          "19044.3086"
 		<# ====== Alive builds ====== #>
-		<# 22H2 #>          "19045.3930"
+		<# 22H2 #>          "19045.4170"
 	)}
 	
 	# Commerical editions
-	{$_ -match "Enterprise[^S]" -or $_ -like "Education"} {$latest = @(
+	{$_ -match "Enterprise[^S]" -or $_ -like "Education" -or $_ -like "ServerRdsh"} {$latest = @(
 		<# ======= EOL builds ======= #>
 		<# 1511 #>          "10586.17446"
 		<# 1511 #>          "10586.1540"
@@ -49,25 +49,25 @@ switch ($edition) {
 		<# 20H2 #>          "19042.2965"
 		<# 21H1 #>          "19043.2364"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "19044.3930"
-		<# 22H2 #>          "19045.3930"
+		<# 21H2 #>          "19044.4170"
+		<# 22H2 #>          "19045.4170"
 	)}
 	
 	# Long-term servicing editions
 	{$_ -match "EnterpriseS"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# LTSB 2015 #>     "10240.20402"
-		<# LTSB 2016 #>     "14393.6614"
-		<# LTSC 2019 #>     "17763.5329"
-		<# LTSC 2021 #>     "19044.3930"
+		<# LTSB 2015 #>     "10240.20526"
+		<# LTSB 2016 #>     "14393.6796"
+		<# LTSC 2019 #>     "17763.5576"
+		<# LTSC 2021 #>     "19044.4170"
 	)}
 	
 	# Server editions
-	{$_ -match "Server"} {$latest = @(
+	{$_ -match "Server" -and $_ -notlike "ServerRdsh"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# Server 2016 #>   "14393.6614"
-		<# Server 2019 #>   "17763.5329"
-		<# Server 2022 #>   "20348.2227"
+		<# Server 2016 #>   "14393.6796"
+		<# Server 2019 #>   "17763.5576"
+		<# Server 2022 #>   "20348.2340"
 	)}
 	
 }
