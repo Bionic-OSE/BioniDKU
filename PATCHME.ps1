@@ -6,10 +6,10 @@
 # SECTION 1: Software version numbers:
 	<#    VLC    #> $global:VLCver = "3.0.20"
 	<# OpenShell #> $global:OShellDispver = "4.4.191"; $global:OShellExecver = "4_4_191"
-	<# Notepad++ #> $global:NPPver = "8.6.4"
-	<#  PSCore7  #> $global:pwsh7ver = "7.4.1"
+	<# Notepad++ #> $global:NPPver = "8.6.5"
+	<#  PSCore7  #> $global:pwsh7ver = "7.4.2"
 
-# SECTION 2: Windows Update UBRs (March 2024)
+# SECTION 2: Windows Update UBRs (April 2024)
 . $workdir\modules\lib\Get-Edition.ps1
 switch ($edition) {
 	
@@ -30,7 +30,7 @@ switch ($edition) {
 		<# 21H1 #>          "19043.2364"
   		<# 21H2 #>          "19044.3086"
 		<# ====== Alive builds ====== #>
-		<# 22H2 #>          "19045.4170"
+		<# 22H2 #>          "19045.4291"
 	)}
 	
 	# Commerical editions
@@ -39,7 +39,7 @@ switch ($edition) {
 		<# 1511 #>          "10586.17446"
 		<# 1511 #>          "10586.1540"
 		<# 1607 #>          "14393.2906"
-		<# 1703 #>          "15063.2108"
+		<# 1703 #>          "15063.2108" # Enterprise and PPIPro can actually go up to .2679
 		<# 1709 #>          "16299.2166"
 		<# 1803 #>          "17134.2208"
 		<# 1809 #>          "17763.1935"
@@ -49,25 +49,25 @@ switch ($edition) {
 		<# 20H2 #>          "19042.2965"
 		<# 21H1 #>          "19043.2364"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "19044.4170"
-		<# 22H2 #>          "19045.4170"
+		<# 21H2 #>          "19044.4291"
+		<# 22H2 #>          "19045.4291"
 	)}
 	
 	# Long-term servicing editions
 	{$_ -match "EnterpriseS"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# LTSB 2015 #>     "10240.20526"
-		<# LTSB 2016 #>     "14393.6796"
-		<# LTSC 2019 #>     "17763.5576"
-		<# LTSC 2021 #>     "19044.4170"
+		<# LTSB 2015 #>     "10240.20596"
+		<# LTSB 2016 #>     "14393.6897"
+		<# LTSC 2019 #>     "17763.5696"
+		<# LTSC 2021 #>     "19044.4291"
 	)}
 	
 	# Server editions
 	{$_ -match "Server" -and $_ -notlike "ServerRdsh"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# Server 2016 #>   "14393.6796"
-		<# Server 2019 #>   "17763.5576"
-		<# Server 2022 #>   "20348.2340"
+		<# Server 2016 #>   "14393.6897"
+		<# Server 2019 #>   "17763.5696"
+		<# Server 2022 #>   "20348.2402"
 	)}
 	
 }
