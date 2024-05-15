@@ -10,7 +10,8 @@
 	<#  PSCore7  #> $global:pwsh7ver = "7.4.2"
 
 # SECTION 2: Windows Update UBRs (April 2024)
-. $workdir\modules\lib\Get-Edition.ps1
+Import-Module -DisableNameChecking $workdir\modules\lib\Get-Edition.psm1
+$edition, $editiontype, $null = Get-Edition
 switch ($edition) {
 	
 	# Consumer and any other editions
@@ -63,7 +64,7 @@ switch ($edition) {
 	)}
 	
 	# Server editions
-	{$_ -match "Server" -and $_ -notlike "ServerRdsh"} {$latest = @(
+	{$_ -match "Server" -and $editiontype -eq "Server"} {$latest = @(
 		<# ====== Alive builds ====== #>
 		<# Server 2016 #>   "14393.6981"
 		<# Server 2019 #>   "17763.5820"
