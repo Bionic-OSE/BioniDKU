@@ -6,7 +6,7 @@
 # SECTION 1: Software version numbers:
 	<#    VLC    #> $global:VLCver = "3.0.20"
 	<# OpenShell #> $global:OShellDispver = "4.4.191"; $global:OShellExecver = "4_4_191"
-	<# Notepad++ #> $global:NPPver = "8.6.5"
+	<# Notepad++ #> $global:NPPver = "8.6.6"
 	<#  PSCore7  #> $global:pwsh7ver = "7.4.2"
 
 # SECTION 2: Windows Update UBRs (April 2024)
@@ -30,13 +30,13 @@ switch ($edition) {
 		<# 21H1 #>          "19043.2364"
   		<# 21H2 #>          "19044.3086"
 		<# ====== Alive builds ====== #>
-		<# 22H2 #>          "19045.4291"
+		<# 22H2 #>          "19045.4412"
 	)}
 	
 	# Commerical editions
 	{$_ -match "Enterprise[^S]" -or $_ -like "Education" -or $_ -like "ServerRdsh"} {$latest = @(
 		<# ======= EOL builds ======= #>
-		<# 1511 #>          "10586.17446"
+		<# 1511 #>          "10240.17446"
 		<# 1511 #>          "10586.1540"
 		<# 1607 #>          "14393.2906"
 		<# 1703 #>          "15063.2108" # Enterprise and PPIPro can actually go up to .2679
@@ -49,25 +49,25 @@ switch ($edition) {
 		<# 20H2 #>          "19042.2965"
 		<# 21H1 #>          "19043.2364"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "19044.4291"
-		<# 22H2 #>          "19045.4291"
+		<# 21H2 #>          "19044.4412"
+		<# 22H2 #>          "19045.4412"
 	)}
 	
 	# Long-term servicing editions
 	{$_ -match "EnterpriseS"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# LTSB 2015 #>     "10240.20596"
-		<# LTSB 2016 #>     "14393.6897"
-		<# LTSC 2019 #>     "17763.5696"
-		<# LTSC 2021 #>     "19044.4291"
+		<# LTSB 2015 #>     "10240.20651"
+		<# LTSB 2016 #>     "14393.6981"
+		<# LTSC 2019 #>     "17763.5820"
+		<# LTSC 2021 #>     "19044.4412"
 	)}
 	
 	# Server editions
 	{$_ -match "Server" -and $_ -notlike "ServerRdsh"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# Server 2016 #>   "14393.6897"
-		<# Server 2019 #>   "17763.5696"
-		<# Server 2022 #>   "20348.2402"
+		<# Server 2016 #>   "14393.6981"
+		<# Server 2019 #>   "17763.5820"
+		<# Server 2022 #>   "20348.2461"
 	)}
 	
 }
