@@ -3,7 +3,7 @@
 
 ![BioniDKU version 400_stable Main menu](https://github.com/Bionic-OSE/BioniDKU/assets/44027930/2c4d046d-d2f4-487f-b642-fe46dd512180)
 
-![BioniDKU version 400_stable Desktop](https://github.com/Bionic-OSE/BioniDKU/assets/44027930/54190c8a-132a-4bcd-918d-90dba93c41d3)
+![BioniDKU version 400_update1 Desktop](https://github.com/Bionic-OSE/BioniDKU/assets/44027930/8888b55a-c0bf-422d-814b-3d46941e5ac2)
 
 ## What is this project about exactly? 
 Head over to the [**Wiki section**](https://github.com/Bionic-OSE/BioniDKU/wiki) to learn more about this! 
