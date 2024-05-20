@@ -1,4 +1,18 @@
 # BioniDKU main menu (2nd-generation) - The thing that appears on first run of the script
+# Project BioniDKU - Copyright (c) 2022-2024 Bionic Butter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Branding, directory and information stuffs
 function Show-Branding($clr) {
@@ -145,8 +159,8 @@ function Show-MenuText($item) {
 			if ($build -eq 10240 -and $disablelogonbg) {$wucolor = "DarkGray"} else {$wucolor = "White"}
 			Write-Host -ForegroundColor Yellow "`Configure the script by tuning the following options to your desire."
 			Write-Host -ForegroundColor $wucolor "1. Toggle Windows Update mode" -n; if ($build -eq 10240 -and $disablelogonbg) {Write-Host " (FORCEFULLY ENABLED)" -ForegroundColor DarkGray} else {Show-Disenabled WUmodeSwitch}
-			Write-Host -ForegroundColor White "2. Set desktop wallpaper to the one from the script" -n; Show-Disenabled SetWallpaper
-			Write-Host -ForegroundColor White "3. Use sounds from Windows 10 build 10074 instead of Windows 8" -n; Show-Disenabled Media10074
+			Write-Host -ForegroundColor White "2. Keep System Restore enabled" -n; Show-Disenabled KeepSR
+			Write-Host -ForegroundColor White "3. Set desktop wallpaper to the one from the script" -n; Show-Disenabled SetWallpaper
 			Write-Host -ForegroundColor White "4. Increase wait time (ideal for remote setups)" -n; Show-Disenabled RunningThisRemotely
 			Write-Host -ForegroundColor White "5. Toggle background music" -n; Show-Disenabled HikaruMusic
 			if ($setupmusic -eq 1) {Write-Host -ForegroundColor White "6. Customize your music selection"}
@@ -202,8 +216,8 @@ while ($true) {
 				$essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").EssentialApps
 				switch ($confignsel) {
 					"1" {if ($build -eq 10240 -and $disablelogonbg) {exit} else {Select-Disenabled WUmodeSwitch}}
-					"2" {Select-Disenabled SetWallpaper}
-					"3" {Select-Disenabled Media10074}
+					"2" {Select-Disenabled KeepSR}
+					"3" {Select-Disenabled SetWallpaper}
 					"4" {Select-Disenabled RunningThisRemotely}
 					"5" {Select-Disenabled HikaruMusic}
 					"6" {if ($setupmusic -eq 1) {& $coredir\music\musicpicker.ps1}}

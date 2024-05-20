@@ -1,6 +1,29 @@
-# BioniDKU Windows Update mode - A decicated mode with a lightweight shell just to run Windows Update
-# The purpose is so that the system can focus on the task at hand, without too much resources being used by the regular Explorer shell
-# This file has a similar structure to the Hikaru menus, one part because it's technically a "menu" with the ability to update the system
+# BioniDKU Windows Update mode - main file
+# 
+# A decicated mode with a lightweight shell just to run Windows Update
+# The purpose is so that the system can focus on the task at hand, without
+# too much resources being used by the regular Explorer shell
+# This file has a similar structure to the Hikaru menus, one part because
+# it's technically a "menu" with the ability to update the system
+#
+# Project BioniDKU - Copyright (c) 2022-2024 Bionic Butter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# WinXShell is not covered under this license, nor is distributed under
+# any licenses. Please see <https://theoven.org/viewtopic.php?t=89> for
+# more details
 
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"

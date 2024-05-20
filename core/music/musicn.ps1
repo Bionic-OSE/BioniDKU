@@ -27,7 +27,7 @@ for ($c = 1; $c -le 5; $c++) {
 		Write-Host "Downloading category $c..." -ForegroundColor White
 		$nl = $nc[$c - 1]
 		for ($n = 1; $n -le $nl; $n++) {
-			Start-BitsTransfer -DisplayName "Downloading category $c" -Description "Attempt $n out of $nl" -Source "$musicdn/normal$c.7z.00$n" -Destination $datadir\dls -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
+			Start-BitsTransfer -DisplayName "Downloading category $c" -Description "Package $n out of $nl" -Source "$musicdn/normal$c.7z.00$n" -Destination $datadir\dls -RetryInterval 60 -RetryTimeout 70 -ErrorAction SilentlyContinue
 		}
 		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\normal$c.7z.001 -o$datadir\music"
 	}

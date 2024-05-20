@@ -1,8 +1,9 @@
+# BioniDKU Hikaru fetchter - (c) Bionic Butter
 # This module gets the core components required for the script to start properly, part of Nana the bootloader
 
 Param(
-  [Parameter(Mandatory=$True,Position=0)]
-  [int32]$action
+	[Parameter(Mandatory=$True,Position=0)]
+	[int32]$action
 )
 function Start-DownloadLoop($link,$destfile,$name,$descr) {
 	while ($true) {
@@ -16,6 +17,8 @@ function Start-DownloadLoop($link,$destfile,$name,$descr) {
 	}
 }
 Import-Module BitsTransfer
+
+$hkv = "32"
 
 switch ($action) {
 	0 {
@@ -33,10 +36,10 @@ switch ($action) {
 		Expand-Archive -Path $datadir\dls\ambient.zip -DestinationPath $datadir\ambient
 	}
 	1 {
-		$hexists = Test-Path -Path "$datadir\dls\sakuraground.7z" -PathType Leaf
+		$hexists = Test-Path -Path "$datadir\dls\sakuraground.png" -PathType Leaf
 		if ($hexists) {exit}
 
-		$hikalink = "download/400_b7a" # Stable "latest/download"
+		$hikalink = "latest/download"
 		
 		Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/${hikalink}/Scripts.7z" "Scripts.7z" "Getting Hikaru-chan" "Downloading soft (scripts) layer"
 		Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/${hikalink}/Executables.7z" "Executables.7z" "Getting Hikaru-chan" "Downloading hard (executables) layer"
@@ -49,7 +52,7 @@ switch ($action) {
 		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\Scripts.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
 		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\Executables.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
 		Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "x $datadir\dls\Servicer.7z -pBioniDKU -o$env:SYSTEMDRIVE\Bionic"
-		Start-Process $env:SYSTEMDRIVE\Bionic\Hikarefresh\wget.exe -Wait -NoNewWindow -ArgumentList "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Hikarefreshinfo.ps1 -O HikarefreshinFOLD.ps1" -WorkingDirectory "$env:SYSTEMDRIVE\Bionic\Hikarefresh" 
+		Start-Process $env:SYSTEMDRIVE\Bionic\Hikarefresh\wget.exe -Wait -NoNewWindow -ArgumentList "https://github.com/Bionic-OSE/BioniDKU-hikaru/releases/latest/download/Servicinfo.${hkv}.ps1 -O ServicinFOLD.ps1" -WorkingDirectory "$env:SYSTEMDRIVE\Bionic\Hikarefresh"
 		Show-WindowTitle 1 "Getting ready" noclose
 		. $datadir\dls\Hikarinfo.ps1
 		New-Item -Path 'HKCU:\SOFTWARE' -Name Hikaru-chan

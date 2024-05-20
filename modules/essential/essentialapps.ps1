@@ -7,6 +7,7 @@ switch (1) {
 		Expand-Archive -Path $datadir\dls\winaero.zip -DestinationPath $datadir\dls
 		$waxe = (Get-ChildItem -Path $datadir\dls -Filter WinaeroTweaker*.exe).Name
 		Start-Process "$datadir\dls\$waxe" -Wait -NoNewWindow -ArgumentList "/SP- /VERYSILENT"
+		Remove-Item "$env:SYSTEMDRIVE\Users\Public\Desktop\Winaero Tweaker.lnk" -Force
 	}
 	$OpenShell {
 		Start-Process $datadir\dls\openshellinstaller.exe -Wait -NoNewWindow -ArgumentList "/qn ADDLOCAL=StartMenu"
@@ -29,6 +30,7 @@ switch (1) {
 	}
 	$NPP {
 		Start-Process $datadir\dls\npp.exe -Wait -NoNewWindow -ArgumentList "/S"
+		Copy-Item "$env:PROGRAMDATA\Microsoft\Windows\Start Menu\Programs\Notepad++.lnk" -Destination "$env:SYSTEMDRIVE\Users\Public\Desktop\Notepad++.lnk" -Force
 	}
 	$VLC {
 		$vlce = (Get-ChildItem -Path $datadir\dls -Filter vlc*.exe)

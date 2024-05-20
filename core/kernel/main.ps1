@@ -1,6 +1,21 @@
-# BioniDKU main orchestrator file - (c) Bionic Butter
+# BioniDKU main orchestrator file
+# Project BioniDKU - Copyright (c) 2022-2024 Bionic Butter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-##############################################################
+############################################################################################################################
+
 # Declare basic functions
 function Show-Branding($clr) {
 	if ($clr -like "clear") {Clear-Host}
@@ -43,10 +58,7 @@ if ($cmpstat -eq 16384) {
 	exit
 }
 
-##############################################################
-
-
-######################## BEGIN SCRIPT ########################
+############################################################################################################################
 
 # Show branding
 Show-WindowTitle 3 0 noclose
@@ -105,6 +117,7 @@ $setupmusic = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").HikaruMusic
 $ngawarn = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").NotGABuild
 $essentialapps = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).EssentialApps
 
+############################################################################################################################
 
 # NOW WE GET TO THE REAL BUSINESS
 
@@ -323,6 +336,8 @@ if ($balloonnotifs -eq $false) {
 }
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "RebootScript" -Value 0 -Type DWord -Force
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "ALLCOMPLETED" -Value 16384 -Type DWord -Force 
+
+############################################################################################################################
 
 Write-Host " "
 Show-WindowTitle 3 100

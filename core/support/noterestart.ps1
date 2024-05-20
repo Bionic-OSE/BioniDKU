@@ -1,3 +1,5 @@
+# BioniDKU end-of-script automatic restart background counter - (c) Bionic Butter
+
 $workdir = Split-Path(Split-Path "$PSScriptRoot")
 $coredir = Split-Path "$PSScriptRoot"
 

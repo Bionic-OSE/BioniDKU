@@ -1,4 +1,18 @@
-# Nana, the BioniDKU bootloader - (c) Bionic Butter
+# Nana, the BioniDKU bootloader 
+# Project BioniDKU - Copyright (c) 2022-2024 Bionic Butter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 function Show-Branding {
 	Clear-Host
@@ -144,13 +158,14 @@ function Set-AutoIDKUValue($type,$value,$data) {
 }
 function Get-RemoteSoftware {
 	# AnyDesk, RustDesk and DWService are currently supported
-	$anydesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files (x86)\AnyDesk\AnyDesk.exe"
-	$rustdesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files\RustDesk\RustDesk.exe"
-	$dwservice = Test-Path -Path "$env:SYSTEMDRIVE\Program Files\DWAgent\native\dwagsvc.exe"
+	$anydesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files (x86)\AnyDesk\AnyDesk.exe" -PathType Leaf
+	$rustdesk = Test-Path -Path "$env:SYSTEMDRIVE\Program Files\RustDesk\RustDesk.exe" -PathType Leaf
+	$dwservice = Test-Path -Path "$env:SYSTEMDRIVE\Program Files\DWAgent\native\dwagsvc.exe" -PathType Leaf
 	$anydeskon = Get-Process AnyDesk -ErrorAction SilentlyContinue
 	$rustdeskon = Get-Process RustDesk -ErrorAction SilentlyContinue
-	$dwserviceon = Get-Process dwagsvc -ErrorAction SilentlyContinue
-	if ($anydesk -or $rustdesk -or $anydeskon -or $rustdeskon) {
+	$dwserviceon1 = Get-Process dwagsvc -ErrorAction SilentlyContinue
+	$rmt = @($anydesk, $rustdesk, $dwservice, $anydeskon, $rustdeskon, $dwserviceon)
+	if ($rmt -Contains ($true)) {
 		return $true
 	} else {return $false}
 }
@@ -164,32 +179,36 @@ Set-ItemProperty -Path "HKCU:\Software\BioniDKU" -Name "ReleaseType" -Value $rel
 Set-ItemProperty -Path "HKCU:\Software\BioniDKU" -Name "ReleaseID" -Value $releaseid -Type String -Force 
 Set-ItemProperty -Path "HKCU:\Software\BioniDKU" -Name "ReleaseIDEx" -Value $releaseidex -Type String -Force
 
-Set-AutoIDKUValue app WinaeroTweaker 1
-Set-AutoIDKUValue app OpenShell 1
-Set-AutoIDKUValue app TClock 1
-Set-AutoIDKUValue app Firefox 1
-Set-AutoIDKUValue app NPP 1
-Set-AutoIDKUValue app ShareX 1
-Set-AutoIDKUValue app PDN 1
-Set-AutoIDKUValue app PENM 1
-Set-AutoIDKUValue app ClassicTM 1
-Set-AutoIDKUValue app DesktopInfo 1
-Set-AutoIDKUValue app VLC 1
+$applist1 = @("WinaeroTweaker","OpenShell","TClock","Firefox","NPP","ShareX","PDN","PENM","ClassicTM","DesktopInfo","VLC")
+foreach ($appn in $applist1) {
+	Set-AutoIDKUValue app $appn 1
+}
+# Uncomment this block and move the apps from the array above down to here
+# to disable them by default
+#
+# $applist0 = @()
+# foreach ($appn in $applist0) {
+# 	Set-AutoIDKUValue app $appn 0
+# }
 
-Set-AutoIDKUValue d "ConfigSet" 0
-Set-AutoIDKUValue d "ConfigEditing" 0 
-Set-AutoIDKUValue d "ConfigEditingSub" 0 
-Set-AutoIDKUValue d "ChangesMade" 0
-Set-AutoIDKUValue d "Denied" 0
-Set-AutoIDKUValue d "EdgeKilled"  0
-Set-AutoIDKUValue d "EssentialApps" 1
-Set-AutoIDKUValue d "Media10074" 0
-Set-AutoIDKUValue d "HikaruMode" 0
-Set-AutoIDKUValue d "HikaruMusic" 1
-Set-AutoIDKUValue d "PendingRebootCount" 0
-Set-AutoIDKUValue d "Transcribe" 1
-Set-AutoIDKUValue d "SetWallpaper" 1
-Set-AutoIDKUValue d "WUmodeSwitch" 1
+
+$valuelist1 = @("HikaruMusic","EssentialApps","Transcribe","SetWallpaper","WUmodeSwitch")
+foreach ($dlue in $valuelist1) {
+	Set-AutoIDKUValue d $dlue 1
+}
+# Similarly, move the values here to disable them by default
+# (WUmodeSwitch = Enable Windows Update mode)
+#
+$valuelist0 = @("KeepSR")
+foreach ($dlue in $valuelist0) {
+	Set-AutoIDKUValue d $dlue 0
+}
+
+# Do NOT modify this array, you may cause the script to misbehave!
+$valuefixed0 = "ConfigSet","ConfigEditing","ConfigEditingSub","ChangesMade","Denied","EdgeKilled","PendingRebootCount","HikaruMode"
+foreach ($dlue in $valuefixed0) {
+	Set-AutoIDKUValue d $dlue 0
+}
 
 if (Get-RemoteSoftware) {Set-AutoIDKUValue d "RunningThisRemotely" 1} else {Set-AutoIDKUValue d "RunningThisRemotely" 0}
 if ($build -le 10586) {Set-AutoIDKUValue d "Pwsh" 5}
@@ -203,15 +222,9 @@ $meeter = Test-Path -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
 $meetor = Test-Path -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer'
 $meesys = Test-Path -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies'
 switch ($false) {
-	{$meeter -eq $_} {
-		New-Item -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'Explorer' | Out-Null
-	}
-	{$meetor -eq $_} {
-		New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Explorer' | Out-Null
-	}
-	{$meesys -eq $_} {
-		New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'System' | Out-Null
-	}
+	{$meeter -eq $_} {New-Item -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'Explorer' | Out-Null}
+	{$meetor -eq $_} {New-Item -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Explorer' | Out-Null}
+	{$meesys -eq $_} {New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies' -Name 'System' | Out-Null}
 }
 
 Stop-Service -Name wuauserv -ErrorAction SilentlyContinue

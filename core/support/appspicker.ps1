@@ -1,4 +1,4 @@
-# Apps picker module, part of the main menu
+# BioniDKU apps picker module, part of the main menu - (c) Bionic Butter
 
 $apps = "\Apps"
 

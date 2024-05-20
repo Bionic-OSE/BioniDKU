@@ -1,3 +1,6 @@
+# BioniDKU manual stuffs guide - (c) Bionic Butter
+# This guide provide steps on things that needs to be done by hand, before the rest of the automation can continue
+
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "EdgeKilled" -Value 1 -Type DWord -Force
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Let's get manually-only things out of the way!"
 Write-Host " "
@@ -57,6 +60,5 @@ if ($build -eq 10240 -and -not $dotnet462) {
 	Write-Host "That will be the last step of the manually-done series."
 }
 
-Write-Host -ForegroundColor Cyan "Once you press Enter, everything else should be automated!"
-if ($build -eq 10240) {Get-ScheduledTask -TaskPath '\Microsoft\Windows\WindowsUpdate\' -TaskName '*' | Unregister-ScheduledTask -Confirm:$false}
-Read-Host
+Write-Host -ForegroundColor Cyan "Once you press Enter TWICE, everything else should be automated!"
+Read-Host; Read-Host

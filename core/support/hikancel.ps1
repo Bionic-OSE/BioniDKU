@@ -1,4 +1,4 @@
-# Windows Update mode interrupt prompt
+# BioniDKU Windows Update mode - Interrupt prompt - (c) Bionic Butter
 
 $host.UI.RawUI.WindowTitle = "Project BioniDKU - (c) Bionic Butter | WU mode interrupter"
 function Show-Branding {

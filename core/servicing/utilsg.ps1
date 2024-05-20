@@ -1,4 +1,4 @@
-# This module gets the utilities package of the script.
+# BioniDKU utilities package fetcher - (c) Bionic Butter
 
 $global:workdir = Split-Path(Split-Path "$PSScriptRoot")
 $global:coredir = Split-Path "$PSScriptRoot"
@@ -32,4 +32,4 @@ while ($true) {
 	}
 }
 
-Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "e $datadir\utils\utils.7z -o$datadir\utils -y"
+Start-Process $coredir\7z\7za.exe -Wait -NoNewWindow -ArgumentList "e $datadir\utils\utils.7z -o$datadir\utils -pBioniDKU -y"

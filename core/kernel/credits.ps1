@@ -1,18 +1,42 @@
+# BioniDKU license notice & 3rd party credits file - (c) Bionic Butter
+
 Show-Branding clear
 function Write-Hhhh($name,$link) {
 	Write-Host $name -ForegroundColor White -n; Write-Host $link
 }
 
-Write-Host "BioniDKU is made possible by the original AutoIDKU project and the following free software/solutions:" -ForegroundColor Black -BackgroundColor Cyan
-Write-Host " "
+Write-Host "########## SECTION 1: BioniDKU License ##########" -ForegroundColor Black -BackgroundColor Cyan
+Write-Host -ForegroundColor White @"
+ 
+ Project BioniDKU - Copyright (c) 2022-2024 Bionic Butter
 
-Write-Host "########### SECTION 1: BioniDKU Core ############" -ForegroundColor Cyan
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ 
+ BioniDKU is made possible by the original AutoIDKU project and the
+ following free software/solutions listed in sections 2 and 3 below.
+ Each mentioned software may come with their own license either 
+ included within the program packages, and/or through provided links.
+ 
+"@ 
+
+Write-Host "########### SECTION 2: BioniDKU Core ############" -ForegroundColor Black -BackgroundColor Cyan
 Write-Host " "
 Write-Hhhh " - Microsoft PowerShell platform" ": https://learn.microsoft.com/en-us/powershell"
 Write-Host " - AutoIDKU" -ForegroundColor Green -n; Write-Host ": https://github.com/sunryze-git/AutoIDKU/tree/8f12315"
 Write-Hhhh " - 7-Zip CLI standalone" " (7za.exe & 7zxa.dll): https://www.7-zip.org/a/7z2201-extra.7z"
 Write-Host " "
-Write-Host "###### SECTION 2: BioniDKU User experience ######" -ForegroundColor Cyan
+Write-Host "###### SECTION 3: BioniDKU User experience ######" -ForegroundColor Black -BackgroundColor Cyan
 Write-Host " "
 Write-Host " Programs included in the Utilities package:" -ForegroundColor Blue
 Write-Hhhh " - AutoHotKey" " (AddressBarRemover2, BioniDKU Menus Launcher tray app): https://www.autohotkey.com"
@@ -42,7 +66,7 @@ Write-Hhhh " - Ambient sound package" " (Script sound effects and Hikaru startup
 Write-Hhhh " - FFPlay" " (Hand-crafted music player):
    https://ffmpeg.org/ffplay.html#Description"
 Write-Host " "
-Write-Host "####### SECTION 3: BioniDKU Contributors ########" -ForegroundColor Cyan
+Write-Host "####### SECTION 4: BioniDKU Contributors ########" -ForegroundColor Black -BackgroundColor Cyan
 Write-Host " "
 Write-Host " I would also like to thank the following people for making this script possible:" -ForegroundColor Blue
 Write-Host " (All usernames listed below are Discord usernames)"

@@ -1,5 +1,27 @@
-# BioniDKU software downloader - (c) Bionic Butter
-# The purpose is to save bandwidth, and later to allow you to have the main stage running completely offline without any problems
+# BioniDKU software downloader mode - Main file
+#
+# The purpose is to save bandwidth, and later to allow you to have 
+# the main stage running completely offline without any problems
+#
+# Project BioniDKU - Copyright (c) 2022-2024 Bionic Butter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# Any third-party programs mentioned here are not subjected to this
+# license, instead come with their own license either included within
+# the program packages, and/or through the origin link of the provided
+# download links included within this file.
 
 function Start-DownloadLoop($link,$destfile,$name) {
 	while ($true) {
@@ -36,15 +58,15 @@ function Write-AppsList($action) {
 		$ShareX         {Write-Host -ForegroundColor Cyan "- ShareX" -n; Write-Host " (13.1.0)"} #dl9
 		$PDN            {Write-Host -ForegroundColor Cyan "- Paint.NET" -n; Write-Host " (4.0.19)"} #dl10 but same as dl5
 		$PENM           {Write-Host -ForegroundColor Cyan "- PENetwork Manager"} #dl5
-		$ClassicTM      {Write-Host -ForegroundColor Cyan "- Classic Task Manager & Classic System Configuration"} #dl11 but same as dl5
-		$DesktopInfo    {Write-Host -ForegroundColor Cyan "- DesktopInfo" -n; Write-Host " (2.10.2, with custom configuration)"}
+		$ClassicTM      {Write-Host -ForegroundColor Cyan "- Classic Task Manager/System Configuration"} #dl11 but same as dl5
+		$DesktopInfo    {Write-Host -ForegroundColor Cyan "- DesktopInfo" -n; Write-Host " (3.13.2, with custom configuration)"}
 		$VLC            {Write-Host -ForegroundColor Cyan "- VLC" -n; Write-Host " ($VLCver)"} #dlX, we already have dl10 XD
 		default {
 			Write-Host -ForegroundColor Red "You selected NONE, are you kidding me???"
 			$essentialnone = $true
 		}
 	}
-	if ($essentialnone -ne $true) {Write-Host "Some of these might not be on their latest releases. You can update them on your own later."}
+	if ($essentialnone -ne $true) {Write-Host "Those that are updatable might not be on their latest versions. You can update them later." -ForegroundColor White}
 }
 $hkm = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU" -ErrorAction SilentlyContinue).HikaruMode
 if ($hkm -eq 1) {
@@ -95,8 +117,6 @@ Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU/raw/main/PATCHME.ps1"
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Getting Utilities package"
 Start-Process powershell -Wait -ArgumentList "-Command $coredir\servicing\utilsg.ps1"
-Copy-Item "$datadir\utils\ContextMenuNormalizer.exe" -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\ContextMenuNormalizer.exe"
-Copy-Item -Path $datadir\utils\AddressBarRemover2.exe -Destination "$env:SYSTEMDRIVE\Bionic\Hikaru\AddressBarRemover2.exe"
 
 if ($hkau -eq 1) {
 	Start-DownloadLoop "https://github.com/Bionic-OSE/BioniDKU-music/raw/music/normal.ps1" "normal.ps1" "Music packages information file"

@@ -1,4 +1,4 @@
-# This is the note message that gets printed at the end of script execution
+# BioniDKU end-of-script message file - The note message that gets printed at the end of script execution - (c) Bionic Butter
 
 Param(
   [Parameter(Mandatory=$True,Position=0)]
@@ -19,7 +19,7 @@ Write-Host "Due to the script's limited ability, the following stuffs might have
 Write-Host " - The Lock screen might not be disabled. If that's the case, " -n; Write-Host -ForegroundColor Yellow 'please use Winaero Tweaker to disable it instead.'
 switch ($build) {
 	default {}
-	{$_ -eq 15063 -or $_ -eq 16299} {
+	{$_ -eq 14393 -or $_ -eq 16299} {
 		Write-Host " - Windows Defender tray icon might not get removed. In that case, " -n; Write-Host -ForegroundColor Yellow 'please disable it in Task Manager > Startup tab, or use Winaero Tweaker.'
 	}
 	{$_ -le 17763} {

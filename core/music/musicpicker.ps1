@@ -1,4 +1,4 @@
-# Music picker module, part of the main menu
+# BioniDKU music picker module, part of the main menu - (c) Bionic Butter
 
 function Select-DisenabledCol($regvalue) {
 	$regreturns = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Music").$regvalue

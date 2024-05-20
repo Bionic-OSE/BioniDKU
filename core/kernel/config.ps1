@@ -1,5 +1,18 @@
-## Project BioniDKU - Next Generation AutoIDKU
-## Advanced configuration file & menu
+## BioniDKU advanced configuration file
+## Project BioniDKU - Copyright (c) 2022-2024 Bionic Butter
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #! The only things you should modify in this file are values under the 'Switch' column, with '$true' meaning 
 #! True/ON and '$false' meaning False/OFF. I've made this layout in the most user-friendly way possible, so
@@ -13,14 +26,14 @@
 ## ================================================ MODULE SWITCHES ===============================================
 ## These are most of the things the script will do during its execution.
 
-<# Install .NET 4.6.2 (10586-)**** #> if ($pwsh -eq 5) {      $dotnet462 =                   $true } # Don't delete
+<# Install .NET 4.6.2 (10586-) [4] #> if ($pwsh -eq 5) {      $dotnet462 =                   $true } # Don't delete
 <# Enable .NET 3.5 #>                                         $dotnet35 =                    $true   # the bracket!
 <# Hide system icons from the taskbar #>                      $hidetaskbaricons =            $true
-<# Remove Microsoft Edge Shortcuts** #>                       $removeedgeshortcut =          $true
+<# Remove Microsoft Edge Shortcuts [2] #>                     $removeedgeshortcut =          $true
 <# Create desktop shortcuts #>                                $desktopshortcuts =            $false
 <# Disable Wake timers #>                                     $removewaketimers =            $true
 <# Remove all UWP apps possible #>                            $removeUWPapps =               $true
-<# Use script's Open-Shell config* #>                         $openshellconfig =             $true
+<# Use script's Open-Shell config [1] #>                      $openshellconfig =             $true
 <# Replace Explorer taskbar icon (17763-) #>                  $explorericon =                $true
 <# Remove taskbar pins #>                                     $taskbarpins =                 $true
 <# Replace seguiemj.ttf with Windows 11's #>                  $replaceemojifont =            $true 
@@ -28,22 +41,22 @@
 <# Shrink Explorer address bar (18363 & 1904x only) #>        $thinneraddressbar =           $true
 <# Remove Microsoft OneDrive #>                               $removeonedrive =              $true
 <# Remove HomeGroup (16299-) #>                               $removehomegroup =             $true
-<# Default Explorer to This PC***** #>                        $explorerstartfldr =           $true
+<# Default Explorer to This PC [5] #>                         $explorerstartfldr =           $true
 <# Use classic battery flyout #>                              $oldbatteryflyout =            $true
 <# Install custom system sound #>                             $customsounds =                $true
-<# Disable some system apps*** #>                             $removesystemapps =            $true
+<# Disable some system apps [3] #>                            $removesystemapps =            $true
 <# Replace SlideToShutDown.exe background #>                  $sltoshutdownwall =            $true
-<# Don't touch Edge Chromium** #>                             $keepedgechromium =            $false
-<# Keep Windows Search*** #>                                  $keepsearch =                  $true
+<# Don't touch Edge Chromium [2] #>                           $keepedgechromium =            $false
+<# Keep Windows Search [3] #>                                 $keepsearch =                  $true
 <# Keep UAC (Stable only) #>                                  $keepuac =                     $true
 <# Hide LogonUI spin screens (non-Home/Servers, 14393+) #>    $embeddedlogon =               $false
 
-#i     *  You MUST enable the Essential Apps option and include Open-Shell in the apps selection.
-#i    **  If you choose to $keepedgechromium, $removeedgeshortcut be skipped if it's installed.
-#i        (MEANING on certain builds if you have Chromium alongside Legacy shortcuts for both will NOT be removed!)
-#i   ***  $keepsearch is an option of $removesystemapps, and will have no effect if the latter is disabled.
-#i  ****  If you choose not to install .NET 4.6.2 on 10240, the classic WU disabling method will be used.
-#i *****  If you disable this option, Quick Access will not be removed.
+#i [1]  You MUST enable the Essential Apps option and include Open-Shell in the apps selection.
+#i [2]  If you choose to $keepedgechromium, $removeedgeshortcut be skipped if it's installed.
+#i      (MEANING on certain builds if you have Chromium alongside Legacy shortcuts for both will NOT be removed!)
+#i [3]  $keepsearch is an option of $removesystemapps, and will have no effect if the latter is disabled.
+#i [4]  If you choose not to install .NET 4.6.2 on 10240, the classic WU disabling method will be used.
+#i [5]  If you disable this option, Quick Access will not be removed.
 
 ## ================================================ REGISTRY SWICHES ===============================================
 ## Below are registry-applied tweaks. You can enable/disable all of them, or toggle individual options.
@@ -61,7 +74,7 @@
 <# Remove Downloads folder (DANGEROUS) #>                     $removedownloads =             $true
 <# Disable "Look for this app in Store" #>                    $applookupinstore =            $true
 <# Tune the Context menu #>                                   $contextmenuentries =          $true
-<# Remove Quick Access* #>                                    $removequickaccess =           $true
+<# Remove Quick Access [6] #>                                 $removequickaccess =           $true
 <# Disable Location icon #>                                   $disablelocationicon =         $true 
 <# Activate Windows Photos viewer #>                          $activatephotoviewer =         $true 
 <# Set Registered owner #>                                    $registeredowner =             $true 
@@ -69,7 +82,7 @@
 <# Disable Edge prelaunch on startup #>                       $disableedgeprelaunch =        $true
 <# Disable Cortana #>                                         $disablecortana =              $true 
 <# Disable automatic update of UWP apps #>                    $disablestoreautoupd =         $true
-<# Enable classic ballon notifications** #>                   $balloonnotifs =               $true 
+<# Enable classic ballon notifications [7] #>                 $balloonnotifs =               $true 
 <# Show all icons in taskbar tray #>                          $showalltrayicons =            $false 
 <# Show hidden system files and folders #>                    $showsuperhidden =             $false 
 <# Disable Lock screen #>                                     $disablelockscrn =             $true
@@ -83,8 +96,8 @@
 <# Disable Power Throttling #>                                $nopowerthrottling =           $false
 <# Reduce the amount of svchost.exes #>                       $svchostslimming =             $true
 
-#i  * See "*****" in the previous section.
-#i ** Classic ballon notifications will be temporarily enabled during script operation, and will be turned off at
+#i [6] See notice "[5]" in the previous section.
+#i [7] Classic ballon notifications will be temporarily enabled during script operation, and will be turned off at
 #i    the end if you switch the option off.
 
 ## ^.^

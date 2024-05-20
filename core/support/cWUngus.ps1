@@ -1,3 +1,5 @@
+# BioniDKU Windows update mode - Heavy update downloader - (c) Bionic Butter
+
 $chonked = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU").cWUfirm
 switch ($true) {
 	{$edition -like "EnterpriseS*" -and $build -in 10240, 14393} {exit}

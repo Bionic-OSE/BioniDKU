@@ -1,4 +1,21 @@
-# BioniDKU music player - Powered by FFPlay - (c) Bionic Butter
+# BioniDKU music player - Powered by FFPlay
+# Project BioniDKU - Copyright (c) 2022-2024 Bionic Butter
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# FFPlay is part of FFmpeg, a trademark of Fabrice Bellard
+# See <https://www.ffmpeg.org/legal.html> for more details
 
 Set-ItemProperty -Path "HKCU:\Software\AutoIDKU" -Name "HikaruMusicStop" -Value 0 -Type DWord -Force
 function Show-NotifyBalloon($title,$message1,$message2) {
