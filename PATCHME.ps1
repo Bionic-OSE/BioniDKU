@@ -6,7 +6,7 @@
 # SECTION 1: Software version numbers:
 	<#    VLC    #> $global:VLCver = "3.0.20"
 	<# OpenShell #> $global:OShellDispver = "4.4.191"; $global:OShellExecver = "4_4_191"
-	<# Notepad++ #> $global:NPPver = "8.6.6"
+	<# Notepad++ #> $global:NPPver = "8.6.7"
 	<#  PSCore7  #> $global:pwsh7ver = "7.4.2"
 
 # SECTION 2: Windows Update UBRs (April 2024)
