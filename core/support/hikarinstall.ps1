@@ -10,9 +10,7 @@ if ($build -ge 18362) {
 	Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name "ContextMenuNormalizer" -Value "$env:SYSTEMDRIVE\Bionic\Hikaru\ContextMenuNormalizer.exe" -Type String -Force
 }
 $OpenShell = (Get-ItemProperty -Path "HKCU:\Software\AutoIDKU\Apps").OpenShell
-if ($OpenShell -eq 1) {
-	Set-ItemProperty -Path "HKCU:\Software\OpenShell\StartMenu\Settings" -Name "TaskbarOpacity" -Value 80 -Type DWord -Force
-}
+if ($OpenShell -eq 1) {Set-ItemProperty -Path "HKCU:\Software\OpenShell\StartMenu\Settings" -Name "TaskbarOpacity" -Value 80 -Type DWord -Force}
 
 Write-Host -ForegroundColor Cyan -BackgroundColor DarkGray "Installing Custom System Sounds"
 Expand-Archive -Path $datadir\utils\Media9200.zip -DestinationPath $env:SYSTEMDRIVE\Windows\Media\Blue
@@ -100,8 +98,8 @@ reg import "$env:SYSTEMDRIVE\Bionic\Hikaru\ShellHikaru.reg"
 
 # Create shortcut for HikaruQML
 $WScriptObj = New-Object -ComObject ("WScript.Shell")
-$hkQML = "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQML.exe"
-$hkQMLS = "$env:AppData\Microsoft\Windows\Start Menu\Programs\BioniDKU Menus Tray.lnk"
+$hkQML = "$env:SYSTEMDRIVE\Bionic\Hikaru\HikaruQMLh.exe"
+$hkQMLS = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\BioniDKU Menus System Tray.lnk"
 $hkQMLSh = $WscriptObj.CreateShortcut($hkQMLS)
 $hkQMLSh.TargetPath = $hkQML
 $hkQMLSh.Save()
