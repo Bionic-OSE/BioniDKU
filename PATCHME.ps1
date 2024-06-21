@@ -4,12 +4,13 @@
 
 
 # SECTION 1: Software version numbers:
-	<#    VLC    #> $global:VLCver = "3.0.20"
+	<#    VLC    #> $global:VLCver = "3.0.21"
 	<# OpenShell #> $global:OShellDispver = "4.4.191"; $global:OShellExecver = "4_4_191"
-	<# Notepad++ #> $global:NPPver = "8.6.7"
+	<# Notepad++ #> $global:NPPver = "8.6.8"
 	<#  PSCore7  #> $global:pwsh7ver = "7.4.2"
+	<#   7-Zip   #> $global:SZVer = "2407"
 
-# SECTION 2: Windows Update UBRs (April 2024)
+# SECTION 2: Windows Update UBRs (June 2024)
 Import-Module -DisableNameChecking $workdir\modules\lib\Get-Edition.psm1
 $edition, $editiontype, $null = Get-Edition
 switch ($edition) {
@@ -31,7 +32,7 @@ switch ($edition) {
 		<# 21H1 #>          "19043.2364"
   		<# 21H2 #>          "19044.3086"
 		<# ====== Alive builds ====== #>
-		<# 22H2 #>          "19045.4412"
+		<# 22H2 #>          "19045.4529"
 	)}
 	
 	# Commerical editions
@@ -40,7 +41,7 @@ switch ($edition) {
 		<# 1511 #>          "10240.17446"
 		<# 1511 #>          "10586.1540"
 		<# 1607 #>          "14393.2906"
-		<# 1703 #>          "15063.2108" # Enterprise and PPIPro can actually go up to .2679
+		<# 1703 #>          "15063.2108" # PPIPro can actually go up to .2679
 		<# 1709 #>          "16299.2166"
 		<# 1803 #>          "17134.2208"
 		<# 1809 #>          "17763.1935"
@@ -49,26 +50,26 @@ switch ($edition) {
 		<# 2004 #>          "19041.1415"
 		<# 20H2 #>          "19042.2965"
 		<# 21H1 #>          "19043.2364"
+		<# 21H2 #>          "19044.4529"
 		<# ====== Alive builds ====== #>
-		<# 21H2 #>          "19044.4412"
-		<# 22H2 #>          "19045.4412"
+		<# 22H2 #>          "19045.4529"
 	)}
 	
 	# Long-term servicing editions
 	{$_ -match "EnterpriseS"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# LTSB 2015 #>     "10240.20651"
-		<# LTSB 2016 #>     "14393.6981"
-		<# LTSC 2019 #>     "17763.5820"
-		<# LTSC 2021 #>     "19044.4412"
+		<# LTSB 2015 #>     "10240.20680"
+		<# LTSB 2016 #>     "14393.7070"
+		<# LTSC 2019 #>     "17763.5936"
+		<# LTSC 2021 #>     "19044.4529"
 	)}
 	
 	# Server editions
 	{$_ -match "Server" -and $editiontype -eq "Server"} {$latest = @(
 		<# ====== Alive builds ====== #>
-		<# Server 2016 #>   "14393.6981"
-		<# Server 2019 #>   "17763.5820"
-		<# Server 2022 #>   "20348.2461"
+		<# Server 2016 #>   "14393.7070"
+		<# Server 2019 #>   "17763.5936"
+		<# Server 2022 #>   "20348.2527"
 	)}
 	
 }
