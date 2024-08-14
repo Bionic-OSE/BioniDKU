@@ -33,9 +33,6 @@ This script is backed by **3 additional repositories**, the products of which ar
 - [**BioniDKU Hikaru-chan**](https://github.com/Bionic-OSE/BioniDKU-hikaru): A **crucial** separate software package that takes control over Windows after the script finishes and provides utilities to both the challenge contestant (the one using the IDKU) and the challenge host (the one set the IDKU up).
 - [**BioniDKU Music**](https://github.com/Bionic-OSE/BioniDKU-music): As the name suggests, this is where the music that (optionally) plays during runtime are downloaded from, packed in split 7-Zip archives. As most of these are YouTube downloads I do NOT own nor have rights to any of the songs included. Please give credits to all the awesome artists/original sources of those as their names scroll through the music player. 
 
-### Wanna go back in time?
-- If you still want to try the older, *GitHub original* [PowerShell 5/7 Hybrid release](https://github.com/Bionic-OSE/BioniDKU/releases/tag/200_u3) from **version 200 series**, it is still available and has been updated to work with recent repository-side changes.
-
 ## Credits
 - [Sunryze](https://github.com/sunryze-git/AutoIDKU/tree/8f12315e667a36eb18f412eae669a86e6aeccc70), the original author of AutoIDKU.
 - Free (and open source) software that are bundled during script runtime & Visual assets featured and included: You can view these through option 4 (*Show credits*) on the main menu. 
